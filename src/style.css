@@ -1,0 +1,119 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+    font-family: "URWDIN";
+    src:
+        local("URWDIN"),
+        url("/fonts/URWDIN.woff2") format("woff2");
+}
+
+* {
+    touch-action: pan-x pan-y;
+    user-select: none;
+    box-sizing: border-box;
+    -webkit-touch-callout: none !important;
+    -webkit-user-select: none !important; /* Safari */
+    -khtml-user-select: none !important; /* Konqueror HTML */
+    -moz-user-select: none !important; /* Firefox */
+    -ms-user-select: none !important; /* Internet Explorer/Edge */
+    user-select: none !important;
+    box-sizing: border-box !important;
+}
+img {
+    pointer-events: none;
+}
+
+input,
+textarea,
+button,
+select,
+label,
+a {
+    -webkit-tap-highlight-color: transparent;
+}
+@layer base {
+    html,
+    body {
+        @apply !bg-[#1a2358];
+    }
+}
+#app {
+    pointer-events: none;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    color: white;
+    -webkit-font-smoothing: antialiased;
+    font-family: "space-grotesk-variable", sans-serif;
+    font-variation-settings: "wght" 300;
+}
+
+.refraction-button {
+    @apply text-lg max-w-[230px] w-full h-[56px] rounded-full flex justify-center items-center border-2 active:bg-white  active:text-cb-blue-950;
+}
+
+@layer components {
+}
+
+@layer utilities {
+    .centered {
+        @apply absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2;
+    }
+    .text-shadow-base {
+        text-shadow:
+            0px 0px 20px rgba(0, 0, 0, 0.15),
+            0px 2px 0px rgba(0, 0, 0, 0.25);
+    }
+    .font-regular {
+        /* weird bug with variable fonts - this is 'regular' boldness */
+        font-weight: 700;
+    }
+    .font-bold {
+        font-variation-settings: "wght" 400;
+    }
+    .font-extrabold {
+        font-variation-settings: "wght" 500;
+    }
+}
+
+/* recording button */
+.progressBar {
+    stroke-dasharray: 100.531 100.531;
+    stroke-dashoffset: 0;
+}
+
+#loadingCircleRecording {
+    stroke-dasharray: 25 25 25 25;
+    stroke-dashoffset: 0;
+}
+
+@keyframes record-button-spin {
+    0% {
+        transform: rotate(-90deg);
+    }
+    100% {
+        transform: rotate(270deg);
+    }
+}
+
+.artwork-bg {
+    background: url("./features/header/assets/artworks-bg.webp"), rgba(25, 21, 46, 1);
+    background-blend-mode: luminosity;
+}
+
+.header-bar {
+    -webkit-transform-style: preserve-3d;
+-moz-transform-style: preserve-3d;
+transform-style: preserve-3d;
+    
+}
+
+.header-child {
+    -webkit-backface-visibility: hidden;
+    -moz-backface-visibility: hidden;
+    backface-visibility: hidden;
+}
