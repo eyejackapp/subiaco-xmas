@@ -207,48 +207,48 @@ export function App() {
             // clearCurrentArtwork();
             setCurrentArtwork(artworkId);
 
-            switch (artworkId) {
-                case 'artwork-1':
-                    ReactGA.event('viewed_story_1', {
-                        viewed_story_1: 1,
-                    });
-                    break;
-                case 'artwork-2':
-                    ReactGA.event('viewed_story_2', {
-                        viewed_story_2: 1,
-                    });
-                    break;
-                case 'artwork-3':
-                    ReactGA.event('viewed_story_3', {
-                        viewed_story_3: 1,
-                    });
-                    break;
-                case 'artwork-4':
-                    ReactGA.event('viewed_story_4', {
-                        viewed_story_4: 1,
-                    });
-                    break;
-                case 'artwork-5':
-                    ReactGA.event('viewed_story_5', {
-                        viewed_story_5: 1,
-                    });
-                    break;
-                case 'artwork-6':
-                    ReactGA.event('viewed_story_6', {
-                        viewed_story_6: 1,
-                    });
-                    break;
-                case 'artwork-7':
-                    ReactGA.event('viewed_story_7', {
-                        viewed_story_7: 1,
-                    });
-                    break;
-                case 'artwork-8':
-                    ReactGA.event('viewed_story_8', {
-                        viewed_story_8: 1,
-                    });
-                    break;
-            }
+            // switch (artworkId) {
+            //     case 'artwork-1':
+            //         ReactGA.event('viewed_story_1', {
+            //             viewed_story_1: 1,
+            //         });
+            //         break;
+            //     case 'artwork-2':
+            //         ReactGA.event('viewed_story_2', {
+            //             viewed_story_2: 1,
+            //         });
+            //         break;
+            //     case 'artwork-3':
+            //         ReactGA.event('viewed_story_3', {
+            //             viewed_story_3: 1,
+            //         });
+            //         break;
+            //     case 'artwork-4':
+            //         ReactGA.event('viewed_story_4', {
+            //             viewed_story_4: 1,
+            //         });
+            //         break;
+            //     case 'artwork-5':
+            //         ReactGA.event('viewed_story_5', {
+            //             viewed_story_5: 1,
+            //         });
+            //         break;
+            //     case 'artwork-6':
+            //         ReactGA.event('viewed_story_6', {
+            //             viewed_story_6: 1,
+            //         });
+            //         break;
+            //     case 'artwork-7':
+            //         ReactGA.event('viewed_story_7', {
+            //             viewed_story_7: 1,
+            //         });
+            //         break;
+            //     case 'artwork-8':
+            //         ReactGA.event('viewed_story_8', {
+            //             viewed_story_8: 1,
+            //         });
+            //         break;
+            // }
 
             if (viewedArtworks && !viewedArtworks.includes(artworkId)) {
                 // setShowArtworkUnlocked(true);
