@@ -8,9 +8,10 @@ import {
   PlacegroundPipelineModuleResult,
 } from "./8thwall/placeground-pipeline-module";
 import { Group, Object3DEventMap } from "three";
+import { ArtworkId, ARTWORKS } from "./artworks";
 
 const XR8_API_KEY =
-  "c2sSoNQnvsUVgBjx5aRT8E8hJDeHZXz2eNd93ewmqVyGe534KPimsQ2Sx85vqqF32Vh7eB";
+  "mw1uy5jVtZZO85pE4KP2QUdffHKjnFlnitMtFzTNu3MYagu9rxduWbFtM7czPhauEmNe8a";
 
 /**
  * Events and API exposed by the renderer
@@ -45,7 +46,7 @@ export type RendererEvents = {
 export type RendererApi = {
   on: Emitter<RendererEvents>["on"];
   off: Emitter<RendererEvents>["off"];
-  loadArtwork(): Promise<Group<Object3DEventMap>>;
+  loadArtwork(id: string): any;
   startRecording(): void;
   stopRecording(): void;
   pauseTracking(): void;
@@ -118,9 +119,24 @@ export async function initExperienceRenderer(
         audio.context.resume();
       }
     },
-    async loadArtwork() {
-      const model = await module3d.loadArtwork();
-      return model;
+    // async loadArtwork() {
+    //   const model = await module3d.loadArtwork();
+    //   return model;
+    // },
+    async loadArtwork(artworkId: ArtworkId) {
+        const artworkData = ARTWORKS[artworkId];
+        if (!artworkData) throw new Error(`initExperienceRenderer: loadArtwork(${artworkId}). No artwork found`);
+        const model = await module3d.loadArtwork(artworkData);
+        console.log('M', model)
+        return model
+
+        // if (fsm.can('StartRepositioning')) {
+        //     const contentModule = await createContentModule(audio);
+        //     fsm.dispatch('StartRepositioning', artworkData, contentModule);
+        // } else {
+        //     console.log('FSM cannot StartRepositioning from state', fsm.value);
+        // }
+      
     },
 
     // TODO return a promise

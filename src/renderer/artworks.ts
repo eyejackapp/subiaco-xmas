@@ -33,7 +33,7 @@ export const ARTWORKS = {
     'artwork-1': {
         name: 'Art Abound',
         artist: 'Artist 1',
-        basePath: '/artworks/story-1/',
+        basePath: '/model/Bloomscapes_V3.glb',
         clue: 'Home of the arts in Bankstown.',
         image: Artwork1Thumbnail,
         artistImage: Artwork1,

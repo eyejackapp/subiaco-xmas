@@ -1,8 +1,10 @@
 // Define an 8th Wall XR Camera Pipeline Module that adds a cube to a threejs scene on startup.
 import mitt, { Emitter } from 'mitt';
-import { ACESFilmicToneMapping, EquirectangularReflectionMapping } from 'three';
 import { RGBELoader } from 'three/examples/jsm/Addons.js';
 import { I8thWallImageTargetEventModel, IPipelineModule } from '.';
+import * as THREE from 'three';
+
+window.THREE = THREE;
 
 export type MusicCentre3dEvents = {
     'on-show-model': {
@@ -47,16 +49,16 @@ export const placegroundPipelineModule =
             emitter,
             onStart: ({ canvas }) => {
                 const { scene, camera, renderer } = XR8.Threejs.xrScene(); // Get the 3js scene from XR8.Threejs
-
+                console.log('placegroundPipelineModule', scene, camera, renderer);
                 // Add some light to the scene.
                 renderer.physicallyCorrectLights = true;
-                renderer.toneMapping = ACESFilmicToneMapping;
+                renderer.toneMapping = THREE.ACESFilmicToneMapping;
                 renderer.toneMappingExposure = 1;
 
                 new RGBELoader().load(
                     '/empty_warehouse_01_1k.hdr',
                     function (texture) {
-                        texture.mapping = EquirectangularReflectionMapping;
+                        texture.mapping = THREE.EquirectangularReflectionMapping;
 
                         scene.environment = texture;
                     },

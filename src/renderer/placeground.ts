@@ -13,8 +13,9 @@ import {
 } from 'three';
 import { Mesh, Object3D, Clock } from 'three';
 import { GLTFLoader } from 'three/examples/jsm/Addons.js';
+import { ArtworkModel, ARTWORKS } from './artworks';
 export type I3dPipeline = {
-    loadArtwork: () => Promise<Group<Object3DEventMap>>;
+    loadArtwork: (artworkData: ArtworkModel) => Promise<Group<Object3DEventMap>>;
 };
 export function init3dExperience(
     module: PlacegroundPipelineModuleResult,
@@ -25,17 +26,17 @@ export function init3dExperience(
     let mixer: AnimationMixer;
 
     const clock = new Clock(true);
-    const audioElement = document.getElementById(
-        'ejx-audio',
-    ) as HTMLAudioElement;
-    audio.setMediaElementSource(audioElement);
+    // const audioElement = document.getElementById(
+    //     'ejx-audio',
+    // ) as HTMLAudioElement;
+    // audio.setMediaElementSource(audioElement);
 
     const cameraWorldDirection = new Vector3();
 
-    const loadArtwork = async () => {
+    const loadArtwork = async (artworkData: ArtworkModel) => {
         const loader = new GLTFLoader();
         const model = await loader.loadAsync(
-            '/model/Bloomscapes_V3.glb',
+           artworkData.basePath,
             (progress) => {
                 module.emitter.emit('content-load-progress', {
                     progress: progress.loaded,
@@ -43,7 +44,7 @@ export function init3dExperience(
                 });
             },
         );
-
+        console.log('MODEL', model);
         model.scene.traverse((child) => {
             if ((child as Mesh).isMesh) {
                 child.frustumCulled = false;
@@ -61,7 +62,7 @@ export function init3dExperience(
         module.emitter.emit('content-loaded');
         model.scene.scale.set(0.001, 0.001, 0.001);
 
-        const soundFile = model.parser.json.scenes[0].extras;
+        // const soundFile = model.parser.json.scenes[0].extras;
 
         model.scene.traverse((child) => {
             if ((child as Mesh).isMesh) {
@@ -69,12 +70,12 @@ export function init3dExperience(
             }
         });
 
-        audioElement.src = soundFile.sound_file_64;
-        audioElement.load();
-        audioElement.oncanplay = () => {
-            audioElement.play();
+        // audioElement.src = soundFile.sound_file_64;
+        // audioElement.load();
+        // audioElement.oncanplay = () => {
+        //     audioElement.play();
             contentContainer.add(model.scene);
-        };
+        // };
 
         return model.scene;
     };

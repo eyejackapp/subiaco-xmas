@@ -27,6 +27,7 @@ import WatermarkFile from './assets/watermark-logo.png';
 import ArtworkLeft from './assets/sprite-left.png';
 import ArtworkRight from './assets/sprite-right.png';
 import Spinner from './components/Spinner';
+import { modelDirection } from 'three/webgpu';
 
 /**
  * Introduction
@@ -132,10 +133,13 @@ export function App() {
         setPermissionGranted(true);
         const canvasEl = document.getElementById('xr-canvas') as HTMLCanvasElement;
         if (!canvasEl) throw new Error('No Canvas element.');
+        console.log('before')
         const renderer = await initExperienceRenderer(canvasEl, {
             watermarkImageUrl: hideRecordButton ? '' : WatermarkFile,
         });
         setRenderer(renderer);
+        console.log('after')
+
         setTimeout(() => {
             setIsLoadingExperience(false);
             if (hasViewedOnboarding) {
@@ -182,11 +186,13 @@ export function App() {
     const [showCompletedModal, setShowCompletedModal] = useState(false);
     const [canShowCongratulationsModal, setCanShowCongratulationsModal] = useState(false);
     const [isLoadingArtwork, setIsLoadingArtwork] = useState(false);
-
+    const [trackingStatus, setTrackingStatus] = useState<'show' | 'hide'>(
+        'show',
+    );
     const { device } = useUserDevice();
     const clearCurrentArtwork = useCallback(() => {
         if (!renderer) throw new Error(`clearArtwork() but no experience loaded.`);
-        renderer.clearArtwork();
+        // renderer.clearArtwork();
         setRepositioningState(RepositioningState.NONE);
     }, [renderer]);
 
@@ -198,68 +204,16 @@ export function App() {
         async (artworkId: ArtworkId) => {
             console.debug(`loadArtwork(${artworkId})`);
             renderer?.pauseAudio();
-            // ReactGA.event('artworks_viewed', {
-            //     artwork_id: artworkId,
-            // });
             setRendererState(RendererState.REPOSITIONING);
             setRepositioningState(RepositioningState.NONE);
             canResumeAudio.current = false;
             // clearCurrentArtwork();
             setCurrentArtwork(artworkId);
 
-            // switch (artworkId) {
-            //     case 'artwork-1':
-            //         ReactGA.event('viewed_story_1', {
-            //             viewed_story_1: 1,
-            //         });
-            //         break;
-            //     case 'artwork-2':
-            //         ReactGA.event('viewed_story_2', {
-            //             viewed_story_2: 1,
-            //         });
-            //         break;
-            //     case 'artwork-3':
-            //         ReactGA.event('viewed_story_3', {
-            //             viewed_story_3: 1,
-            //         });
-            //         break;
-            //     case 'artwork-4':
-            //         ReactGA.event('viewed_story_4', {
-            //             viewed_story_4: 1,
-            //         });
-            //         break;
-            //     case 'artwork-5':
-            //         ReactGA.event('viewed_story_5', {
-            //             viewed_story_5: 1,
-            //         });
-            //         break;
-            //     case 'artwork-6':
-            //         ReactGA.event('viewed_story_6', {
-            //             viewed_story_6: 1,
-            //         });
-            //         break;
-            //     case 'artwork-7':
-            //         ReactGA.event('viewed_story_7', {
-            //             viewed_story_7: 1,
-            //         });
-            //         break;
-            //     case 'artwork-8':
-            //         ReactGA.event('viewed_story_8', {
-            //             viewed_story_8: 1,
-            //         });
-            //         break;
-            // }
-
             if (viewedArtworks && !viewedArtworks.includes(artworkId)) {
                 // setShowArtworkUnlocked(true);
                 setViewedArtworks((viewedArtworks) => [...viewedArtworks!, artworkId]);
-                // ReactGA.event('artworks_viewed', {
-                //     first_artwork_view: artworkId,
-                // });
-                // ReactGA.event('num_artworks_unlocked', {
-                //     artwork_unlocked: 1,
-                // });
-                // } else {
+            
             }
             if (!renderer) throw new Error(`loadArtwork(${artworkId}) but no experience loaded.`);
             await renderer.loadArtwork(artworkId);
@@ -389,7 +343,21 @@ export function App() {
             renderer.off('on-artwork-helper-change', handleArtworkHelperChange);
         };
     }, [renderer, qrCodeFound, loadArtwork, showTrackingOverlay]);
-
+    useEffect(() => {
+        if (!renderer) return;
+        const handleTrackingStatus = (e: 'show' | 'hide') => {
+            setTrackingStatus(e);
+            if (e === 'show') {
+            }
+            // if (uiStatus === 'show' && e === 'hide') {
+            //     setUiStatus('hide');
+            // }
+        };
+        renderer.on('tracking-status', handleTrackingStatus);
+        return () => {
+            renderer.off('tracking-status', handleTrackingStatus);
+        };
+    }, [renderer]);
     const getNextRepositionState = (currentState: RepositioningState) => {
         const newState = currentState + 1;
         return newState;
@@ -444,19 +412,19 @@ export function App() {
         loadArtworkFromUrl();
     };
 
-    const shouldRendererPause = useMemo(() => {
-        return (
-            showOnboardingModal ||
-            isHeaderOpen ||
-            recordingState.state === 'ready' ||
-            (screenOrientation?.includes('landscape') && isMobile)
-        );
-    }, [showOnboardingModal, isHeaderOpen, recordingState, screenOrientation]);
+    // const shouldRendererPause = useMemo(() => {
+    //     return (
+    //         showOnboardingModal ||
+    //         isHeaderOpen ||
+    //         recordingState.state === 'ready' ||
+    //         (screenOrientation?.includes('landscape') && isMobile)
+    //     );
+    // }, [showOnboardingModal, isHeaderOpen, recordingState, screenOrientation]);
 
-    useEffect(() => {
-        if (!renderer) return;
-        shouldRendererPause ? renderer.pause() : renderer.resume();
-    }, [shouldRendererPause, renderer]);
+    // useEffect(() => {
+    //     if (!renderer) return;
+    //     shouldRendererPause ? renderer.pause() : renderer.resume();
+    // }, [shouldRendererPause, renderer]);
 
     const toggleHeader = useCallback(() => {
         setIsHeaderOpen((isOpen) => !isOpen);
@@ -570,83 +538,83 @@ export function App() {
             </div>
         );
     }
-    if (isDebug)
-        return (
-            <>
-                <DebugMenu debugStateCallback={setDebugState} />
-                {currentDebugState === DebugMenuState.ONBOARDING && (
-                    <OnboardingModals onClose={() => setShowOnboardingModal(false)} />
-                )}
-                {currentDebugState === DebugMenuState.SPLASH && (
-                    <Splash
-                        onPermissionsGranted={initExperience}
-                        isLoadingExperience={isLoadingExperience}
-                        device={device}
-                    />
-                )}
-                {currentDebugState === DebugMenuState.HEADER && (
-                    <Header
-                        viewedArtworks={viewedArtworks!}
-                        currentArtwork={currentArtwork}
-                        currentArtworkModel={currentArtworkModel}
-                        tappedArtwork={tappedArtwork}
-                        onArtworkTapped={handleArtworkTap}
-                        onClearViewedArtworks={clearViewedArtworks}
-                        showArtworkClue={showArtworkClue}
-                        onTapHeader={loadArtwork}
-                        onClearCurrentArtwork={clearCurrentArtwork}
-                        recordingState={recordingState}
-                        onToggleHeader={toggleHeader}
-                        isHeaderOpen={isHeaderOpen}
-                        rendererState={rendererState}
-                        handleRepositionArtwork={handleRepositionArtwork}
-                        repositioningState={repositioningState}
-                    />
-                )}
-                {currentDebugState === DebugMenuState.ARTWORK_FOUND_NOTIFICATION && (
-                    <NotificationBar className="bg-white text-blue-violet-600">
-                        <p className="py-4 px-5 text-center">Artwork Unlocked!</p>
-                    </NotificationBar>
-                )}
-                {currentDebugState === DebugMenuState.ARTWORK_POPUP && (
-                    <ArtworkPopup currentArtworkModel={ARTWORK_ARRAY[0]} />
-                )}
-                {currentDebugState === DebugMenuState.MEDIA_PREVIEW && (
-                    <MediaPreview recordingState={recordingState} onVideoCleared={onVideoCleared} />
-                )}
-                {currentDebugState === DebugMenuState.CONGRATULATIONS && (
-                    <Modal
-                        maxWidth="max-w-[340px]"
-                        maxHeight="max-h-[500px]"
-                        className="bg-[url('./assets/congrats-bg.webp')] bg-cover text-white centered overflow-visible"
-                    >
-                        <img
-                            className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[100px] "
-                            src={CongratsLogo}
-                        ></img>
-                        <div className="flex flex-col justify-between items-center pt-16 pb-8 px-8 h-full">
-                            <h2 className="text-xl font-500 text-left font-semibold self-start">Congratulations!</h2>
-                            <p className="text-sm font-light text-left tracking-[1px] leading-[18px]">
-                                Have you noticed the eight experiences are part of the Hyperreal Amble? Did you notice
-                                the installation and wall-art?
-                                <br />
-                                <br />
-                                From 6pm on 27 Jan, 15 Feb and 1 Mar, step into Incubate Studios to share your thoughts,
-                                create with friends and strangers; pop-in to the other creative hubs -Bankstown Arts
-                                Centre, BLaKC and Paul Keating Park.
-                                <br />
-                                <br />
-                                Stay longer, dine, drink and support local! Discover more of Bankstown where creativity
-                                lives and moves.
-                            </p>
-                            <button className="refraction-button" onClick={handleClosedCompletedModal}>
-                                OK
-                            </button>
-                        </div>
-                    </Modal>
-                )}
-            </>
-        );
+    // if (isDebug)
+    //     return (
+    //         <>
+    //             <DebugMenu debugStateCallback={setDebugState} />
+    //             {currentDebugState === DebugMenuState.ONBOARDING && (
+    //                 <OnboardingModals onClose={() => setShowOnboardingModal(false)} />
+    //             )}
+    //             {currentDebugState === DebugMenuState.SPLASH && (
+    //                 <Splash
+    //                     onPermissionsGranted={initExperience}
+    //                     isLoadingExperience={isLoadingExperience}
+    //                     device={device}
+    //                 />
+    //             )}
+    //             {currentDebugState === DebugMenuState.HEADER && (
+    //                 <Header
+    //                     viewedArtworks={viewedArtworks!}
+    //                     currentArtwork={currentArtwork}
+    //                     currentArtworkModel={currentArtworkModel}
+    //                     tappedArtwork={tappedArtwork}
+    //                     onArtworkTapped={handleArtworkTap}
+    //                     onClearViewedArtworks={clearViewedArtworks}
+    //                     showArtworkClue={showArtworkClue}
+    //                     onTapHeader={loadArtwork}
+    //                     onClearCurrentArtwork={clearCurrentArtwork}
+    //                     recordingState={recordingState}
+    //                     onToggleHeader={toggleHeader}
+    //                     isHeaderOpen={isHeaderOpen}
+    //                     rendererState={rendererState}
+    //                     handleRepositionArtwork={handleRepositionArtwork}
+    //                     repositioningState={repositioningState}
+    //                 />
+    //             )}
+    //             {currentDebugState === DebugMenuState.ARTWORK_FOUND_NOTIFICATION && (
+    //                 <NotificationBar className="bg-white text-blue-violet-600">
+    //                     <p className="py-4 px-5 text-center">Artwork Unlocked!</p>
+    //                 </NotificationBar>
+    //             )}
+    //             {currentDebugState === DebugMenuState.ARTWORK_POPUP && (
+    //                 <ArtworkPopup currentArtworkModel={ARTWORK_ARRAY[0]} />
+    //             )}
+    //             {currentDebugState === DebugMenuState.MEDIA_PREVIEW && (
+    //                 <MediaPreview recordingState={recordingState} onVideoCleared={onVideoCleared} />
+    //             )}
+    //             {currentDebugState === DebugMenuState.CONGRATULATIONS && (
+    //                 <Modal
+    //                     maxWidth="max-w-[340px]"
+    //                     maxHeight="max-h-[500px]"
+    //                     className="bg-[url('./assets/congrats-bg.webp')] bg-cover text-white centered overflow-visible"
+    //                 >
+    //                     <img
+    //                         className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[100px] "
+    //                         src={CongratsLogo}
+    //                     ></img>
+    //                     <div className="flex flex-col justify-between items-center pt-16 pb-8 px-8 h-full">
+    //                         <h2 className="text-xl font-500 text-left font-semibold self-start">Congratulations!</h2>
+    //                         <p className="text-sm font-light text-left tracking-[1px] leading-[18px]">
+    //                             Have you noticed the eight experiences are part of the Hyperreal Amble? Did you notice
+    //                             the installation and wall-art?
+    //                             <br />
+    //                             <br />
+    //                             From 6pm on 27 Jan, 15 Feb and 1 Mar, step into Incubate Studios to share your thoughts,
+    //                             create with friends and strangers; pop-in to the other creative hubs -Bankstown Arts
+    //                             Centre, BLaKC and Paul Keating Park.
+    //                             <br />
+    //                             <br />
+    //                             Stay longer, dine, drink and support local! Discover more of Bankstown where creativity
+    //                             lives and moves.
+    //                         </p>
+    //                         <button className="refraction-button" onClick={handleClosedCompletedModal}>
+    //                             OK
+    //                         </button>
+    //                     </div>
+    //                 </Modal>
+    //             )}
+    //         </>
+    //     );
     return (
         <>
             <FadeTransition show={screenOrientation?.includes('landscape') && isMobile} duration={500}>
@@ -654,7 +622,7 @@ export function App() {
             </FadeTransition>
             {renderer && !isLoadingExperience ? (
                 <>
-                    <FadeTransition show={showOnboardingModal && recordingState.state === 'none'} duration={500}>
+                    {/* <FadeTransition show={showOnboardingModal && recordingState.state === 'none'} duration={500}>
                         <OnboardingModals onClose={handleOnboardingClose} />
                     </FadeTransition>
 
@@ -677,7 +645,7 @@ export function App() {
                             viewedArtworks={viewedArtworks}
                             onInstructionsCompleted={handleInstructionsCompleted}
                         />
-                    </FadeTransition>
+                    </FadeTransition> */}
                     {showHeaderUi && (
                         <Header
                             viewedArtworks={viewedArtworks!}
@@ -698,7 +666,8 @@ export function App() {
                         />
                     )}
 
-                    {createPortal(
+
+                    {/* {createPortal(
                         <FadeTransition show={showArtworkUnlocked} duration={500}>
                             <Modal
                                 maxWidth="max-w-[390px]"
@@ -718,9 +687,6 @@ export function App() {
                                         <br />
                                         This experience will now activate.{' '}
                                     </p>
-                                    {/* <button className="refraction-button" onClick={handleCloseArtworkUnlocked}>
-                                        OK
-                                    </button> */}
                                 </div>
                             </Modal>
                         </FadeTransition>,
@@ -812,7 +778,7 @@ export function App() {
                             </Modal>
                         </FadeTransition>,
                         document.body,
-                    )}
+                    )} */}
                 </>
             ) : (
                 <Splash

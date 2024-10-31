@@ -13,11 +13,7 @@ import {
     PlacegroundPipelineModuleResult,
     placegroundPipelineModule,
 } from './placeground-pipeline-module';
-import {
-    ExperienceType,
-    experienceStore,
-    experienceTypeAtom,
-} from '../../atoms';
+
 import { artworkData } from '../artworks';
 export * from './types';
 /**
@@ -171,11 +167,12 @@ export const init8thWall = (
                 xrExtras.RuntimeError.pipelineModule(), // Shows an error image on runtime error.
                 window.CoachingOverlay.pipelineModule(), // Show the absolute scale coaching overlay.
             );
-            window.CoachingOverlay.configure({ disablePrompt: true });
+            window.CoachingOverlay.configure({ disablePrompt: false });
 
             xr8.addCameraPipelineModules(pipelineModules);
 
             placegroundModule.emitter.on('setup', ({ scene, camera }) => {
+                console.log('setup')
                 res({
                     mediaRecorder: xr8.MediaRecorder,
                     module: placegroundModule,
