@@ -54,14 +54,12 @@ const loadScript = (url: string): Promise<void> => {
  */
 const init = (
     key: string,
-    config: (xr8: IXR8, xrExtras: IXRExtras) => void,
-): Promise<void> => {
+    config: (xr8: IXR8, xrExtras: IXRExtras) => Promise<EJ8Api>,
+): Promise<EJ8Api> => {
     return new Promise((res, rej) => {
         const dependencies = [
             loadScript('https://cdn.8thwall.com/web/xrextras/xrextras.js'),
-            loadScript(
-                'https://cdn.8thwall.com/web/coaching-overlay/coaching-overlay.js',
-            ),
+            loadScript('https://cdn.8thwall.com/web/coaching-overlay/coaching-overlay.js'),
             loadScript(`https://apps.8thwall.com/xrweb?appKey=${key}`),
         ];
 
@@ -71,11 +69,9 @@ const init = (
             } else {
                 window.XRExtras.Loading.showLoading({
                     onxrloaded: () => {
-                        config(
-                            window.XR8 as unknown as IXR8,
-                            window.XRExtras as IXRExtras,
-                        );
-                        res();
+                        config(window.XR8 as unknown as IXR8, window.XRExtras as IXRExtras)
+                            .then(res)
+                            .catch(rej);
                     },
                     onxrerror: (reason: unknown) => {
                         rej(reason);
@@ -84,7 +80,6 @@ const init = (
             }
         };
         Promise.all(dependencies).then(() => {
-            // Once loaded listen for xrextrasloading event
             window.XRExtras
                 ? showLoading()
                 : window.addEventListener('xrextrasloaded', showLoading);
@@ -141,62 +136,71 @@ export const init8thWall = (
     canvas: HTMLCanvasElement,
     key: string,
     options: InitEJ8Options,
-) => {
-    return new Promise<EJ8Api>((res) => {
-        init(key, (xr8, xrExtras) => {
-            xr8.XrController.configure({
-                disableWorldTracking: false,
-                scale: 'absolute',
-            });
-            const pipelineModules: IPipelineModule[] = [];
-            
-            let qrProcessApi: QRProcessApi | undefined;
-            if (options.enableQrScanner) {
-                pipelineModules.push(xr8.CameraPixelArray.pipelineModule({ luminance: true, maxDimension: 720 }));
-                const [qrPipelineModule, api] = qrprocessPipelineModule();
-                qrProcessApi = api;
-                pipelineModules.push(qrPipelineModule);
-            }
-
-            pipelineModules.push(
-                xr8.XrController.pipelineModule(), // Enables SLAM tracking.
-                xr8.GlTextureRenderer.pipelineModule(),
-                xr8.Threejs.pipelineModule(),
-            );
-
-            const placegroundModule: PlacegroundPipelineModuleResult =
-                placegroundPipelineModule();
-            pipelineModules.push(placegroundModule);
-
-            if (options.watermarkImageUrl) {
-                customMediaConfig.watermarkImageUrl = options.watermarkImageUrl;
-            }
-
-            configureMediaRecorder(customMediaConfig);
-
-            pipelineModules.push(
-                xr8.MediaRecorder.pipelineModule(),
-                xrExtras.FullWindowCanvas.pipelineModule(), // Modifies the canvas to fill the window.
-                xrExtras.Loading.pipelineModule(), // Manages the loading screen on startup.
-                xrExtras.RuntimeError.pipelineModule(), // Shows an error image on runtime error.
-                window.CoachingOverlay.pipelineModule(), // Show the absolute scale coaching overlay.
-            );
-            window.CoachingOverlay.configure({ disablePrompt: false });
-
-            xr8.addCameraPipelineModules(pipelineModules);
-
-            placegroundModule.emitter.on('setup', ({ scene, camera }) => {
-                console.log('setup')
-                res({
-                    mediaRecorder: xr8.MediaRecorder,
-                    module: placegroundModule,
-                    scene,
-                    camera,
-                    qrProcessApi,
-                    audio: sound,
+): Promise<EJ8Api> => {
+    return init(key, (xr8, xrExtras) => {
+        return new Promise<EJ8Api>((resolve, reject) => {
+            try {
+                xr8.XrController.configure({
+                    disableWorldTracking: false,
+                    scale: 'absolute',
                 });
-            });
-            xr8.run({ canvas });
+
+                const pipelineModules: IPipelineModule[] = [];
+
+                let qrProcessApi: QRProcessApi | undefined;
+                if (options.enableQrScanner) {
+                    pipelineModules.push(
+                        xr8.CameraPixelArray.pipelineModule({ luminance: true, maxDimension: 720 })
+                    );
+                    const [qrPipelineModule, api] = qrprocessPipelineModule();
+                    qrProcessApi = api;
+                    pipelineModules.push(qrPipelineModule);
+                }
+
+                pipelineModules.push(
+                    xr8.XrController.pipelineModule(),
+                    xr8.GlTextureRenderer.pipelineModule(),
+                    xr8.Threejs.pipelineModule()
+                );
+
+                const placegroundModule = placegroundPipelineModule();
+                pipelineModules.push(placegroundModule);
+
+                if (options.watermarkImageUrl) {
+                    customMediaConfig.watermarkImageUrl = options.watermarkImageUrl;
+                }
+
+                configureMediaRecorder(customMediaConfig);
+
+                pipelineModules.push(
+                    xr8.MediaRecorder.pipelineModule(),
+                    xrExtras.FullWindowCanvas.pipelineModule(),
+                    xrExtras.Loading.pipelineModule(),
+                    xrExtras.RuntimeError.pipelineModule(),
+                    window.CoachingOverlay.pipelineModule()
+                );
+                window.CoachingOverlay.configure({ disablePrompt: false });
+
+                xr8.addCameraPipelineModules(pipelineModules);
+
+                // Attach the 'setup' event listener before calling xr8.run()
+                placegroundModule.emitter.on('setup', ({ scene, camera }) => {
+                    console.log('setup');
+                    resolve({
+                        mediaRecorder: xr8.MediaRecorder,
+                        module: placegroundModule,
+                        scene,
+                        camera,
+                        qrProcessApi,
+                        audio: sound,
+                    });
+                });
+
+                // Start the XR engine
+                xr8.run({ canvas });
+            } catch (error) {
+                reject(error);
+            }
         });
     });
 };
