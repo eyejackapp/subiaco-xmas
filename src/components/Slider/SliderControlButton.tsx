@@ -1,5 +1,5 @@
 import { clsx } from 'clsx';
-import { SliderController } from './Slider';
+import { SliderController } from './ui/Slider/Slider';
 
 type SliderControlButtonProps = {
     sliderController: SliderController;

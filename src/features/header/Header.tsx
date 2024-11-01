@@ -3,7 +3,7 @@ import { ARTWORKS_LENGTH, ArtworkId, ArtworkModel } from '../../renderer/artwork
 import clsx from 'clsx';
 import { HeaderBody } from './HeaderBody';
 import { HeaderTitle } from './HeaderTitle';
-import { Modal } from '../../components/Modal';
+import { Modal } from '../../components/Modal/Modal';
 import { VideoRecorderResult } from '../recording-button';
 import ArtworkPopup from '../artwork-popup';
 import { RendererState, RepositioningState } from '../../app';

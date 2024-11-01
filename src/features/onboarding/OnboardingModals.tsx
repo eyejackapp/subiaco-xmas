@@ -1,7 +1,7 @@
-import { Slider, SliderController } from '../../components/Slider';
-import { Slide } from '../../components/Slide';
-import { Modal } from '../../components/Modal';
-import { ModalOverlay } from '../../components/ModalOverlay';
+import { Slider, SliderController } from '../../components/Slider/Slider';
+import { Slide } from '../../components/Slider/Slide';
+import { Modal } from '../../components/Modal/Modal';
+import { ModalOverlay } from '../../components/Modal/ModalOverlay';
 import 'keen-slider/keen-slider.min.css';
 import OnboardingBg from './assets/bg.jpg';
 import OnboardingBg2 from './assets/bg-2.png';

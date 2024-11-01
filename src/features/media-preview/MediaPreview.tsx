@@ -1,6 +1,6 @@
 import { useState } from 'preact/hooks';
-import { Modal } from '../../components/Modal';
-import { ModalOverlay } from '../../components/ModalOverlay';
+import { Modal } from '../../components/Modal/Modal';
+import { ModalOverlay } from '../../components/Modal/ModalOverlay';
 import { VideoRecorderResult } from '../recording-button';
 import clsx from 'clsx';
 

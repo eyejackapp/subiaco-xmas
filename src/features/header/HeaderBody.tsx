@@ -1,7 +1,7 @@
 import clsx from 'clsx';
 import { ARTWORK_ARRAY, ArtworkId, ArtworkModel } from '../../renderer/artworks';
 import QuestionMark from './assets/question.svg';
-import NotificationBar from '../notification-bar';
+import NotificationBar from '../../components/NotificationBar';
 import { FAQs } from './FAQs';
 
 export type HeaderBodyProps = {
