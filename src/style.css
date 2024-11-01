@@ -117,3 +117,9 @@ transform-style: preserve-3d;
     -moz-backface-visibility: hidden;
     backface-visibility: hidden;
 }
+
+/* override 8thwall loading */
+#loadingContainer {
+    display: none !important;
+    z-index: -1000 !important;
+}

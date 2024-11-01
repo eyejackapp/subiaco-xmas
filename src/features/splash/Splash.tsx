@@ -1,37 +1,20 @@
-import { useMemo, useState } from 'preact/hooks';
-import { QrCodeGenerator } from './QrCodeGenerator';
-import { CopyToClipboardTrigger } from './CopyToClipboardTrigger';
-import clipboardImg from './assets/clipboard.svg';
-import useImagePreloader from '../../hooks/useImagePreloader';
-import { preloadSrcList } from '../../utils/preload-asset-list';
-
 import clsx from 'clsx';
-import Spinner from '../../components/Spinner';
-import useTimeGuard from './useTimeGuard';
+import { useEffect, useMemo, useState } from 'preact/hooks';
+import useUserDevice from '../../hooks/useUserDevice';
 import { Logo8thWall } from './Logo8thWall';
-import Lockup from '../../components/Lockup';
-import { useTimeout } from 'ahooks';
-import { TDevice } from '../../hooks/useUserDevice';
-import LockupSm from './assets/logo-sm.png';
-import Key from './assets/key-splash.webp';
-import { FadeTransition } from '../../components/Transitions';
+import { Spinner } from '../../components/Spinner';
+import { QrCodeGenerator } from '../../components/QrCodeGenerator';
+import { CopyToClipboardTrigger } from '../../components/Generics/CopyToClipboardTrigger';
+import { useTimeout } from '../../hooks/useTimeout';
 
 type SplashProps = {
     onPermissionsGranted: () => void;
-    isLoadingExperience: boolean;
-    device: TDevice;
-};
+}
 
-// Currently set to 2023-12-6_18:00:00 (UTC) (Launch is 1pm EST, EST is (-5hr) therefore 6pm)
-// Use https://www.epochconverter.com/ (make sure to use the millisecond version) to re-calculate.
-const skipTimeguard = new URLSearchParams(location.search).has('skip_timeguard');
-// const UTC_GO_LIVE_TIME = import.meta.env.VITE_SST_STAGE === 'prod' ? 1701885600000 : 1699293600000;
-const UTC_GO_LIVE_TIME = 1699293600000;
-
-export function Splash({ onPermissionsGranted, isLoadingExperience, device }: SplashProps) {
-    useImagePreloader(preloadSrcList);
-
-    const timeGuardState = useTimeGuard(UTC_GO_LIVE_TIME);
+export function Splash({ onPermissionsGranted }: SplashProps) {
+    const [pageType, setPageType] = useState<'loading' | 'default'>('loading');
+    const [uiType, setUiType] = useState<'loading' | 'default'>('default');
+    const { device } = useUserDevice();
 
     const [permissionDenied, setPermissionDenied] = useState<'camera-denied' | 'motion-denied' | undefined>(undefined);
 
@@ -40,6 +23,7 @@ export function Splash({ onPermissionsGranted, isLoadingExperience, device }: Sp
             .getUserMedia({ video: true, audio: true })
             .then(() => {
                 onPermissionsGranted();
+                setUiType('loading');
             })
             .catch((err) => {
                 setPermissionDenied('camera-denied');
@@ -74,210 +58,116 @@ export function Splash({ onPermissionsGranted, isLoadingExperience, device }: Sp
         }
     };
 
-    const [pageType, setPageType] = useState<'loading' | 'default'>('loading');
-    const uiType = useMemo(() => {
-        // if (timeGuardState.state === 'loading' || pageType === 'loading') {
-        if (pageType === 'loading') {
-            return 'loading';
-        } else if (timeGuardState.state === 'blocked' && !skipTimeguard) {
-            return 'timeguard';
-        } else return 'default';
-
-        throw new Error('Unhandled splash state.');
-    }, [timeGuardState.state, pageType]);
-
     useTimeout(() => {
         setPageType('default');
     }, 2000);
 
+
     const deviceType = useMemo(() => {
         if (device === undefined) {
             return 'loading';
-        } else if (device === 'iOS' || device === 'Android') {
+        } else if (device === 'iOS' || device === 'Android' || device === 'AppClip') {
             return 'mobile';
-        } else return 'desktop';
+        } else return 'mobile';
     }, [device]);
 
     return (
         <div
             className={clsx(
-                'absolute touch-none inset-0 z-[1000] bg-cover bg-center h-full w-full flex text-white pointer-events-auto',
-                {
-                    'bg-splash-desktop py-20 gap-y-8 flex-col justify-center short-narrow-desktop:flex-row short-narrow-desktop:gap-x-8':
-                        deviceType === 'desktop',
-                    'bg-splash py-10 flex-col justify-between': deviceType !== 'desktop',
-                },
+                'bg-cover bg-center h-full w-full text-white pointer-events-auto items-center xpx-5 py-12 flex flex-col',
             )}
         >
-            <div
-                className={clsx('w-full flex justify-center items-center z-10', {
-                    'basis-1/3 flex-end': deviceType === 'desktop',
-                    'basis-1/2 flex-grow ': deviceType !== 'desktop',
-                })}
-            >
-                <div className="flex flex-col items-center justify-between h-full w-full">
-                    {deviceType !== 'desktop' && <img src={LockupSm} className="max-w-[120px] w-full pt-4" />}
-                    <Lockup
-                        // size={deviceType === 'desktop' ? 'large' : 'default'}
-                        size={'large'}
-                        className={clsx('', {
-                            'max-w-[650px] w-full max-h-full px-8 py-4': deviceType === 'desktop',
-                            ' w-full px-8 py-4': deviceType !== 'desktop',
-                            'flex-shrink -mb-20 ': pageType === 'loading' && deviceType === 'mobile',
-                            'flex-grow animate-slide-up duration-1000':
-                                pageType === 'default' && deviceType === 'mobile',
-                        })}
-                    />
-                </div>
+            <div className={clsx("flex-grow justify-center px-4 flex flex-col gap-6 text-center", {
+                "basis-1/3": deviceType === 'desktop',
+                "basis-2/3": deviceType === 'mobile'
+            })}>
+                <p>Lincoln Center</p>
+                <h2 className="text-4xl font-bold">Subiaco Xmas</h2>
             </div>
+            {deviceType === 'desktop' && (
+                <DesktopSplash />
+            )}
+
             {deviceType === 'loading' && (
-                <div className="flex flex-col justify-end items-center px-10 pb-10 basis-1/2">
-                    <Spinner />
+                <div className="flex flex-col justify-center items-center px-10 pb-10 basis-1/2 h-full">
+                    <Spinner size="lg" />
                 </div>
             )}
             {deviceType === 'mobile' && (
-                <>
-                    {permissionDenied ? (
-                        <PermissionsDeniedScreen permissionDenied={permissionDenied} />
-                    ) : (
-                        <>
-                            <div className="flex flex-col justify-end items-center px-8 mb-12 basis-1/2">
-                                {uiType === 'timeguard' && (
-                                    <>
-                                        <h2 className="font-light text-center text-[26px] animate-fade-in">
-                                            Join us from Dec 6th at 1pm
-                                        </h2>
-                                        <div className="py-10"></div>
+                permissionDenied ? <PermissionsDeniedScreen permissionDenied={permissionDenied} /> :
+                    <>
 
-                                        <h2 className="pb-6 text-xl font-light"> Add to Calendar</h2>
-                                        <div className="flex justify-evenly px-4 w-full text-base font-light underline underline-offset-[3px]">
-                                            <a className="decoration-0" href="https://calndr.link/e/hZUDGcWw97?s=apple">
-                                                iCal
-                                            </a>
-                                            <a
-                                                className="decoration-0"
-                                                href="https://calndr.link/e/hZUDGcWw97?s=google"
-                                            >
-                                                Google
-                                            </a>
-                                            <a
-                                                className="decoration-0"
-                                                href="https://calndr.link/e/hZUDGcWw97?s=outlook"
-                                            >
-                                                Outlook
-                                            </a>
-                                            <a
-                                                className="decoration-0"
-                                                href="https://calndr.link/e/hZUDGcWw97?s=office365"
-                                            >
-                                                Office365
-                                            </a>
-                                        </div>
-                                        <div className="py-8"></div>
-                                    </>
-                                )}
-                                {uiType === 'loading' && <Spinner />}
+                        {pageType === 'loading' && (
+                            <>
+                                <div className="animate-fade-in xpb-5 flex justify-center items-center flex-col"><Spinner size="lg" /></div>
 
-                                {uiType === 'default' && (
-                                    <>
-                                        <h2 className="text-xl font-light text-center animate-fade-in font-secondary-sans">
-                                            Access to your camera, microphone,
-                                            <br /> motion & orientation is required
-                                        </h2>
-                                        <div className="py-6"></div>
-                                    </>
-                                )}
+                                <div className="absolute bottom-0 pb-4">
+                                    <Logo8thWall />
+                                </div>
+                            </>
+                        )}
+                        {pageType === 'default' && (
+                            <>
+                                <div
+                                    className={clsx(
+                                        'flex flex-col items-center flex-grow basis-1/2 px-5 pb-14 animate-fade-in justify-end',
+                                    )}
+                                >
+                                    {uiType === 'default' && (
+                                        <>
+                                            <h2 className="text-lg md:text-xl items-end text-center animate-fade-in font-inter pb-12 px-5 leading-[115%]">
+                                                Access to your camera, microphone,
+                                                <br /> motion & orientation is required
+                                            </h2>
+                                            <div className="">
+                                                <button onClick={requestMotion}>LAUNCH</button>
+                                            </div>
+                                        </>
+                                    )}
 
-                                {uiType !== 'loading' && (timeGuardState.state === 'ok' || skipTimeguard || true) && (
-                                    <>
-                                        <button
-                                            className={clsx(
-                                                'flex relative justify-center items-center font-button refraction-button',
-                                                'animate-fade-in',
-                                                'disabled:opacity-50',
-                                            )}
-                                            onClick={requestMotion}
-                                            disabled={isLoadingExperience}
-                                        >
-                                            {isLoadingExperience ? (
-                                                <span className="animate-fade-in">
-                                                    <Spinner width={30} height={30} />
-                                                </span>
-                                            ) : (
-                                                <span className="relative text-lg font-sans">
-                                                    Allow
-                                                    <span className="absolute -right-8 top-1/2 -translate-y-[60%]">
-                                                        <svg
-                                                            width="24"
-                                                            height="12"
-                                                            viewBox="0 0 24 12"
-                                                            fill="none"
-                                                            xmlns="http://www.w3.org/2000/svg"
-                                                        >
-                                                            <path
-                                                                className="stroke-current"
-                                                                d="M17 1L22 6L17 11"
-                                                                stroke="white"
-                                                                strokeWidth="2"
-                                                            />
-                                                            <path
-                                                                className="stroke-current"
-                                                                d="M22 6H0"
-                                                                stroke="white"
-                                                                strokeWidth="2"
-                                                            />
-                                                        </svg>
-                                                    </span>
-                                                </span>
-                                            )}
-                                        </button>
-                                    </>
+                                </div>
+                                {uiType === 'loading' && (
+                                    <div className="animate-fade-in xpb-5 flex justify-center items-center flex-col"><Spinner size="lg" /><p className="pt-8 font-inter">Loading assets...</p></div>
                                 )}
+                            </>
+                        )}
 
-                                <FadeTransition show={pageType === 'loading'} duration={1000}>
-                                    <img
-                                        src={Key}
-                                        className="max-w-[90%] w-full absolute -z-10 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
-                                    />
-                                </FadeTransition>
-                                {pageType === 'loading' && (
-                                    <>
-                                        <div className="absolute bottom-0 pb-4">
-                                            <Logo8thWall />
-                                        </div>
-                                    </>
-                                )}
-                            </div>
-                        </>
-                    )}
-                </>
+                    </>
             )}
-            {deviceType === 'desktop' && <DesktopSplash />}
+            <div>
+
+            </div>
         </div>
     );
 }
 
 function DesktopSplash() {
+    // const url = useEJXLaunchUrl();
+    const url = window.location.href
     return (
-        <div className="flex flex-col gap-8 justify-center items-center mt-8">
-            <img className="absolute top-[3dvh] right-[3dvh] max-w-[15dvh] h-auto" src={LockupSm}></img>
-            <QrCodeGenerator value={window.location.href} />
-            <h2 className="text-lg font-light text-center sm:text-[22px]">
-                Scan the QR code to launch the
-                <br />
-                AR art walk experience
-            </h2>
-            <CopyToClipboardTrigger text={window.location.href}>
-                <div className="flex relative gap-x-2 py-3 px-4 max-w-xs border-2 border-white border-opacity-30 cursor-pointer hover:border-opacity-50 hover:opacity-50 min-w-[250px]">
-                    <span className="overflow-hidden flex-grow w-full text-center whitespace-nowrap font-button link max-w-[310px] text-ellipsis">
-                        COPY LINK
-                    </span>
-                    <img className="absolute right-3 cursor-pointer" src={clipboardImg} />
-                </div>
-            </CopyToClipboardTrigger>
+        <div className="flex flex-col gap-8 h-full w-full items-center">
+            <div className="w-fit flex flex-col 3xl:gap-14 md:gap-10 gap-8 items-center justify-center">
+                <QrCodeGenerator
+                    value={url}
+                    fgColor="#000000"
+                    size={250}
+                />
+                <h2 className="text-white text-center md:text-[22px] text-xl font-helvetica-light md:leading-[26px] leading-[22px] tracking-[-0.41px]">
+                    This Experience is best viewed at the Lincoln Center.
+                </h2>
+                <CopyToClipboardTrigger text={url}>
+                    <div className="border-2 min-w-[250px] border-white border-opacity-30 py-3 px-4 max-w-xs flex gap-x-2 relative cursor-pointer hover:opacity-50 hover:border-opacity-50">
+                        <span className="link flex-grow text-center text-helvetica-heavy max-w-[310px] whitespace-nowrap overflow-hidden text-ellipsis w-full">
+                            COPY LINK
+                        </span>
+                    </div>
+                </CopyToClipboardTrigger>
+            </div>
+
         </div>
     );
 }
+
 
 type PermissionsDeniedScreenProps = {
     permissionDenied: 'camera-denied' | 'motion-denied' | undefined;
