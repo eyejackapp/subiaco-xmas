@@ -42,6 +42,7 @@ export type RendererEvents = {
   "resume-tracking": void;
   "pause-tracking": void;
   "on-camera-down": boolean;
+  "tracking-status": 'show' | 'hide';
 } & MusicCentre3dEvents &
   QRProcessEvents;
 
@@ -84,7 +85,7 @@ export async function initExperienceRenderer(
   );
   const moduleEmitter = module.emitter as Emitter<MusicCentre3dEvents>;
 
-  moduleEmitter.on("tracking-status", (status) => {
+  moduleEmitter.on("tracking-status", (status: 'show' | 'hide') => {
     emitter.emit("tracking-status", status);
   });
   moduleEmitter.on("content-loaded", () => {

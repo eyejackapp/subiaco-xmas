@@ -4,6 +4,7 @@ import './style.css';
 import ReactGA from 'react-ga4';
 import * as Sentry from '@sentry/react';
 import { AppStateProvider } from './context/AppStateContext.tsx';
+import { RendererProvider } from './context/RendererContext.tsx';
 
 // ReactGA.initialize('G-L0317D6T4W');
 
@@ -14,4 +15,4 @@ import { AppStateProvider } from './context/AppStateContext.tsx';
 //     });
 // }
 
-render(<AppStateProvider><App /></AppStateProvider>, document.getElementById('app')!);
+render(<AppStateProvider><RendererProvider><App /></RendererProvider></AppStateProvider>, document.getElementById('app')!);

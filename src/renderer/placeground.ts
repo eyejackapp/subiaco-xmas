@@ -83,20 +83,6 @@ export function init3dExperience(
     const contentContainer = new Object3D();
     scene.add(contentContainer);
 
-    module.emitter.on('tracking-status', (status) => {
-        status === 'show' ? hideModel() : showModel();
-    });
-
-    const showModel = () => {
-        // if (!model) return;
-        // model.scale.set(1, 1, 1);
-    };
-
-    const hideModel = () => {
-        // if (!model) return;
-        // model.scale.set(0.001, 0.001, 0.001);
-    };
-
     module.emitter.on('on-update', () => {
         if (!mixer) {
             return;
