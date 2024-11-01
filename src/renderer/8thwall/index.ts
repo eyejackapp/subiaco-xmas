@@ -13,8 +13,9 @@ import {
     PlacegroundPipelineModuleResult,
     placegroundPipelineModule,
 } from './placeground-pipeline-module';
-
+import qrprocessPipelineModule from './qr-process-pipeline-module';
 import { artworkData } from '../artworks';
+import { QRProcessApi } from './qr-process-pipeline-module';
 export * from './types';
 /**
  * Loads a script from a CDN by putting it in a <script> tag
@@ -95,6 +96,7 @@ type EJ8Api = {
     mediaRecorder: IMediaRecorder;
     module:
          PlacegroundPipelineModuleResult;
+    qrProcessApi?: QRProcessApi;
     scene: THREE.Scene;
     camera: THREE.Camera;
     audio: THREE.Audio;
@@ -130,11 +132,15 @@ const configureMediaRecorder = ({
 
     configure(customMediaConfig);
 };
+export type InitEJ8Options = {
+    enableQrScanner?: boolean;
+    watermarkImageUrl: string;
+};
 
 export const init8thWall = (
     canvas: HTMLCanvasElement,
     key: string,
-    options: Partial<MediaRecorderProps>,
+    options: InitEJ8Options,
 ) => {
     return new Promise<EJ8Api>((res) => {
         init(key, (xr8, xrExtras) => {
@@ -143,6 +149,14 @@ export const init8thWall = (
                 scale: 'absolute',
             });
             const pipelineModules: IPipelineModule[] = [];
+            
+            let qrProcessApi: QRProcessApi | undefined;
+            if (options.enableQrScanner) {
+                pipelineModules.push(xr8.CameraPixelArray.pipelineModule({ luminance: true, maxDimension: 720 }));
+                const [qrPipelineModule, api] = qrprocessPipelineModule();
+                qrProcessApi = api;
+                pipelineModules.push(qrPipelineModule);
+            }
 
             pipelineModules.push(
                 xr8.XrController.pipelineModule(), // Enables SLAM tracking.
@@ -178,6 +192,7 @@ export const init8thWall = (
                     module: placegroundModule,
                     scene,
                     camera,
+                    qrProcessApi,
                     audio: sound,
                 });
             });

@@ -9,6 +9,7 @@ import {
 } from "./8thwall/placeground-pipeline-module";
 import { Group, Object3DEventMap } from "three";
 import { ArtworkId, ARTWORKS } from "./artworks";
+import { QRProcessEvents } from "./8thwall/qr-process-pipeline-module";
 
 const XR8_API_KEY =
   "mw1uy5jVtZZO85pE4KP2QUdffHKjnFlnitMtFzTNu3MYagu9rxduWbFtM7czPhauEmNe8a";
@@ -41,7 +42,8 @@ export type RendererEvents = {
   "resume-tracking": void;
   "pause-tracking": void;
   "on-camera-down": boolean;
-} & MusicCentre3dEvents;
+} & MusicCentre3dEvents &
+  QRProcessEvents;
 
 export type RendererApi = {
   on: Emitter<RendererEvents>["on"];
@@ -68,11 +70,11 @@ export async function initExperienceRenderer(
 ): Promise<RendererApi> {
   console.debug("initExperienceRenderer(canvas)", canvas);
   const emitter = mitt<RendererEvents>();
-  const { mediaRecorder, module, scene, audio, camera } = await init8thWall(
-    canvas,
-    XR8_API_KEY,
-    options
-  );
+  const { mediaRecorder, module, scene, audio, qrProcessApi, camera } =
+    await init8thWall(canvas, XR8_API_KEY, {
+      ...options,
+      enableQrScanner: true,
+    });
   let module3d: I3dPipeline;
   module3d = init3dExperience(
     module as PlacegroundPipelineModuleResult,
@@ -94,6 +96,12 @@ export async function initExperienceRenderer(
   moduleEmitter.on("on-camera-down", (isCameraFaceDown) => {
     emitter.emit("on-camera-down", isCameraFaceDown);
   });
+  // If qr code scanner is avaliable, redirect all the event sback through the main event emitter.
+  if (qrProcessApi) {
+    qrProcessApi.events.on("qr-scan-result", (ev) =>
+      emitter.emit("qr-scan-result", ev)
+    );
+  }
 
   const api: RendererApi = {
     on: emitter.on,
@@ -124,19 +132,21 @@ export async function initExperienceRenderer(
     //   return model;
     // },
     async loadArtwork(artworkId: ArtworkId) {
-        const artworkData = ARTWORKS[artworkId];
-        if (!artworkData) throw new Error(`initExperienceRenderer: loadArtwork(${artworkId}). No artwork found`);
-        const model = await module3d.loadArtwork(artworkData);
-        console.log('M', model)
-        return model
+      const artworkData = ARTWORKS[artworkId];
+      if (!artworkData)
+        throw new Error(
+          `initExperienceRenderer: loadArtwork(${artworkId}). No artwork found`
+        );
+      const model = await module3d.loadArtwork(artworkData);
+      console.log("M", model);
+      return model;
 
-        // if (fsm.can('StartRepositioning')) {
-        //     const contentModule = await createContentModule(audio);
-        //     fsm.dispatch('StartRepositioning', artworkData, contentModule);
-        // } else {
-        //     console.log('FSM cannot StartRepositioning from state', fsm.value);
-        // }
-      
+      // if (fsm.can('StartRepositioning')) {
+      //     const contentModule = await createContentModule(audio);
+      //     fsm.dispatch('StartRepositioning', artworkData, contentModule);
+      // } else {
+      //     console.log('FSM cannot StartRepositioning from state', fsm.value);
+      // }
     },
 
     // TODO return a promise

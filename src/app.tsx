@@ -30,45 +30,6 @@ import Spinner from './components/Spinner';
 import { modelDirection } from 'three/webgpu';
 import ErrorPage from './features/error';
 
-/**
- * Introduction
- *
- * Warning: This file will become BIG and that's ok.
- *
- * @Beth, were going to take a different approach by simplifying the state management in this project.
- * that approach is going to be not using any global state management libraries or contexts and passing the data down,
- * via props to where it is needed.
- *
- * All of the global app state and state management will exist in this one component.  This is actually fine for a
- * project of this size and reenforces some good practices.
- *
- * The biggest problem is the problem of data/state ownership.  Ownership refers to what has control over a piece of data/state.  If a
- * module changes a piece of data it 'owns' it.  If multiple modules change the same piece of state it has
- * shared ownership and that makes it very easy to introduce bugs.  In previous projects we've had any component/module changing
- * any piece of state and it makes it very hard to know what is going on.  In this project we will build it with the
- * following guidelines to avoid this problem.
- *
- * 1. Child components shouldn't modify global state, instead they notify the parent of an event (via a callback) and
- * the parent changes state.  This lets us split all app logic into cause and effect.  An event triggers a state
- * change.  We can then easily change the cause or the effect to meet changes to the requirements with less risk of
- * introducing bugs when refactoring.
- * >    Warn: Events such as `set-app-state` are the same as just setting the state directly.  We need events like
- * >    `artwork-loaded` and then the event handler will update the state.
- *
- * 2. In all of the event handlers we need to throw errors if its effect can fail/error.  For example you can't load an
- * artwork if the renderer isn't initialised yet.  This will help us avoid race conditions early on.
- *
- * 3. Double check code clarity before committing.  Make sure things use consistent names and that the names reflect
- * what the data/state actually represents.
- *
- * 4. Try type everything.  It's going to make it a lot easier to understand what's going on when you come back to the
- * project or when someone else needs to interface with your work.
- *
- * Not using global state forces us to have very good data ownership practices and is actually a pretty resilient way to
- * write an app.  The only downside is that it's REALLY REALLY tedious.  That being said, so is fixing state bugs so
- * it's worth building this way as practice.
- */
-/** General error type for displaying error to user */
 export type AppError = {
     title: string;
     message: string;
@@ -133,13 +94,10 @@ export function App() {
         setPermissionGranted(true);
         const canvasEl = document.getElementById('xr-canvas') as HTMLCanvasElement;
         if (!canvasEl) throw new Error('No Canvas element.');
-        console.log('before')
         const renderer = await initExperienceRenderer(canvasEl, {
             watermarkImageUrl: hideRecordButton ? '' : WatermarkFile,
         });
         setRenderer(renderer);
-        console.log('after')
-
         setTimeout(() => {
             setIsLoadingExperience(false);
             if (hasViewedOnboarding) {
@@ -177,7 +135,6 @@ export function App() {
     const [showRecordingButton, setShowRecordingButton] = useState(false);
     const [isHeaderOpen, setIsHeaderOpen] = useState(false);
     const [mediaVisible, setMediaVisible] = useState(false);
-    const [trackingStatus, setTrackingStatus] = useState<string>();
     const [artworkHelperMode, setArtworkHelperMode] = useState<'left' | 'right' | 'none'>();
     const [qrCodeFound, setqrCodeFound] = useState(true);
     const [rendererState, setRendererState] = useState(RendererState.NONE);
@@ -304,7 +261,6 @@ export function App() {
                 if ((artworkNumber && !validCodeRegex.test(artworkNumber)) || showTrackingOverlay) return;
                 location.hash = artworkNumber as string;
             }
-
             model.status === 'found' ? setqrCodeFound(false) : setqrCodeFound(true);
         };
 
