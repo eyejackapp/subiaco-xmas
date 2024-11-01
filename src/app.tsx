@@ -7,62 +7,39 @@ import ErrorPage from './features/error';
 import { useAppState } from './hooks/useAppState';
 import { AppState } from './context/AppStateContext';
 import { useRenderer } from './hooks/useRenderer';
-import { ArtworkId } from './renderer/artworks';
-
-
-export const QR_CODE_LOOKUP = {
-    '9734': 'artwork-1',
-    '6495': 'artwork-2',
-    '8719': 'artwork-3',
-    '4842': 'artwork-4',
-    '1425': 'artwork-5',
-    '3274': 'artwork-6',
-    '9806': 'artwork-7',
-    '7730': 'artwork-8',
-};
-
-const validCodes = ['9734', '6495', '8719', '4842', '1425', '3274', '9806', '7730'];
-const validCodeRegex = new RegExp(`\\b(${validCodes.join('|')})\\b`);
-
+import useUrlHash from './hooks/useUrlHash';
+import { getArtworkIdFromCode } from './utils/qrUtils';
 
 export function App() {
 
     const { appState, setAppState } = useAppState();
     const { initExperience, loadArtwork, renderer } = useRenderer();
+    const { hash, updateHash } = useUrlHash();
 
-    const handleInitExperience = async () => {
+    const handleInitExperience = useCallback(async () => {
         try {
             await initExperience();
+            const hasViewedOnboarding = true
+            setAppState(hasViewedOnboarding ? AppState.ARTWORK_VIEWING : AppState.ONBOARDING);
         } catch (error) {
             console.error('Failed to initialize experience:', error);
         }
+    }, [initExperience]);
 
+    const handleLoadArtwork = async () => {
+        const artworkId = getArtworkIdFromCode(hash);
+        if (artworkId) {
+            await loadArtwork(artworkId);
+            setAppState(AppState.ARTWORK_VIEWING);
+        }
     }
 
-    const handleLoadArtwork = useCallback(
-        async () => {
-            if (window.location.hash) {
-                const artworkNumber = location.hash.split('#').pop() as ArtworkId;
-                if (artworkNumber && !validCodeRegex.test(artworkNumber)) return;
-                const artworkId = QR_CODE_LOOKUP[
-                    artworkNumber as '9734' | '6495' | '8719' | '4842' | '1425' | '3274' | '9806' | '7730'
-                ] as ArtworkId;
-                //   setCurrentArtwork(artworkId);
-                await loadArtwork(artworkId);
-            }
-        },
-        [loadArtwork]
-    );
-
     useEffect(() => {
-        if (renderer) {
-            console.log('renderer change')
-            // TODO: if onboarding has not been viewed, setAppState(AppState.ONBOARDING), otherwise setAppState(AppState.ARTWORK_LOADING)
-            setAppState(AppState.ARTWORK_VIEWING);
+        if (!hash && !renderer) return
+        if (appState === AppState.ARTWORK_VIEWING) {
             handleLoadArtwork();
         }
-    }, [renderer]);
-
+    }, [hash, renderer, appState, handleLoadArtwork]);
 
     const [error] = useErrorBoundary();
 
