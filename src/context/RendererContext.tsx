@@ -1,7 +1,10 @@
 // RendererContext.js
-import { useContext, useState, useEffect, useCallback } from 'preact/hooks';
+import { useContext, useState, useEffect, useCallback, useRef } from 'preact/hooks';
 import { RendererApi, initExperienceRenderer } from '../renderer';
 import { createContext, ReactNode } from 'preact/compat';
+import { Object3D } from 'three';
+import { QRProcessEvents } from '../renderer/8thwall/qr-process-pipeline-module';
+import useUrlHash from '../hooks/useUrlHash';
 
 export enum RendererState {
     NONE,
@@ -16,13 +19,13 @@ type RendererContextType = {
     loadArtwork: (artworkId: string) => Promise<void> | void;
     initExperience: () => Promise<void> | void;
     clearCurrentArtwork: () => void;
-  };
+};
 
 export const RendererContext = createContext<RendererContextType>({
     renderer: null,
     rendererState: RendererState.NONE,
     trackingStatus: 'show',
-    initExperience: () => {},
+    initExperience: () => { },
     loadArtwork: (artworkId: string) => { },
     clearCurrentArtwork: () => { },
 });
@@ -35,10 +38,14 @@ export type RendererProviderProps = {
     children: ReactNode;
 }
 
+
 export const RendererProvider = ({ children }: RendererProviderProps) => {
     const [renderer, setRenderer] = useState<RendererApi | null>(null);
     const [rendererState, setRendererState] = useState(RendererState.NONE);
     const [trackingStatus, setTrackingStatus] = useState<'show' | 'hide'>('show');
+    const currentModelRef = useRef<Object3D | null>(null); // Track the current model
+
+    const { handleQRFound } = useUrlHash();
 
     const initExperience = useCallback(async () => {
         const canvasEl = document.getElementById('xr-canvas') as HTMLCanvasElement;
@@ -49,18 +56,40 @@ export const RendererProvider = ({ children }: RendererProviderProps) => {
         setRenderer(renderer);
     }, [])
 
+    const clearCurrentArtwork = useCallback(() => {
+        if (currentModelRef.current) {
+            currentModelRef.current.traverse((object) => {
+                if (object.isMesh) {
+                    object.geometry?.dispose();
+                    if (object.material) {
+                        if (Array.isArray(object.material)) {
+                            object.material.forEach((material) => material.dispose());
+                        } else {
+                            object.material.dispose();
+                        }
+                    }
+                }
+            });
+            renderer?.getScene().remove(currentModelRef.current);
+            currentModelRef.current = null;
+        }
+    }, [renderer]);
+
     const loadArtwork = useCallback(async (artworkId: string) => {
-        console.log(`loadArtwork(${artworkId})`, renderer);
+        console.debug(`loadArtwork(${artworkId})`);
         if (!renderer) throw new Error(`loadArtwork(${artworkId}) but no experience loaded.`);
+        clearCurrentArtwork();
         // TODO: check where to put this and why it's needed
         renderer.pauseAudio();
-        await renderer.loadArtwork(artworkId);
-    }, [renderer]);
+        const model = await renderer.loadArtwork(artworkId);
+        if (model) {
+            renderer.getScene().add(model);
+            currentModelRef.current = model;
+        }
+    }, [renderer, clearCurrentArtwork]);
 
 
-    const clearCurrentArtwork = useCallback(() => {
-        // ... clear current artwork in renderer
-    }, [renderer]);
+
 
     // Handle renderer events and update state
     useEffect(() => {
@@ -73,14 +102,17 @@ export const RendererProvider = ({ children }: RendererProviderProps) => {
         const handleTrackingStatus = (status: 'show' | 'hide') => {
             setTrackingStatus(status);
         }
+        const handleQR = (model: QRProcessEvents['qr-scan-result']) => {
+            handleQRFound(model)
+        }
 
         renderer.on('content-loaded', handleLoaded);
         renderer.on('tracking-status', handleTrackingStatus);
-
+        renderer.on('qr-scan-result', handleQR);
         return () => {
             renderer.off('content-loaded', handleLoaded);
             renderer.off('tracking-status', handleTrackingStatus);
-
+            renderer.off('qr-scan-result', handleQR);
         };
     }, [renderer]);
 

@@ -49,7 +49,6 @@ export const placegroundPipelineModule =
             emitter,
             onStart: ({ canvas }) => {
                 const { scene, camera, renderer } = XR8.Threejs.xrScene(); // Get the 3js scene from XR8.Threejs
-                console.log('placegroundPipelineModule', scene, camera, renderer);
                 // Add some light to the scene.
                 renderer.physicallyCorrectLights = true;
                 renderer.toneMapping = THREE.ACESFilmicToneMapping;

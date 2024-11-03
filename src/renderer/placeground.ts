@@ -44,7 +44,7 @@ export function init3dExperience(
                 });
             },
         );
-        console.log('MODEL', model);
+
         model.scene.traverse((child) => {
             if ((child as Mesh).isMesh) {
                 child.frustumCulled = false;

@@ -185,7 +185,6 @@ export const init8thWall = (
 
                 // Attach the 'setup' event listener before calling xr8.run()
                 placegroundModule.emitter.on('setup', ({ scene, camera }) => {
-                    console.log('setup');
                     resolve({
                         mediaRecorder: xr8.MediaRecorder,
                         module: placegroundModule,

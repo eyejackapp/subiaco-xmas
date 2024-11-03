@@ -7,7 +7,7 @@ import {
   MusicCentre3dEvents,
   PlacegroundPipelineModuleResult,
 } from "./8thwall/placeground-pipeline-module";
-import { Group, Object3DEventMap } from "three";
+import { Group, Object3DEventMap, Scene } from "three";
 import { ArtworkId, ARTWORKS } from "./artworks";
 import { QRProcessEvents } from "./8thwall/qr-process-pipeline-module";
 
@@ -56,6 +56,7 @@ export type RendererApi = {
   resumeTracking(): void;
   pauseAudio(): void;
   resumeAudio(): void;
+  getScene(): Scene;
 };
 
 type RendererOptions = {
@@ -128,6 +129,9 @@ export async function initExperienceRenderer(
         audio.context.resume();
       }
     },
+    getScene() {
+      return scene;
+    },
     // async loadArtwork() {
     //   const model = await module3d.loadArtwork();
     //   return model;
@@ -139,15 +143,7 @@ export async function initExperienceRenderer(
           `initExperienceRenderer: loadArtwork(${artworkId}). No artwork found`
         );
       const model = await module3d.loadArtwork(artworkData);
-      console.log("M", model);
       return model;
-
-      // if (fsm.can('StartRepositioning')) {
-      //     const contentModule = await createContentModule(audio);
-      //     fsm.dispatch('StartRepositioning', artworkData, contentModule);
-      // } else {
-      //     console.log('FSM cannot StartRepositioning from state', fsm.value);
-      // }
     },
 
     // TODO return a promise

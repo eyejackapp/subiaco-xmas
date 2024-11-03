@@ -44,7 +44,7 @@ export const ARTWORKS = {
     'artwork-2': {
         name: 'Marketplace',
         artist: 'Artist 2',
-        basePath: '/artworks/story-2/',
+        basePath: '/model/Bloomscapes_V3.glb',
         clue: 'Sandwiched between the carpark and the street of shops.',
         image: Artwork2Thumbnail,
         artistImage: Artwork2,
