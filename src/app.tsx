@@ -8,6 +8,7 @@ import { useRenderer } from './hooks/useRenderer';
 import useUrlHash from './hooks/useUrlHash';
 import { getArtworkIdFromCode } from './utils/qrUtils';
 import { useTimeout } from './hooks/useTimeout';
+import UserForm from './components/UserForm';
 
 export function App() {
 
@@ -60,7 +61,8 @@ export function App() {
 
     return (
         <>
-            <FadeTransition show={appState === AppState.SPLASH}>
+            <UserForm />
+            {/* <FadeTransition show={appState === AppState.SPLASH}>
                 <div className="h-full w-full">
                     <Splash
                         onPermissionsGranted={handleInitExperience}
@@ -69,7 +71,7 @@ export function App() {
             </FadeTransition>
             <FadeTransition show={appState === AppState.ONBOARDING}>
                 <div>HELLO</div>
-            </FadeTransition>
+            </FadeTransition> */}
         </>
     );
 }
