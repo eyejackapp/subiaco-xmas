@@ -1,4 +1,3 @@
-import 'preact/debug';
 import { useCallback, useEffect, useErrorBoundary } from 'preact/hooks';
 import Splash from './features/splash';
 import { FadeTransition } from './components/Transitions';
@@ -8,11 +7,12 @@ import { AppState } from './context/AppStateContext';
 import { useRenderer } from './hooks/useRenderer';
 import useUrlHash from './hooks/useUrlHash';
 import { getArtworkIdFromCode } from './utils/qrUtils';
+import { useTimeout } from './hooks/useTimeout';
 
 export function App() {
 
     const { appState, setAppState } = useAppState();
-    const { initExperience, loadArtwork, renderer } = useRenderer();
+    const { initExperience, loadArtwork, renderer, trackingStatus } = useRenderer();
     const { hash } = useUrlHash();
 
     const handleInitExperience = useCallback(async () => {
@@ -20,25 +20,34 @@ export function App() {
             await initExperience();
             const hasViewedOnboarding = true
             setAppState(hasViewedOnboarding ? AppState.ARTWORK_VIEWING : AppState.ONBOARDING);
-            console.log('renderer', renderer);
         } catch (error) {
             console.error('Failed to initialize experience:', error);
         }
     }, [initExperience]);
 
     const handleLoadArtwork = useCallback(async () => {
-        console.log('HANDLE LOAD ARTWORK');
         const artworkId = getArtworkIdFromCode(hash);
+        console.log('Load artwork:', artworkId);
         if (!artworkId) {
             throw new Error(`Hash is not valid: ${hash}`);
         }
         await loadArtwork(artworkId);
-    }, []);
+    }, [loadArtwork]);
+
+
+    const { start: startTimeout, clear: clearTimeout } = useTimeout(handleLoadArtwork, 5000);
 
     useEffect(() => {
-        if (!renderer || !hash) return;
-        handleLoadArtwork();
-    }, [renderer, hash]);
+        if (!renderer) return;
+        console.log('trackingstatus', trackingStatus)
+        if (trackingStatus === 'hide') {
+            clearTimeout();
+            handleLoadArtwork();
+        } else {
+            startTimeout();
+        }
+
+    }, [trackingStatus]);
 
     const [error] = useErrorBoundary();
 

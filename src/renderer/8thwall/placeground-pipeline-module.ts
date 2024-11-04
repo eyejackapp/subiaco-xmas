@@ -37,10 +37,12 @@ export type PlacegroundPipelineModuleResult = IPipelineModule & {
 export const placegroundPipelineModule =
     (): PlacegroundPipelineModuleResult => {
         const show = () => {
+            console.log('show');
             emitter.emit('tracking-status', 'show');
         };
 
         const hide = () => {
+            console.log('hide');
             emitter.emit('tracking-status', 'hide');
         };
 

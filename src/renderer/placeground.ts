@@ -60,7 +60,8 @@ export function init3dExperience(
             object.frustumCulled = false;
         });
         module.emitter.emit('content-loaded');
-        model.scene.scale.set(0.001, 0.001, 0.001);
+        // model.scene.scale.set(0.001, 0.001, 0.001);
+        model.scene.scale.set(1, 1, 1);
 
         // const soundFile = model.parser.json.scenes[0].extras;
 

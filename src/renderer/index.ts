@@ -109,7 +109,6 @@ export async function initExperienceRenderer(
     on: emitter.on,
     off: emitter.off,
     /**
-     * Kills previous content and begins to load new content.
      *
      * @param artworkId - Artwork to load.
      */

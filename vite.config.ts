@@ -17,9 +17,7 @@ export default defineConfig({
       
     ],
     worker: {
-        plugins: [
-            comlink(),
-        ]
+        plugins: () => [comlink()]
     },
     server: {
         https: {
