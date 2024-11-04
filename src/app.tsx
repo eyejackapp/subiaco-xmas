@@ -47,7 +47,7 @@ export function App() {
             startTimeout();
         }
 
-    }, [trackingStatus]);
+    }, [trackingStatus, renderer, startTimeout, clearTimeout, handleLoadArtwork],);
 
     const [error] = useErrorBoundary();
 
