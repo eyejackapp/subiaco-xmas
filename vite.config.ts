@@ -10,14 +10,7 @@ import { VitePWA } from "vite-plugin-pwa";
 
 
 
-export default defineConfig(({ mode }) => {
-    const env = loadEnv(mode, process.cwd(), "");
-    const apiUrl = env.VITE_GOOGLE_APPS_SCRIPT_URL;
-    if (!apiUrl) {
-      console.warn("No APIURL provided. The /api proxy wont work.");
-    } else {
-      console.log(`APIURL provided.  /api will proxy to ${apiUrl}`);
-    }
+export default defineConfig(() => {
 
   return {
     plugins: [comlink(), preact(), inspect()],
@@ -28,13 +21,6 @@ export default defineConfig(({ mode }) => {
       https: {
         key: "./k-key.pem",
         cert: "./k.pem",
-      },
-      proxy: {
-        "/api": {
-          target: apiUrl,
-          changeOrigin: true,
-          rewrite: (path) => path.replace(/^\/api/, ""),
-        },
       },
     },
     resolve: {

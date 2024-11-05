@@ -1,10 +1,12 @@
-import { useState } from 'preact/hooks';
+import { useEffect, useState } from 'preact/hooks';
 import { ChangeEvent, FormEvent } from 'preact/compat';
 import useUserManager from '@/hooks/useUserManager';
 import { update } from 'three/examples/jsm/libs/tween.module';
+import { FadeTransition } from './Transitions';
+import { Spinner } from './Spinner';
 
 interface UserFormData {
-  date: string;
+  date: () => string;
   fullName: string;
   postcode: string;
   emailAddress: string;
@@ -20,9 +22,28 @@ interface UserFormProps {
 }
 
 export const UserForm = ({ onSuccess, buttonText = 'Add User' }: UserFormProps) => {
-  const { addUser, message, loading, error, updateUserEmail, updating } = useUserManager();
+  const { addUser, message, loading, error, updateUserEmail, updating, hasHitSubmissionLimit } = useUserManager();
+  const [limitReached, setLimitReached] = useState<boolean>(false);
+  const [loadingForm, setLoadingForm] = useState(false);
+  const getLocalTime = () => {
+    const now = new Date();
+    
+    const options = {
+        timeZone: 'Australia/Perth',
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false
+    };
+    
+    const formatter = new Intl.DateTimeFormat('en-AU', options);
+    return formatter.format(now);
+};
+
   const [formData, setFormData] = useState<UserFormData>({
-    date: new Date().toLocaleDateString(),
+    date: getLocalTime(),
     fullName: 'beth',
     postcode: '2050',
     emailAddress: 'beth@test.com',
@@ -52,10 +73,35 @@ export const UserForm = ({ onSuccess, buttonText = 'Add User' }: UserFormProps) 
 
   }
 
+
+  useEffect(() => {
+    const checkSubmissionLimit = async () => {
+      try {
+        setLoadingForm(true);
+        const isLimitReached = await hasHitSubmissionLimit();
+        setLimitReached(isLimitReached);
+      } catch (error) {
+        console.error('Error loading form', error)
+      } finally {
+        setLoadingForm(false);
+      }
+    };
+
+    checkSubmissionLimit();
+  }, []);
+
+
   return (
-    <div className="bg-white p-6 max-w-lg mx-auto rounded-lg shadow-md">
-      <h1 className="text-2xl font-semibold text-gray-800 mb-4">Add New User</h1>
-      <form onSubmit={handleSubmit} className="space-y-4 text-black">
+
+    <div className="bg-white p-6 max-w-lg mx-auto rounded-lg shadow-md relative">
+      <FadeTransition show={loadingForm}>
+        <div className="absolute inset-0 z-10 rounded-lg bg-red-500">
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2">
+            <Spinner />
+          </div>
+        </div>
+      </FadeTransition>
+      <h1 className="text-2xl font-semibold text-gray-800 mb-4">{limitReached ? 'Different Form' : 'User Form'}</h1><form onSubmit={handleSubmit} className="space-y-4 text-black">
         <input
           type="text"
           name="fullName"
@@ -63,16 +109,14 @@ export const UserForm = ({ onSuccess, buttonText = 'Add User' }: UserFormProps) 
           value={formData.fullName}
           onChange={handleChange}
           required
-          className="w-full p-2 border rounded-md focus:outline-none focus:border-blue-500"
-        />
+          className="w-full p-2 border rounded-md focus:outline-none focus:border-blue-500" />
         <input
           type="text"
           name="postcode"
           placeholder="Postcode"
           value={formData.postcode}
           onChange={handleChange}
-          className="w-full p-2 border rounded-md focus:outline-none focus:border-blue-500"
-        />
+          className="w-full p-2 border rounded-md focus:outline-none focus:border-blue-500" />
         <input
           type="email"
           name="emailAddress"
@@ -80,40 +124,35 @@ export const UserForm = ({ onSuccess, buttonText = 'Add User' }: UserFormProps) 
           value={formData.emailAddress}
           onChange={handleChange}
           required
-          className="w-full p-2 border rounded-md focus:outline-none focus:border-blue-500"
-        />
+          className="w-full p-2 border rounded-md focus:outline-none focus:border-blue-500" />
         <input
           type="text"
           name="phone"
           placeholder="Phone"
           value={formData.phone}
           onChange={handleChange}
-          className="w-full p-2 border rounded-md focus:outline-none focus:border-blue-500"
-        />
+          className="w-full p-2 border rounded-md focus:outline-none focus:border-blue-500" />
         <input
           type="text"
           name="hearSource"
           placeholder="How did you hear?"
           value={formData.hearSource}
           onChange={handleChange}
-          className="w-full p-2 border rounded-md focus:outline-none focus:border-blue-500"
-        />
+          className="w-full p-2 border rounded-md focus:outline-none focus:border-blue-500" />
         <input
           type="text"
           name="visitedBusinesses"
           placeholder="Did you visit any businesses?"
           value={formData.visitedBusinesses}
           onChange={handleChange}
-          className="w-full p-2 border rounded-md focus:outline-none focus:border-blue-500"
-        />
+          className="w-full p-2 border rounded-md focus:outline-none focus:border-blue-500" />
         <input
           type="text"
           name="encouragedExplore"
           placeholder="Did the trail encourage you to explore?"
           value={formData.encouragedExplore}
           onChange={handleChange}
-          className="w-full p-2 border rounded-md focus:outline-none focus:border-blue-500"
-        />
+          className="w-full p-2 border rounded-md focus:outline-none focus:border-blue-500" />
 
         <button
           type="submit"
@@ -122,9 +161,7 @@ export const UserForm = ({ onSuccess, buttonText = 'Add User' }: UserFormProps) 
         >
           {loading ? 'Adding...' : buttonText}
         </button>
-      </form>
-
-      <button
+      </form><button
         disabled={updating}
         onClick={handleUserEmailUpdate}
         className="w-full mt-4 p-2 bg-blue-500 text-white rounded-md font-semibold hover:bg-blue-600 disabled:bg-gray-400"
@@ -136,6 +173,7 @@ export const UserForm = ({ onSuccess, buttonText = 'Add User' }: UserFormProps) 
       {loading && <p className="mt-4 text-blue-500">Processing...</p>}
       {error && <p className="mt-4 text-red-500">{error}</p>}
       {message && <p className="mt-4 text-green-500">{message}</p>}
+
     </div>
   );
 }

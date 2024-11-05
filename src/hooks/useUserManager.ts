@@ -1,4 +1,4 @@
-import { useState } from 'preact/hooks';
+import { useState } from "preact/hooks";
 
 interface UserData {
   id: string;
@@ -12,16 +12,16 @@ interface UserData {
   encouragedExplore: string;
 }
 
-const PROXY_URL = '/api';
+const API_URL = import.meta.env.VITE_GOOGLE_APPS_SCRIPT_URL;
 
 function useUserManager() {
   const [userId, setUserId] = useState<string>(() => {
-    const existingId = localStorage.getItem('userId');
+    const existingId = localStorage.getItem("userId");
     if (existingId) {
       return existingId;
     } else {
       const newId = crypto.randomUUID();
-      localStorage.setItem('userId', newId);
+      localStorage.setItem("userId", newId);
       return newId;
     }
   });
@@ -31,24 +31,25 @@ function useUserManager() {
   const [updating, setUpdating] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
-  const addUser = async (userData: Omit<UserData, 'id'>) => {
+  const addUser = async (userData: Omit<UserData, "id">) => {
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch(PROXY_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': "application/json" },
+      const response = await fetch(API_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        mode: 'no-cors',
         body: JSON.stringify({
-          action: 'addUser',
+          action: "addUser",
           id: userId,
           ...userData,
         }),
       });
       await response.text();
-      setMessage('Success');
+      setMessage("Success");
     } catch (err) {
-      setError('Failed to add user');
-      console.error('Error adding user:', err);
+      setError("Failed to add user");
+      console.error("Error adding user:", err);
     } finally {
       setLoading(false);
     }
@@ -58,26 +59,47 @@ function useUserManager() {
     setUpdating(true);
     setError(null);
     try {
-      const response = await fetch(PROXY_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch(API_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        mode: 'no-cors',
         body: JSON.stringify({
-          action: 'updateEmail',
+          action: "updateEmail",
           id: userId,
           emailAddress: email,
         }),
       });
       await response.text();
-      setMessage('Updated email');
+      setMessage("Updated email");
     } catch (err) {
-      setError('Failed to update user email');
-      console.error('Error updating user email:', err);
+      setError("Failed to update user email");
+      console.error("Error updating user email:", err);
     } finally {
       setUpdating(false);
     }
   };
 
-  return { addUser, updateUserEmail, message, loading, error, userId, updating };
+  const hasHitSubmissionLimit = async () => {
+    try {
+      const response = await fetch(API_URL);
+      const data = await response.json();
+      return data.submissionsCount > 1;
+    } catch (error) {
+      console.error("Error fetching submission limit:", error);
+      return;
+    } 
+  };
+
+  return {
+    addUser,
+    updateUserEmail,
+    message,
+    loading,
+    error,
+    userId,
+    updating,
+    hasHitSubmissionLimit,
+  };
 }
 
 export default useUserManager;

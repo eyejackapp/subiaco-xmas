@@ -60,7 +60,7 @@ export function App() {
     }
 
     return (
-        <>
+        <div className="w-full h-full flex items-center justify-center">
             <UserForm />
             {/* <FadeTransition show={appState === AppState.SPLASH}>
                 <div className="h-full w-full">
@@ -72,6 +72,6 @@ export function App() {
             <FadeTransition show={appState === AppState.ONBOARDING}>
                 <div>HELLO</div>
             </FadeTransition> */}
-        </>
+        </div>
     );
 }
