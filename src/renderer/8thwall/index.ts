@@ -179,7 +179,7 @@ export const init8thWall = (
                     xrExtras.RuntimeError.pipelineModule(),
                     window.CoachingOverlay.pipelineModule()
                 );
-                window.CoachingOverlay.configure({ disablePrompt: false });
+                window.CoachingOverlay.configure({ disablePrompt: true });
 
                 xr8.addCameraPipelineModules(pipelineModules);
 
