@@ -1,69 +1,23 @@
 import { useCallback, useEffect, useRef, useState } from 'preact/hooks';
-import { ARTWORKS_LENGTH, ArtworkId, ArtworkModel } from '../../renderer/artworks';
+import { ARTWORKS_LENGTH } from '../../renderer/artworks';
 import clsx from 'clsx';
 import { HeaderBody } from './HeaderBody';
-import { HeaderTitle } from './HeaderTitle';
-import { Modal } from '../../components/Modal/Modal';
-import { VideoRecorderResult } from '../recording-button';
-import ArtworkPopup from '../artwork-popup';
-import { RendererState, RepositioningState } from '../../app';
-import { FadeTransition } from '../../components/Transitions';
-import { ZoomPanPinch } from '../../components/ZoomPanPinch';
-import { MapViewer } from './MapViewer';
 
-export type HeaderProps = {
-    viewedArtworks: ArtworkId[];
-    currentArtwork: ArtworkId | undefined;
-    currentArtworkModel: ArtworkModel | undefined;
-    onArtworkTapped: (model: ArtworkModel, artworkId: ArtworkId) => void;
-    tappedArtwork: ArtworkModel | undefined;
-    onClearViewedArtworks: () => void;
-    showArtworkClue: boolean;
-    onTapHeader: (artworkId: ArtworkId) => void;
-    onClearCurrentArtwork: () => void;
-    recordingState: VideoRecorderResult;
-    onToggleHeader: () => void;
-    isHeaderOpen: boolean;
-    rendererState: RendererState;
-    handleRepositionArtwork: () => void;
-    repositioningState: RepositioningState;
-};
+import { useArtwork } from '@/context/ArtworkContext';
 
-export function Header({
-    viewedArtworks,
-    currentArtwork,
-    currentArtworkModel,
-    onArtworkTapped,
-    tappedArtwork,
-    onClearViewedArtworks,
-    showArtworkClue,
-    onClearCurrentArtwork,
-    recordingState,
-    onToggleHeader,
-    isHeaderOpen,
-    rendererState,
-    handleRepositionArtwork,
-    repositioningState,
-}: HeaderProps) {
-    const [isMapOpen, setIsMapOpen] = useState(false);
+export function Header() {
+  const [isHeaderOpen, setIsHeaderOpen] = useState(false);
+
+    const { viewedArtworks, currentArtwork } = useArtwork();
+
+
     const [isPopupOpen, setIsPopupOpen] = useState(false);
 
-    const onMapVisible = useCallback(() => {
-        setIsMapOpen((isOpen) => !isOpen);
-    }, [setIsMapOpen]);
+    const onToggleHeader = useCallback(() => {
+        setIsHeaderOpen((isOpen) => !isOpen);
+        // if (!isHeaderOpen) setShowArtworkClue(false);
+    }, []);
 
-    const [infoModalType, setInfoModalType] = useState<'terms' | 'privacy' | undefined>(undefined);
-    const onShowInfoModal = (type: 'terms' | 'privacy') => {
-        setInfoModalType(type);
-    };
-    const onRepositionClick = () => {
-        handleRepositionArtwork();
-    };
-
-    const onToggleArtworkPopup = (e: Event) => {
-        e.stopPropagation();
-        setIsPopupOpen(!isPopupOpen);
-    };
 
     const scrollElement = useRef<HTMLDivElement>(null);
     useEffect(() => {
@@ -76,65 +30,14 @@ export function Header({
         }
     }, [isHeaderOpen, scrollElement, isPopupOpen]);
 
-    useEffect(() => {
-        const handleVisiblityChange = () => {
-            if (document.visibilityState === 'visible') {
-            } else {
-                setIsPopupOpen(false);
-                setIsMapOpen(false);
-            }
-        };
-        window.addEventListener('visibilitychange', handleVisiblityChange);
-        return () => {
-            window.removeEventListener('visibilitychange', handleVisiblityChange);
-        };
-    }, []);
 
     return (
         <div
             className={clsx('header-child relative top-0 w-full z-10 bg-gray-100 Header pointer-events-auto', {
-                'animate-slide-down': recordingState.state === 'none',
-                'animate-slide-up': recordingState.state !== 'none',
+                // 'animate-slide-down': recordingState.state === 'none',
+                // 'animate-slide-up': recordingState.state !== 'none',
             })}
         >
-            <HeaderTitle />
-
-            {isMapOpen && (
-                <div className="fixed z-50 h-full w-full bg-cb-blue-950 animate-fade-in">
-                    <ZoomPanPinch>
-                        <MapViewer />
-                    </ZoomPanPinch>
-
-                    <button
-                        className="fixed bottom-10 z-50 left-1/2 -translate-x-1/2 active:text-cb-green-500"
-                        onClick={onMapVisible}
-                    >
-                        <svg width="56" height="56" viewBox="0 0 56 56" xmlns="http://www.w3.org/2000/svg">
-                            <rect
-                                className="fill-current text-cb-green-500 active:text-white"
-                                width="56"
-                                height="56"
-                                rx="28"
-                                fill="#003EE3"
-                            />
-                            <path
-                                className="stroke-current"
-                                d="M22 22L34 34"
-                                strokeWidth="2"
-                                strokeLinecap="square"
-                                stroke="white"
-                            />
-                            <path
-                                className="stroke-current"
-                                d="M34 22L22 34"
-                                strokeWidth="2"
-                                strokeLinecap="square"
-                                stroke="white"
-                            />
-                        </svg>
-                    </button>
-                </div>
-            )}
             <div
                 className="px-5 py-4 w-full bg-[#11d398] bg-[length:100%_160%] bg-center flex justify-between items-end cursor-pointer box-border border-b-[0.5px] border-orchid-500"
                 onClick={onToggleHeader}
@@ -159,11 +62,10 @@ export function Header({
                     </span>
                 </p>
             </div>
-            {currentArtworkModel && (
+            {/* {currentArtworkModel && (
                 <FadeTransition
                     show={
-                        rendererState === RendererState.VIEWING ||
-                        repositioningState === RepositioningState.HAS_REPOSITIONED
+                        rendererState === RendererState.VIEWING
                     }
                     duration={500}
                 >
@@ -175,116 +77,19 @@ export function Header({
                                 onToggleArtworkPopup={onToggleArtworkPopup}
                             />
                         </div>
-                        {!isPopupOpen && (
-                            <div
-                                className="flex flex-col items-end p-4 pointer-events-auto"
-                                onClick={onRepositionClick}
-                            >
-                                <div className="flex flex-col gap-y-2 justify-center items-center">
-                                    <svg
-                                        width="44"
-                                        height="44"
-                                        viewBox="0 0 44 44"
-                                        fill="none"
-                                        xmlns="http://www.w3.org/2000/svg"
-                                    >
-                                        <circle
-                                            cx="22"
-                                            cy="22"
-                                            r="21.5"
-                                            fill={
-                                                repositioningState === RepositioningState.IS_REPOSITIONING
-                                                    ? 'white'
-                                                    : 'black'
-                                            }
-                                            fillOpacity={
-                                                repositioningState === RepositioningState.IS_REPOSITIONING ? '1' : '0.4'
-                                            }
-                                            stroke="white"
-                                        />
-                                        <path
-                                            d="M22 10.5L22 33.5M33.5 22H10.5"
-                                            stroke={
-                                                repositioningState === RepositioningState.IS_REPOSITIONING
-                                                    ? '#4C4B46'
-                                                    : 'white'
-                                            }
-                                            strokeWidth="1.5"
-                                            strokeLinecap="square"
-                                        />
-                                        <path
-                                            d="M26 14L22 10L18 14"
-                                            stroke={
-                                                repositioningState === RepositioningState.IS_REPOSITIONING
-                                                    ? '#4C4B46'
-                                                    : 'white'
-                                            }
-                                            strokeWidth="1.5"
-                                            strokeLinecap="square"
-                                        />
-                                        <path
-                                            d="M18 30L22 34L26 30"
-                                            stroke={
-                                                repositioningState === RepositioningState.IS_REPOSITIONING
-                                                    ? '#4C4B46'
-                                                    : 'white'
-                                            }
-                                            strokeWidth="1.5"
-                                            strokeLinecap="square"
-                                        />
-                                        <path
-                                            d="M30 26L34 22L30 18"
-                                            stroke={
-                                                repositioningState === RepositioningState.IS_REPOSITIONING
-                                                    ? '#4C4B46'
-                                                    : 'white'
-                                            }
-                                            strokeWidth="1.5"
-                                            strokeLinecap="square"
-                                        />
-                                        <path
-                                            d="M14 18L10 22L14 26"
-                                            stroke={
-                                                repositioningState === RepositioningState.IS_REPOSITIONING
-                                                    ? '#4C4B46'
-                                                    : 'white'
-                                            }
-                                            strokeWidth="1.5"
-                                            strokeLinecap="square"
-                                        />
-                                    </svg>
-                                    <span className="text-shadow-base font-bold text-sm tracking-[0.4px]">
-                                        POSITION
-                                    </span>
-                                </div>
-                            </div>
-                        )}
                     </div>
                 </FadeTransition>
-            )}
-
-            {/* {infoModalType !== undefined && (
-                <InfoModal type={infoModalType} onClose={() => setInfoModalType(undefined)} />
             )} */}
+
             <div
                 ref={scrollElement}
                 className={clsx('header-bar w-full transition-[max-height] duration-500 bg-cb-dark-purple-950', {
                     'max-h-0 overflow-hidden': !isHeaderOpen,
                     'max-h-[calc(100dvh-112px)] overflow-scroll': isHeaderOpen,
-                    // 'max-h-[calc(100dvh-112px)] overflow-hidden fixed': isHeaderOpen && infoModalType,
                 })}
             >
                 <HeaderBody
-                    viewedArtworks={viewedArtworks}
-                    currentArtwork={currentArtwork}
-                    onArtworkTapped={onArtworkTapped}
-                    tappedArtwork={tappedArtwork}
-                    onClearViewedArtworks={onClearViewedArtworks}
-                    onMapVisible={onMapVisible}
-                    showArtworkClue={showArtworkClue}
-                    onClearCurrentArtwork={onClearCurrentArtwork}
                     onToggleHeader={onToggleHeader}
-                    onShowInfoModal={onShowInfoModal}
                 />
             </div>
         </div>

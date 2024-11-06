@@ -24,7 +24,7 @@
     "preact": "^10.24.3",
     "react-ga4": "^2.1.0",
     "react-qr-code": "^2.0.15",
-    "react-zoom-pan-pinch": "^3.6.1",
+    "react-zoom-pan-pinch": "3.6.0",
     "three": "^0.169.0",
     "zbar.wasm": "^2.1.1"
   },

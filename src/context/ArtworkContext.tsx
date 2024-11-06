@@ -1,16 +1,43 @@
 // ArtworkContext.js
-import { useContext, useState, useMemo } from 'preact/hooks';
-import { ARTWORKS, ArtworkId } from '../renderer/artworks';
+import { useContext, useState, useMemo} from 'preact/hooks';
+import { createContext } from 'preact/compat';
+import { ARTWORKS, ArtworkId, ArtworkModel } from '../renderer/artworks';
 import { useLocalStorageState } from 'ahooks';
 
-const ArtworkContext = createContext();
+type ArtworkContextType = {
+  currentArtwork?: ArtworkId;
+  setCurrentArtwork: (id: ArtworkId) => void;
+  viewedArtworks: ArtworkId[];
+  currentArtworkModel: ArtworkModel | undefined
+};
+
+const ArtworkContext = createContext<ArtworkContextType>({
+  currentArtworkModel: undefined,
+  viewedArtworks: [],
+  setCurrentArtwork: () => {},
+  currentArtwork: undefined
+});
+// {
+//   currentArtwork: '',
+//   setCurrentArtwork: '',
+//   currentArtworkModel: '',
+//   viewedArtworks: '',
+//   setViewedArtworks: '',
+//   tappedArtwork: '',
+//   setTappedArtwork: '',
+//   showArtworkClue: '',
+//   setShowArtworkClue: '',
+//   showArtworkUnlocked: '',
+//   setShowArtworkUnlocked: '',
+// }
+
 
 export const useArtwork = () => {
   return useContext(ArtworkContext);
 };
 
 export const ArtworkProvider = ({ children }) => {
-  const [currentArtwork, setCurrentArtwork] = useState(undefined);
+  const [currentArtwork, setCurrentArtwork] = useState<ArtworkId | undefined>(undefined);
 
   const currentArtworkModel = useMemo(() => {
     return currentArtwork ? ARTWORKS[currentArtwork] : undefined;
@@ -20,10 +47,10 @@ export const ArtworkProvider = ({ children }) => {
     defaultValue: [],
   });
 
-  const [tappedArtwork, setTappedArtwork] = useState(null);
-  const [showArtworkClue, setShowArtworkClue] = useState(false);
-  const [showArtworkUnlocked, setShowArtworkUnlocked] = useState(false);
-
+  // const [tappedArtwork, setTappedArtwork] = useState(null);
+  // const [showArtworkClue, setShowArtworkClue] = useState(false);
+  // const [showArtworkUnlocked, setShowArtworkUnlocked] = useState(false);
+  console.log('viewed artworks', viewedArtworks)
   return (
     <ArtworkContext.Provider
       value={{
@@ -31,13 +58,13 @@ export const ArtworkProvider = ({ children }) => {
         setCurrentArtwork,
         currentArtworkModel,
         viewedArtworks,
-        setViewedArtworks,
-        tappedArtwork,
-        setTappedArtwork,
-        showArtworkClue,
-        setShowArtworkClue,
-        showArtworkUnlocked,
-        setShowArtworkUnlocked,
+        // setViewedArtworks,
+        // tappedArtwork,
+        // setTappedArtwork,
+        // showArtworkClue,
+        // setShowArtworkClue,
+        // showArtworkUnlocked,
+        // setShowArtworkUnlocked,
       }}
     >
       {children}

@@ -2,33 +2,42 @@ import clsx from 'clsx';
 import { ARTWORK_ARRAY, ArtworkId, ArtworkModel } from '../../renderer/artworks';
 import QuestionMark from './assets/question.svg';
 import NotificationBar from '../../components/NotificationBar';
-import { FAQs } from './FAQs';
+import { useCallback, useState } from 'preact/hooks';
+import { createPortal } from 'preact/compat'
+import { useArtwork } from '@/context/ArtworkContext';
+import { ZoomPanPinch } from '@/components/ZoomPanPinch';
+import { MapViewer } from './MapViewer';
 
 export type HeaderBodyProps = {
-    className?: string;
-    viewedArtworks: ArtworkId[];
-    currentArtwork: ArtworkId | undefined;
-    onArtworkTapped: (model: ArtworkModel, artworkId: ArtworkId) => void;
-    tappedArtwork: ArtworkModel | undefined;
-    onClearViewedArtworks: () => void;
-    onMapVisible: () => void;
-    showArtworkClue: boolean;
-    onClearCurrentArtwork: () => void;
     onToggleHeader: () => void;
-    onShowInfoModal: (type: 'terms' | 'privacy') => void;
+    // onShowInfoModal: (type: 'terms' | 'privacy') => void;
 };
 
-export function HeaderBody({
-    viewedArtworks,
-    currentArtwork,
-    onArtworkTapped,
-    tappedArtwork,
-    onClearViewedArtworks,
-    onMapVisible,
-    showArtworkClue,
-    onToggleHeader,
-    onShowInfoModal,
-}: HeaderBodyProps) {
+export function HeaderBody({ onToggleHeader }: HeaderBodyProps) {
+    const [tappedArtwork, setTappedArtwork] = useState<ArtworkModel>();
+    const [showArtworkClue, setShowArtworkClue] = useState(false);
+    const [isMapOpen, setIsMapOpen] = useState(false);
+
+    const { viewedArtworks } = useArtwork();
+
+    const handleArtworkTap = useCallback(
+        (model: ArtworkModel, artworkId: ArtworkId) => {
+            setTappedArtwork(model);
+            if (viewedArtworks && !viewedArtworks.includes(artworkId)) {
+                setShowArtworkClue(true);
+            } else {
+                // const artwork = Object.entries(QR_CODE_LOOKUP).find(([key, val]) => val === artworkId);
+                // setIsHeaderOpen(false);
+            }
+        },
+        [viewedArtworks],
+
+    )
+
+    const onMapVisible = useCallback(() => {
+        setIsMapOpen((isOpen) => !isOpen);
+    }, [setIsMapOpen]);
+
     return (
         <div className="w-full bg-cb-dark-purple-950 relative">
             {showArtworkClue && tappedArtwork && (
@@ -44,12 +53,46 @@ export function HeaderBody({
                 </NotificationBar>
             )}
             <ArtworkList
-                viewedArtworks={viewedArtworks}
-                currentArtwork={currentArtwork}
-                onArtworkTapped={onArtworkTapped}
+                onArtworkTapped={handleArtworkTap}
             />
             <span className="block bg-[#424242] h-[1px] w-full"></span>
             <Map onMapVisible={onMapVisible} />
+            {isMapOpen && createPortal(
+                <div className="fixed z-[1000] inset-0 pointer-events-auto h-full w-full bg-cb-blue-950 animate-fade-in">
+                    <ZoomPanPinch>
+                        <MapViewer />
+                    </ZoomPanPinch>
+
+                    <button
+                        className="fixed bottom-10 z-50 left-1/2 -translate-x-1/2 active:text-cb-green-500"
+                        onClick={onMapVisible}
+                    >
+                        <svg width="56" height="56" viewBox="0 0 56 56" xmlns="http://www.w3.org/2000/svg">
+                            <rect
+                                className="fill-current text-cb-green-500 active:text-white"
+                                width="56"
+                                height="56"
+                                rx="28"
+                                fill="#003EE3"
+                            />
+                            <path
+                                className="stroke-current"
+                                d="M22 22L34 34"
+                                strokeWidth="2"
+                                strokeLinecap="square"
+                                stroke="white"
+                            />
+                            <path
+                                className="stroke-current"
+                                d="M34 22L22 34"
+                                strokeWidth="2"
+                                strokeLinecap="square"
+                                stroke="white"
+                            />
+                        </svg>
+                    </button>
+                </div>, document.body
+            )}
             <span className="block bg-[#424242] h-[1px] w-full"></span>
             <Instructions />
             {/* <FAQs /> */}
@@ -87,11 +130,10 @@ export function HeaderBody({
 }
 
 type ArtworkListProps = {
-    viewedArtworks: ArtworkId[];
-    currentArtwork: ArtworkId | undefined;
     onArtworkTapped: (model: ArtworkModel, artworkId: ArtworkId) => void;
 };
-function ArtworkList({ viewedArtworks, currentArtwork, onArtworkTapped }: ArtworkListProps) {
+function ArtworkList({ onArtworkTapped }: ArtworkListProps) {
+    const { viewedArtworks, currentArtwork } = useArtwork();
     return (
         <div className="artwork-bg flex sm:gap-9 gap-7 sm:p-8 p-5 flex-wrap">
             {ARTWORK_ARRAY.map((model, index) => {

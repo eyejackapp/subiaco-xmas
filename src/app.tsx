@@ -1,4 +1,4 @@
-import { useCallback, useErrorBoundary, useState } from "preact/hooks";
+import { useCallback, useState, useErrorBoundary } from "preact/hooks";
 import Splash from "./features/splash";
 import { FadeTransition } from "./components/Transitions";
 import ErrorPage from "./features/error";
@@ -7,12 +7,11 @@ import { AppState } from "./context/AppStateContext";
 import { useRenderer } from "./hooks/useRenderer";
 import useUrlHash from "./hooks/useUrlHash";
 import { getArtworkIdFromCode } from "./utils/qrUtils";
-import { useTimeout } from "./hooks/useTimeout";
-import UserForm from "./components/UserForm";
-import useUserManager from "./hooks/useUserManager";
-import InstructionsOverlay from "./features/instructions-overlay";
 import TrackingOverlay from "./features/tracking-overlay";
 import { Spinner } from "./components/Spinner";
+import Header from "./features/header";
+import { useArtwork } from "./context/ArtworkContext";
+import { ArtworkId } from "./renderer/artworks";
 
 export function App() {
   const [loadingArtwork, setLoadingArtwork] = useState(false);
@@ -20,6 +19,7 @@ export function App() {
   const { appState, setAppState } = useAppState();
   const { initExperience, loadArtwork } = useRenderer();
   const { hash } = useUrlHash();
+  const {setCurrentArtwork} = useArtwork();
 
   const handleInitExperience = useCallback(async () => {
     try {
@@ -35,20 +35,22 @@ export function App() {
 
   const handleLoadArtwork = useCallback(async () => {
     setLoadingArtwork(true);
-    const artworkId = getArtworkIdFromCode(hash);
+    const artworkId = getArtworkIdFromCode(hash) as ArtworkId;
     console.log("Load artwork:", hash, artworkId);
     if (!artworkId) {
       throw new Error(`Hash is not valid: ${hash}`);
     }
     await loadArtwork(artworkId);
     setLoadingArtwork(false);
-  }, [loadArtwork, hash, setLoadingArtwork]);
+    setCurrentArtwork(artworkId)
+  }, [loadArtwork, hash, setLoadingArtwork, setCurrentArtwork]);
+
 
   const [error] = useErrorBoundary();
 
   /**
    * JSX
-   */
+  */
   if (error) {
     return <ErrorPage error={error} />;
   }
@@ -73,6 +75,11 @@ export function App() {
           )}
         </div>
       </FadeTransition>
+      <FadeTransition show={appState !== AppState.SPLASH}>
+          <div className="absolute top-0 w-full">
+            <Header />
+          </div>
+        </FadeTransition>
     </div>
   );
 }
