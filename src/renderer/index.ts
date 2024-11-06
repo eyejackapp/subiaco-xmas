@@ -2,12 +2,12 @@ import mitt, { Emitter } from "mitt";
 import { I8thWallImageTargetEventModel, init8thWall } from "./8thwall";
 import { drawWatermark } from "./8thwall/watermark";
 
-import { I3dPipeline, init3dExperience } from "./placeground";
+import { init3dExperience } from "./placeground";
 import {
-  MusicCentre3dEvents,
+  PlaceGround3dEvents,
   PlacegroundPipelineModuleResult,
 } from "./8thwall/placeground-pipeline-module";
-import { Group, Object3DEventMap, Scene } from "three";
+import { Scene } from "three";
 import { ArtworkId, ARTWORKS } from "./artworks";
 import { QRProcessEvents } from "./8thwall/qr-process-pipeline-module";
 
@@ -42,8 +42,9 @@ export type RendererEvents = {
   "resume-tracking": void;
   "pause-tracking": void;
   "on-camera-down": boolean;
-  "tracking-status": 'show' | 'hide';
-} & MusicCentre3dEvents &
+  "tracking-status": "show" | "hide";
+  "on-show-unlocked": void;
+} & PlaceGround3dEvents &
   QRProcessEvents;
 
 export type RendererApi = {
@@ -64,7 +65,7 @@ type RendererOptions = {
 };
 
 /**
- * This sets up 8thwall and music centre modules and then wraps it in an API that's more specific to this project.
+ * This sets up 8thwall and placeground module and then wraps it in an API that's more specific to this project.
  */
 export async function initExperienceRenderer(
   canvas: HTMLCanvasElement,
@@ -77,18 +78,18 @@ export async function initExperienceRenderer(
       ...options,
       enableQrScanner: true,
     });
-  let module3d: I3dPipeline;
-  module3d = init3dExperience(
+  const module3d = init3dExperience(
     module as PlacegroundPipelineModuleResult,
     scene,
     camera,
     audio
   );
-  const moduleEmitter = module.emitter as Emitter<MusicCentre3dEvents>;
+  const moduleEmitter = module.emitter as Emitter<PlaceGround3dEvents>;
 
-  moduleEmitter.on("tracking-status", (status: 'show' | 'hide') => {
+  moduleEmitter.on("tracking-status", (status: "show" | "hide") => {
     emitter.emit("tracking-status", status);
   });
+  moduleEmitter.on("on-show-unlocked", () => emitter.emit("on-show-unlocked"));
   moduleEmitter.on("content-loaded", () => {
     emitter.emit("content-loaded");
   });
@@ -98,7 +99,6 @@ export async function initExperienceRenderer(
   moduleEmitter.on("on-camera-down", (isCameraFaceDown) => {
     emitter.emit("on-camera-down", isCameraFaceDown);
   });
-  // If qr code scanner is avaliable, redirect all the event sback through the main event emitter.
   if (qrProcessApi) {
     qrProcessApi.events.on("qr-scan-result", (ev) =>
       emitter.emit("qr-scan-result", ev)
@@ -131,10 +131,6 @@ export async function initExperienceRenderer(
     getScene() {
       return scene;
     },
-    // async loadArtwork() {
-    //   const model = await module3d.loadArtwork();
-    //   return model;
-    // },
     async loadArtwork(artworkId: ArtworkId) {
       const artworkData = ARTWORKS[artworkId];
       if (!artworkData)

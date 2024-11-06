@@ -6,7 +6,7 @@ import * as THREE from 'three';
 
 window.THREE = THREE;
 
-export type MusicCentre3dEvents = {
+export type PlaceGround3dEvents = {
     'on-show-model': {
         detail: I8thWallImageTargetEventModel['detail'];
     };
@@ -26,12 +26,13 @@ export type MusicCentre3dEvents = {
     trackingStatus: string;
     'tracking-status': 'show' | 'hide';
     'on-camera-down': boolean;
+    'on-show-unlocked': void;
 };
 
-const emitter = mitt<MusicCentre3dEvents>();
+const emitter = mitt<PlaceGround3dEvents>();
 
 export type PlacegroundPipelineModuleResult = IPipelineModule & {
-    emitter: Emitter<MusicCentre3dEvents>;
+    emitter: Emitter<PlaceGround3dEvents>;
 };
 
 export const placegroundPipelineModule =

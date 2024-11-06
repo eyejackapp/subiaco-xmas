@@ -68,7 +68,7 @@ export function Splash({ onPermissionsGranted }: SplashProps) {
             return 'loading';
         } else if (device === 'iOS' || device === 'Android' || device === 'AppClip') {
             return 'mobile';
-        } else return 'mobile';
+        } else return 'desktop';
     }, [device]);
 
     return (
@@ -81,7 +81,7 @@ export function Splash({ onPermissionsGranted }: SplashProps) {
                 "basis-1/3": deviceType === 'desktop',
                 "basis-2/3": deviceType === 'mobile'
             })}>
-                <p>Lincoln Center</p>
+                <p>Subiaco</p>
                 <h2 className="text-4xl font-bold">Subiaco Xmas</h2>
             </div>
             {deviceType === 'desktop' && (
@@ -153,7 +153,8 @@ function DesktopSplash() {
                     size={250}
                 />
                 <h2 className="text-white text-center md:text-[22px] text-xl font-helvetica-light md:leading-[26px] leading-[22px] tracking-[-0.41px]">
-                    This Experience is best viewed at the Lincoln Center.
+                    Scan the QR code to launch the<br />
+                    Twinkling Treasure Hunt AR experience
                 </h2>
                 <CopyToClipboardTrigger text={url}>
                     <div className="border-2 min-w-[250px] border-white border-opacity-30 py-3 px-4 max-w-xs flex gap-x-2 relative cursor-pointer hover:opacity-50 hover:border-opacity-50">
