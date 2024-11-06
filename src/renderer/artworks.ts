@@ -30,10 +30,10 @@ type ArtworkDefiniton = {
 };
 
 export const ARTWORKS = {
-    'artwork-1': {
-        name: 'Art Abound',
+    'xmas-tree': {
+        name: 'Xmas Tree',
         artist: 'Artist 1',
-        basePath: '/model/Bloomscapes_V3.glb',
+        basePath: '/content/Xmas_Tree.glb',
         clue: 'Home of the arts in Bankstown.',
         image: Artwork1Thumbnail,
         artistImage: Artwork1,
@@ -44,7 +44,7 @@ export const ARTWORKS = {
     'artwork-2': {
         name: 'Marketplace',
         artist: 'Artist 2',
-        basePath: '/model/Bloomscapes_V3.glb',
+        basePath: '/content/Toy_Parade.glb',
         clue: 'Sandwiched between the carpark and the street of shops.',
         image: Artwork2Thumbnail,
         artistImage: Artwork2,

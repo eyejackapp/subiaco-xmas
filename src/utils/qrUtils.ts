@@ -1,12 +1,12 @@
 export const QR_CODE_LOOKUP = {
-    '9734': 'artwork-1',
-    '6495': 'artwork-2',
-    '8719': 'artwork-3',
-    '4842': 'artwork-4',
-    '1425': 'artwork-5',
-    '3274': 'artwork-6',
-    '9806': 'artwork-7',
-    '7730': 'artwork-8',
+    '1': 'xmas-tree',
+    '2': 'artwork-2',
+    '3': 'artwork-3',
+    '4': 'artwork-4',
+    '5': 'artwork-5',
+    '6': 'artwork-6',
+    '7': 'artwork-7',
+    '8': 'artwork-8',
 } as const;
 
 const validCodes = Object.keys(QR_CODE_LOOKUP);
