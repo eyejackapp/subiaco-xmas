@@ -95,7 +95,22 @@ export function init3dExperience(
         // Animate the model
         const delta = clock.getDelta();
         mixer.update(delta);
+    let hasShownUnlockedModal = false;
+    mixer.addEventListener("finished", (event) => {
+        if (hasShownUnlockedModal) return
+          module.emitter.emit("on-show-unlocked");
+          hasShownUnlockedModal = true;
+          playAnimationsRepeat(model);
     });
+    });
+  const playAnimationsRepeat = (model) => {
+    model.animations.forEach((clip: AnimationClip) => {
+      const action = mixer.clipAction(clip.optimize());
+      action.stop();
+      action.setLoop(LoopRepeat);
+      action.play();
+    });
+  };
 
     return { loadArtwork };
 }

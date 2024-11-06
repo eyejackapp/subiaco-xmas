@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'preact/hooks';
+import { memo } from 'preact/compat'
 import { GroundDetectionImg } from './GroundDetectionImg';
 import clsx from 'clsx';
 import { useRenderer } from '@/hooks/useRenderer';
@@ -7,7 +8,7 @@ type TrackingOverlayProps = {
     onStatusNormal: () => void;
 }
 
-export function TrackingOverlay({ onStatusNormal }: TrackingOverlayProps) {
+export const TrackingOverlay = memo(function TrackingOverlay({ onStatusNormal }: TrackingOverlayProps) {
     const [uiStatus, setUiStatus] = useState('LIMITED');
     const { trackingStatus } = useRenderer();
     useEffect(() => {
@@ -43,4 +44,4 @@ export function TrackingOverlay({ onStatusNormal }: TrackingOverlayProps) {
             )}
         </>
     );
-}
+})
