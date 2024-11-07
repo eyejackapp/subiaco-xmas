@@ -1,6 +1,6 @@
 export const QR_CODE_LOOKUP = {
     '1': 'xmas-tree',
-    '2': 'artwork-2',
+    '2': 'toy-parade',
     '3': 'artwork-3',
     '4': 'artwork-4',
     '5': 'artwork-5',

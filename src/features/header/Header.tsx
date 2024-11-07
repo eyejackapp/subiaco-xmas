@@ -10,7 +10,6 @@ export function Header() {
 
     const { viewedArtworks, currentArtwork } = useArtwork();
 
-
     const [isPopupOpen, setIsPopupOpen] = useState(false);
 
     const onToggleHeader = useCallback(() => {

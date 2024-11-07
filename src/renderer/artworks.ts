@@ -41,8 +41,8 @@ export const ARTWORKS = {
         link: 'https://twitter.com/',
         index: 0,
     },
-    'artwork-2': {
-        name: 'Marketplace',
+    'toy-parade': {
+        name: 'Toy Parade',
         artist: 'Artist 2',
         basePath: '/content/Toy_Parade.glb',
         clue: 'Sandwiched between the carpark and the street of shops.',

@@ -12,14 +12,16 @@ import { Spinner } from "./components/Spinner";
 import Header from "./features/header";
 import { useArtwork } from "./context/ArtworkContext";
 import { ArtworkId } from "./renderer/artworks";
+import { ModalOverlay } from "./components/Modal/ModalOverlay";
+import { Modal } from "./components/Modal/Modal";
 
 export function App() {
   const [loadingArtwork, setLoadingArtwork] = useState(false);
 
   const { appState, setAppState } = useAppState();
-  const { initExperience, loadArtwork } = useRenderer();
+  const { initExperience, loadArtwork, showArtworkUnlocked, setShowArtworkUnlocked } = useRenderer();
   const { hash } = useUrlHash();
-  const {setCurrentArtwork} = useArtwork();
+  const { setCurrentArtwork } = useArtwork();
 
   const handleInitExperience = useCallback(async () => {
     try {
@@ -76,10 +78,27 @@ export function App() {
         </div>
       </FadeTransition>
       <FadeTransition show={appState !== AppState.SPLASH}>
-          <div className="absolute top-0 w-full">
-            <Header />
-          </div>
-        </FadeTransition>
+        <div className="absolute top-0 w-full">
+          <Header />
+        </div>
+      </FadeTransition>
+      <FadeTransition show={showArtworkUnlocked}>
+        <div className="w-full h-full">
+          <ModalOverlay>
+            <Modal className="centered h-fit bg-[#EA81A4] px-8 py-16 flex justify-center items-center">
+              <div className="flex flex-col items-center justify-center gap-8">
+                <h1 className="text-3xl font-bold text-center">Artwork Unlocked!</h1>
+                <button
+                  className="mt-4 px-4 py-2 border-white border-2 max-w-[230px] w-full text-white rounded"
+                  onClick={() => setShowArtworkUnlocked(false)}
+                >
+                  OK
+                </button>
+              </div>
+            </Modal>
+          </ModalOverlay>
+        </div>
+      </FadeTransition>
     </div>
   );
 }
