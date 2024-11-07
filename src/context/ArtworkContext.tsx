@@ -38,7 +38,7 @@ export const useArtwork = () => {
 
 export const ArtworkProvider = ({ children }) => {
   const [currentArtwork, setCurrentArtwork] = useState<ArtworkId | undefined>(undefined);
-
+  console.log('current artwork', currentArtwork)
   const currentArtworkModel = useMemo(() => {
     return currentArtwork ? ARTWORKS[currentArtwork] : undefined;
   }, [currentArtwork]);

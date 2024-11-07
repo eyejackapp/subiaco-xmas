@@ -15,7 +15,8 @@ export enum RendererState {
 type RendererContextType = {
     renderer: RendererApi | null;
     rendererState: RendererState;
-    trackingStatus: 'show' | 'hide';
+    trackingStatus: 'LIMITED' | 'NORMAL';
+    setTrackingStatus: (status: 'LIMITED' | 'NORMAL') => void;
     loadArtwork: (artworkId: string) => Promise<void> | void;
     initExperience: () => Promise<void> | void;
     clearCurrentArtwork: () => void;
@@ -26,7 +27,8 @@ type RendererContextType = {
 export const RendererContext = createContext<RendererContextType>({
     renderer: null,
     rendererState: RendererState.NONE,
-    trackingStatus: 'show',
+    trackingStatus: 'LIMITED',
+    setTrackingStatus: (status: 'LIMITED' | 'NORMAL') => { },
     initExperience: () => { },
     loadArtwork: (artworkId: string) => { },
     clearCurrentArtwork: () => { },
@@ -46,13 +48,13 @@ export type RendererProviderProps = {
 export const RendererProvider = ({ children }: RendererProviderProps) => {
     const [renderer, setRenderer] = useState<RendererApi | null>(null);
     const [rendererState, setRendererState] = useState(RendererState.NONE);
-    const [trackingStatus, setTrackingStatus] = useState<'show' | 'hide'>('show');
+    const [trackingStatus, setTrackingStatus] = useState<'LIMITED' | 'NORMAL'>('LIMITED');
     const [showArtworkUnlocked, setShowArtworkUnlocked] = useState(false);
 
     const currentModelRef = useRef<Object3D | null>(null); // Track the current model
 
-    const { handleQRFound } = useUrlHash();
-
+    // const { handleQRFound } = useUrlHash();
+    
     const initExperience = useCallback(async () => {
         const canvasEl = document.getElementById('xr-canvas') as HTMLCanvasElement;
         if (!canvasEl) throw new Error('No Canvas element.');
@@ -63,19 +65,20 @@ export const RendererProvider = ({ children }: RendererProviderProps) => {
     }, [])
 
     const clearCurrentArtwork = useCallback(() => {
+        console.log('clearCurrentArtwork');
         if (currentModelRef.current) {
-            currentModelRef.current.traverse((object) => {
-                if (object.isMesh) {
-                    object.geometry?.dispose();
-                    if (object.material) {
-                        if (Array.isArray(object.material)) {
-                            object.material.forEach((material) => material.dispose());
-                        } else {
-                            object.material.dispose();
-                        }
-                    }
-                }
-            });
+            // currentModelRef.current.traverse((object) => {
+            //     if (object.isMesh) {
+            //         object.geometry?.dispose();
+            //         if (object.material) {
+            //             if (Array.isArray(object.material)) {
+            //                 object.material.forEach((material) => material.dispose());
+            //             } else {
+            //                 object.material.dispose();
+            //             }
+            //         }
+            //     }
+            // });
             renderer?.getScene().remove(currentModelRef.current);
             currentModelRef.current = null;
         }
@@ -84,7 +87,7 @@ export const RendererProvider = ({ children }: RendererProviderProps) => {
     const loadArtwork = useCallback(async (artworkId: string) => {
         console.debug(`loadArtwork(${artworkId})`);
         if (!renderer) throw new Error(`loadArtwork(${artworkId}) but no experience loaded.`);
-        clearCurrentArtwork();
+        // clearCurrentArtwork();
         // TODO: check where to put this and why it's needed
         renderer.pauseAudio();
         const model = await renderer.loadArtwork(artworkId);
@@ -92,7 +95,7 @@ export const RendererProvider = ({ children }: RendererProviderProps) => {
             renderer.getScene().add(model);
             currentModelRef.current = model;
         }
-    }, [renderer, clearCurrentArtwork]);
+    }, [renderer]);
 
 
 
@@ -105,12 +108,13 @@ export const RendererProvider = ({ children }: RendererProviderProps) => {
             setRendererState(RendererState.LOADED);
         };
 
-        const handleTrackingStatus = (status: 'show' | 'hide') => {
+        const handleTrackingStatus = (status: 'LIMITED' | 'NORMAL') => {
             setTrackingStatus(status);
         }
-        const handleQR = (model: QRProcessEvents['qr-scan-result']) => {
-            handleQRFound(model)
-        }
+        // const handleQR = (model: QRProcessEvents['qr-scan-result']) => {
+        //     if (model.status === 'none') return;
+        //     handleQRFound(model)
+        // }
 
         const handleUnlocked = () => {
             setShowArtworkUnlocked(true);
@@ -119,13 +123,13 @@ export const RendererProvider = ({ children }: RendererProviderProps) => {
         renderer.on('on-show-unlocked', handleUnlocked)
         renderer.on('content-loaded', handleLoaded);
         renderer.on('tracking-status', handleTrackingStatus);
-        renderer.on('qr-scan-result', handleQR);
+        // renderer.on('qr-scan-result', handleQR);
         return () => {
             renderer.off('content-loaded', handleLoaded);
             renderer.off('tracking-status', handleTrackingStatus);
-            renderer.off('qr-scan-result', handleQR);
+            // renderer.off('qr-scan-result', handleQR);
         };
-    }, [renderer, handleQRFound]);
+    }, [renderer, clearCurrentArtwork]);
 
     return (
         <RendererContext.Provider
@@ -133,6 +137,7 @@ export const RendererProvider = ({ children }: RendererProviderProps) => {
                 renderer,
                 rendererState,
                 trackingStatus,
+                setTrackingStatus,
                 initExperience,
                 loadArtwork,
                 clearCurrentArtwork,

@@ -24,7 +24,7 @@ export type PlaceGround3dEvents = {
         camera: THREE.Camera;
     };
     trackingStatus: string;
-    'tracking-status': 'show' | 'hide';
+    'tracking-status': 'LIMITED' | 'NORMAL';
     'on-camera-down': boolean;
     'on-show-unlocked': void;
 };
@@ -38,13 +38,13 @@ export type PlacegroundPipelineModuleResult = IPipelineModule & {
 export const placegroundPipelineModule =
     (): PlacegroundPipelineModuleResult => {
         const show = () => {
-            console.log('show');
-            emitter.emit('tracking-status', 'show');
+            console.log('LIMITED');
+            emitter.emit('tracking-status', 'LIMITED');
         };
 
         const hide = () => {
-            console.log('hide');
-            emitter.emit('tracking-status', 'hide');
+            console.log('NORMAL');
+            emitter.emit('tracking-status', 'NORMAL');
         };
 
         return {

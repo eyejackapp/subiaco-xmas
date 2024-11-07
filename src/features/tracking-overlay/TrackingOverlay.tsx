@@ -3,6 +3,7 @@ import { memo } from 'preact/compat'
 import { GroundDetectionImg } from './GroundDetectionImg';
 import clsx from 'clsx';
 import { useRenderer } from '@/hooks/useRenderer';
+import { useMount } from '@/hooks/useMount';
 
 type TrackingOverlayProps = {
     onStatusNormal: () => void;
@@ -11,27 +12,31 @@ type TrackingOverlayProps = {
 export const TrackingOverlay = memo(function TrackingOverlay({ onStatusNormal }: TrackingOverlayProps) {
     const [uiStatus, setUiStatus] = useState('LIMITED');
     const { trackingStatus } = useRenderer();
-    useEffect(() => {
+    useMount(() => {
+        setUiStatus(trackingStatus)
         const timeout = setTimeout(() => {
-            if (trackingStatus === 'show') {
+            if (trackingStatus === 'LIMITED') {
                 setUiStatus('NORMAL');
-                onStatusNormal();
             }
         }, 5000);
 
         return () => {
             clearTimeout(timeout);
         };
-    }, [trackingStatus, onStatusNormal]);
+    });
 
-    console.log('tracking overlay')
+    useEffect(() => {
+       if (uiStatus === 'NORMAL') onStatusNormal()
+    }, [onStatusNormal, uiStatus])
+
+    console.log('tracking overlay', trackingStatus, uiStatus)
 
     return (
         <>
             <span
-                className={clsx('absolute top-[16px] left-4 w-2 h-2 rounded-[50%] animate-fade-in', {
-                    'bg-orange-500': trackingStatus === 'hide',
-                    'bg-green-500': trackingStatus === 'show',
+                className={clsx('absolute top-[100px] left-4 w-2 h-2 rounded-[50%] animate-fade-in', {
+                    'bg-orange-500': trackingStatus === 'LIMITED',
+                    'bg-green-500': trackingStatus === 'NORMAL',
                 })}
             ></span>
             {uiStatus === 'LIMITED' && (

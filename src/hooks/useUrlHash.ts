@@ -1,9 +1,9 @@
-import { useState, useCallback, useRef } from 'preact/hooks';
+import { useState, useCallback, useRef, useEffect } from 'preact/hooks';
 import { useEventListener } from './useEventListener';
 import { getArtworkIdFromCode } from '../utils/qrUtils';
 import { QRProcessEvents } from '../renderer/8thwall/qr-process-pipeline-module';
 
-function useUrlHash() {
+function useUrlHash(onHashChange?: () => void) {
   const [hash, setHash] = useState(() => window.location.hash.slice(1));
   const previousHashRef = useRef(hash);
 
@@ -23,12 +23,15 @@ function useUrlHash() {
       const hash = new URL(model.data).hash.slice(1);
       const artworkId = getArtworkIdFromCode(hash);
       if (artworkId && artworkId !== previousHashRef.current) {
-        console.log('UPDATE hash', artworkId, hash);
+        console.log('UPDATE hash', artworkId);
         updateHash(hash);
         previousHashRef.current = artworkId;
+        if (onHashChange) {
+          onHashChange();
+        }
       }
     }
-  }, [updateHash]);
+  }, [updateHash, onHashChange]);
 
   useEventListener('hashchange', handleHashChange);
 
