@@ -52,10 +52,10 @@ export const ARTWORKS = {
         link: 'https://twitter.com/',
         index: 1,
     },
-    'artwork-3': {
-        name: 'Food Encounter',
+    'snow-globe': {
+        name: 'Snow Globe',
         artist: 'Artist 3',
-        basePath: '/artworks/story-3/',
+        basePath: '/content/Snow_Globe.glb',
         clue: 'Right next to a divine dessert cafe.',
         image: Artwork3Thumbnail,
         artistImage: Artwork3,
@@ -63,10 +63,10 @@ export const ARTWORKS = {
         link: 'https://twitter.com/',
         index: 2,
     },
-    'artwork-4': {
-        name: 'Crossing Cultures',
+    'santa-sleigh': {
+        name: 'Santa Sleigh',
         artist: 'Artist 4',
-        basePath: '/artworks/story-4/',
+        basePath: '/content/Santa_Sleigh.glb',
         clue: 'A stretch connecting two parts of Bankstown CVD.',
         image: Artwork4Thumbnail,
         artistImage: Artwork4,
@@ -74,10 +74,10 @@ export const ARTWORKS = {
         link: 'https://twitter.com/',
         index: 3,
     },
-    'artwork-5': {
-        name: 'A Place to Gather',
+    'santa-selfie': {
+        name: 'Santa Selfie',
         artist: 'Artist 5',
-        basePath: '/artworks/story-5/',
+        basePath: '/content/Santa_Selfie.glb',
         clue: 'A wooden platform on the green.',
         image: Artwork5Thumbnail,
         artistImage: Artwork5,
@@ -85,10 +85,10 @@ export const ARTWORKS = {
         link: 'https://twitter.com/',
         index: 4,
     },
-    'artwork-6': {
-        name: 'Fashion Parade',
+    'present-storm': {
+        name: 'Present Storm',
         artist: 'Artist 6',
-        basePath: '/artworks/story-6/',
+        basePath: '/content/Present_Storm.glb',
         clue: 'Circles of seats and bubble tea galore.',
         image: Artwork6Thumbnail,
         artistImage: Artwork6,

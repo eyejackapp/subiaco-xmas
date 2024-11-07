@@ -1,40 +1,24 @@
 // ArtworkContext.js
-import { useContext, useState, useMemo} from 'preact/hooks';
+import { useContext, useState, useMemo, useEffect } from 'preact/hooks';
 import { createContext } from 'preact/compat';
 import { ARTWORKS, ArtworkId, ArtworkModel } from '../renderer/artworks';
 import { useLocalStorageState } from 'ahooks';
 
 type ArtworkContextType = {
-  currentArtwork?: ArtworkId;
-  setCurrentArtwork: (id: ArtworkId) => void;
-  viewedArtworks: ArtworkId[];
+  currentArtwork: ArtworkId | undefined;
+  setCurrentArtwork: React.Dispatch<React.SetStateAction<ArtworkId | undefined>>;
+  viewedArtworks: ArtworkId[] | undefined;
+  setViewedArtworks: React.Dispatch<React.SetStateAction<ArtworkId[] | undefined>>;
   currentArtworkModel: ArtworkModel | undefined
 };
 
-const ArtworkContext = createContext<ArtworkContextType>({
+export const ArtworkContext = createContext<ArtworkContextType>({
   currentArtworkModel: undefined,
   viewedArtworks: [],
-  setCurrentArtwork: () => {},
-  currentArtwork: undefined
+  setCurrentArtwork: () => { },
+  setViewedArtworks: () => { },
+  currentArtwork: undefined,
 });
-// {
-//   currentArtwork: '',
-//   setCurrentArtwork: '',
-//   currentArtworkModel: '',
-//   viewedArtworks: '',
-//   setViewedArtworks: '',
-//   tappedArtwork: '',
-//   setTappedArtwork: '',
-//   showArtworkClue: '',
-//   setShowArtworkClue: '',
-//   showArtworkUnlocked: '',
-//   setShowArtworkUnlocked: '',
-// }
-
-
-export const useArtwork = () => {
-  return useContext(ArtworkContext);
-};
 
 export const ArtworkProvider = ({ children }) => {
   const [currentArtwork, setCurrentArtwork] = useState<ArtworkId | undefined>(undefined);
@@ -43,31 +27,41 @@ export const ArtworkProvider = ({ children }) => {
     return currentArtwork ? ARTWORKS[currentArtwork] : undefined;
   }, [currentArtwork]);
 
-  const [viewedArtworks, setViewedArtworks] = useLocalStorageState('viewedArtworks', {
+  const [viewedArtworks, setViewedArtworks] = useLocalStorageState<ArtworkId[] | undefined>('viewedArtworks', {
     defaultValue: [],
   });
+
+  useEffect(() => {
+    if (currentArtwork && viewedArtworks) {
+      if (!viewedArtworks.includes(currentArtwork)) {
+        setViewedArtworks([...viewedArtworks, currentArtwork]);
+      }
+    }
+  }, [currentArtwork, viewedArtworks, setViewedArtworks]);
 
   // const [tappedArtwork, setTappedArtwork] = useState(null);
   // const [showArtworkClue, setShowArtworkClue] = useState(false);
   // const [showArtworkUnlocked, setShowArtworkUnlocked] = useState(false);
   console.log('viewed artworks', viewedArtworks)
-  return (
-    <ArtworkContext.Provider
-      value={{
-        currentArtwork,
-        setCurrentArtwork,
-        currentArtworkModel,
-        viewedArtworks,
-        // setViewedArtworks,
-        // tappedArtwork,
-        // setTappedArtwork,
-        // showArtworkClue,
-        // setShowArtworkClue,
-        // showArtworkUnlocked,
-        // setShowArtworkUnlocked,
-      }}
-    >
-      {children}
-    </ArtworkContext.Provider>
-  );
+// }
+
+return (
+  <ArtworkContext.Provider
+    value={{
+      currentArtwork,
+      setCurrentArtwork,
+      currentArtworkModel,
+      viewedArtworks,
+      setViewedArtworks,
+      // tappedArtwork,
+      // setTappedArtwork,
+      // showArtworkClue,
+      // setShowArtworkClue,
+      // showArtworkUnlocked,
+      // setShowArtworkUnlocked,
+    }}
+  >
+    {children}
+  </ArtworkContext.Provider>
+);
 };

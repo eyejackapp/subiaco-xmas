@@ -2,8 +2,8 @@ import { useCallback, useEffect, useRef, useState } from 'preact/hooks';
 import { ARTWORKS_LENGTH } from '../../renderer/artworks';
 import clsx from 'clsx';
 import { HeaderBody } from './HeaderBody';
+import { useArtwork } from '@/hooks/useArtwork';
 
-import { useArtwork } from '@/context/ArtworkContext';
 
 export function Header() {
   const [isHeaderOpen, setIsHeaderOpen] = useState(false);

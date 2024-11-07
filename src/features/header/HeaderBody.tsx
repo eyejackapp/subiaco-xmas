@@ -4,9 +4,9 @@ import QuestionMark from './assets/question.svg';
 import NotificationBar from '../../components/NotificationBar';
 import { useCallback, useState } from 'preact/hooks';
 import { createPortal } from 'preact/compat'
-import { useArtwork } from '@/context/ArtworkContext';
 import { ZoomPanPinch } from '@/components/ZoomPanPinch';
 import { MapViewer } from './MapViewer';
+import { useArtwork } from '@/hooks/useArtwork';
 
 export type HeaderBodyProps = {
     onToggleHeader: () => void;
