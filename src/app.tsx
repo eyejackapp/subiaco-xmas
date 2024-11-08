@@ -29,7 +29,6 @@ export function App() {
 
   // hash change handling
   const handleHashChange = useCallback(() => {
-    console.log('handlehashchange')
     clearCurrentArtwork();
     setArtworkState(ArtworkState.PLACING);
   }, [clearCurrentArtwork, setArtworkState]);
@@ -69,28 +68,23 @@ export function App() {
     await loadArtwork(artworkId);
     setLoadingArtwork(false);
     setCurrentArtwork(artworkId)
-  }, [loadArtwork, hash, setLoadingArtwork, setCurrentArtwork]);
+    setArtworkState(ArtworkState.VIEWING);
+  }, [loadArtwork, hash, setLoadingArtwork, setCurrentArtwork, setArtworkState]);
 
 
   const onVideoCleared = useCallback(() => {
-    //
-  }, []);
+    setAppState(AppState.ARTWORK_VIEWING);
+  }, [setAppState]);
 
   useEffect(() => {
-    if (recordingState.state === 'ready') {
-      setAppState(AppState.MEDIA_SHARE)
-    }
+    if (recordingState.state !== 'ready') return;
+    setAppState(AppState.MEDIA_SHARE);
   }, [recordingState.state, setAppState]);
 
-  useEffect(() => {
-    if (recordingState.state === 'ready') {
-      setAppState(AppState.MEDIA_SHARE)
-    }
-  }, [recordingState.state, setAppState]);
-
-  const showArtworkUnlockedModal = useMemo(() => {
-    return showArtworkUnlocked && recordingState.state === 'none'
-  }, [showArtworkUnlocked, recordingState.state]);
+  const showArtworkUnlockedModal =
+    showArtworkUnlocked &&
+    recordingState.state === 'none' &&
+    artworkState === ArtworkState.VIEWING;
 
   const [error] = useErrorBoundary();
 
@@ -104,7 +98,6 @@ export function App() {
   return (
     <div className="w-full h-full flex items-center justify-center">
       {/* <UserForm /> */}
-      {/* <div className="absolute top-4 left-4 z-50">Current: {currentArtwork}</div> */}
       <FadeTransition show={appState === AppState.SPLASH}>
         <div className="h-full w-full">
           <Splash onPermissionsGranted={handleInitExperience} />
@@ -130,7 +123,7 @@ export function App() {
           <Header />
         </div>
       </FadeTransition>
-      <FadeTransition show={showArtworkUnlocked}>
+      <FadeTransition show={showArtworkUnlockedModal}>
         <div className="w-full h-full">
           <ModalOverlay>
             <Modal className="centered h-fit bg-[#EA81A4] px-8 py-16 flex justify-center items-center">

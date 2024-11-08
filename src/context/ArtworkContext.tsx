@@ -53,7 +53,6 @@ export const ArtworkProvider = ({ children }) => {
   // const [tappedArtwork, setTappedArtwork] = useState(null);
   // const [showArtworkClue, setShowArtworkClue] = useState(false);
   // const [showArtworkUnlocked, setShowArtworkUnlocked] = useState(false);
-  console.log('viewed artworks', viewedArtworks)
   // }
 
   return (
