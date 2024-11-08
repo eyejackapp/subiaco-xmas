@@ -1,4 +1,4 @@
-import { useCallback, useState, useErrorBoundary, useEffect } from "preact/hooks";
+import { useCallback, useState, useErrorBoundary, useEffect, useMemo } from "preact/hooks";
 import Splash from "./features/splash";
 import { FadeTransition } from "./components/Transitions";
 import ErrorPage from "./features/error";
@@ -15,20 +15,24 @@ import { ModalOverlay } from "./components/Modal/ModalOverlay";
 import { Modal } from "./components/Modal/Modal";
 import { QRProcessEvents } from "./renderer/8thwall/qr-process-pipeline-module";
 import { useArtwork } from "./hooks/useArtwork";
+import { ArtworkState } from "./context/ArtworkContext";
+import { RecordingButton, useVideoRecorder } from "./features/recording-button";
+import MediaPreview from "./features/media-preview";
 
 export function App() {
   const [loadingArtwork, setLoadingArtwork] = useState(false);
 
   const { appState, setAppState } = useAppState();
-  const { renderer, initExperience, loadArtwork, showArtworkUnlocked, setShowArtworkUnlocked, clearCurrentArtwork, setTrackingStatus } = useRenderer();
-  const { setCurrentArtwork, currentArtwork, setViewedArtworks } = useArtwork();
+  const { renderer, initExperience, loadArtwork, showArtworkUnlocked, setShowArtworkUnlocked, clearCurrentArtwork } = useRenderer();
+  const { artworkState, setArtworkState, setCurrentArtwork, currentArtwork } = useArtwork();
+  const recordingState = useVideoRecorder(renderer);
 
   // hash change handling
   const handleHashChange = useCallback(() => {
     console.log('handlehashchange')
     clearCurrentArtwork();
-    setTrackingStatus('LIMITED');
-  }, [clearCurrentArtwork, setTrackingStatus]);
+    setArtworkState(ArtworkState.PLACING);
+  }, [clearCurrentArtwork, setArtworkState]);
 
   const { hash, handleQRFound } = useUrlHash(handleHashChange);
 
@@ -49,6 +53,7 @@ export function App() {
       setAppState(
         hasViewedOnboarding ? AppState.ARTWORK_VIEWING : AppState.ONBOARDING
       );
+      if (hasViewedOnboarding) setArtworkState(ArtworkState.PLACING)
     } catch (error) {
       console.error("Failed to initialize experience:", error);
     }
@@ -66,6 +71,26 @@ export function App() {
     setCurrentArtwork(artworkId)
   }, [loadArtwork, hash, setLoadingArtwork, setCurrentArtwork]);
 
+
+  const onVideoCleared = useCallback(() => {
+    //
+  }, []);
+
+  useEffect(() => {
+    if (recordingState.state === 'ready') {
+      setAppState(AppState.MEDIA_SHARE)
+    }
+  }, [recordingState.state, setAppState]);
+
+  useEffect(() => {
+    if (recordingState.state === 'ready') {
+      setAppState(AppState.MEDIA_SHARE)
+    }
+  }, [recordingState.state, setAppState]);
+
+  const showArtworkUnlockedModal = useMemo(() => {
+    return showArtworkUnlocked && recordingState.state === 'none'
+  }, [showArtworkUnlocked, recordingState.state]);
 
   const [error] = useErrorBoundary();
 
@@ -87,14 +112,17 @@ export function App() {
       </FadeTransition>
       <FadeTransition show={appState === AppState.ARTWORK_VIEWING}>
         <div className="h-full w-full">
-          <TrackingOverlay onStatusNormal={handleLoadArtwork} />
-          {loadingArtwork && (
+          {artworkState === ArtworkState.PLACING &&
+            <TrackingOverlay onStatusNormal={handleLoadArtwork} />
+          }
+          {
+            loadingArtwork && artworkState === ArtworkState.LOADING &&
             <div className="bg-black bg-opacity-75 h-full w-full">
               <div className="absolute top-1/2 left-1/2 -translate-x-1/2">
                 <Spinner />
               </div>
             </div>
-          )}
+          }
         </div>
       </FadeTransition>
       <FadeTransition show={appState !== AppState.SPLASH}>
@@ -118,6 +146,18 @@ export function App() {
               </div>
             </Modal>
           </ModalOverlay>
+        </div>
+      </FadeTransition>
+
+      <FadeTransition show={appState === AppState.ARTWORK_VIEWING} duration={500}>
+        <div className="flex fixed bottom-4 left-1/2 justify-center items-center w-full h-full -translate-x-1/2 max-w-[94px] max-h-[94px] z-[1]">
+          <RecordingButton recordingState={recordingState} />
+        </div>
+      </FadeTransition>
+
+      <FadeTransition show={appState === AppState.MEDIA_SHARE}>
+        <div className="w-full h-full">
+          <MediaPreview recordingState={recordingState} onVideoCleared={onVideoCleared} />
         </div>
       </FadeTransition>
     </div>

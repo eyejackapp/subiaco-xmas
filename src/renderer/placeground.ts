@@ -56,10 +56,11 @@ export function init3dExperience(
       action.clampWhenFinished = true;
       action.play();
     });
-
+    console.log("LOADING A NEW ANIMATION")
     let hasShownUnlockedModal = false;
     mixer.addEventListener("finished", (event) => {
       if (hasShownUnlockedModal) return;
+      console.log("EMITTING Finished first loop");
       module.emitter.emit("on-show-unlocked");
       hasShownUnlockedModal = true;
       playAnimationsRepeat(model);

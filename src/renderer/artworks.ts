@@ -96,10 +96,10 @@ export const ARTWORKS = {
         link: 'https://twitter.com/',
         index: 5,
     },
-    'artwork-7': {
-        name: 'Urban Garden',
+    'snow-man': {
+        name: 'Snow Man',
         artist: 'Artist 7',
-        basePath: '/artworks/story-7/',
+        basePath: '/content/Snow_Man.glb',
         clue: 'Lush greenery in the city next to cultural venues.',
         image: Artwork7Thumbnail,
         artistImage: Artwork7,

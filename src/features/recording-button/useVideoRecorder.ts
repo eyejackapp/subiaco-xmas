@@ -1,9 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'preact/hooks';
 import { RendererApi, RendererEvents } from '../../renderer';
-import LocalKV from '../../utils/indexed-db';
-import { useMount } from '../../hooks/useMount';
 
-const VIDEO_KV_KEY = 'tezos-video';
 
 // THis is a pattern which allows you to expose an API that is only valid when this component is in a certain state.
 // If you check the 'state' key for the type of state you want you'll have access to the rest of the object.
@@ -29,24 +26,11 @@ type RecordedResult = {
 
 export type VideoRecorderResult = NoneResult | RecordingResult | EncodingResult | RecordedResult;
 
-const kv = new LocalKV('refraction', 'store', 1);
-
 export function useVideoRecorder(api: RendererApi | undefined): VideoRecorderResult {
     const [state, setState] = useState<VideoRecorderResult['state']>('none');
     const [recordingProgress, setRecordingProgress] = useState(0);
 
     const [videoBlob, setVideoBlob] = useState<Blob>();
-    // Try load video blob on mount and go directly to 'ready' state.
-    useMount(() => {
-        kv.get(VIDEO_KV_KEY).then((result) => {
-            const videoBytes = result as ArrayBuffer | undefined;
-            if (videoBytes) {
-                setState('ready');
-                const blob = new Blob([videoBytes], { type: 'video/mp4' });
-                setVideoBlob(blob);
-            }
-        });
-    });
 
     // Create and cleanup
     const videoUrl = useMemo(() => {
@@ -77,8 +61,6 @@ export function useVideoRecorder(api: RendererApi | undefined): VideoRecorderRes
         const handleReady = async (blob: RendererEvents['recording-ready']) => {
             if (state !== 'encoding') console.warn(`Recording ready but state not Processing. Instead found ${state}.`);
             setVideoBlob(blob);
-            const arrayBuffer = await blob.arrayBuffer();
-            await kv.set(VIDEO_KV_KEY, arrayBuffer);
             // console.log('Saved to indexed-db');
             // console.log('Ready');
             setState('ready');
@@ -112,7 +94,6 @@ export function useVideoRecorder(api: RendererApi | undefined): VideoRecorderRes
     const handleClear = useCallback(() => {
         setVideoBlob(undefined);
         setState('none');
-        kv.delete(VIDEO_KV_KEY);
     }, []);
 
     const download = useCallback(

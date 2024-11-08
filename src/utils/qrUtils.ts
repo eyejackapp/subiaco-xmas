@@ -5,7 +5,7 @@ export const QR_CODE_LOOKUP = {
     '4': 'santa-sleigh',
     '5': 'santa-selfie',
     '6': 'present-storm',
-    '7': 'artwork-7',
+    '7': 'snow-man',
     '8': 'artwork-8',
 } as const;
 

@@ -3,8 +3,6 @@ import { useContext, useState, useEffect, useCallback, useRef } from 'preact/hoo
 import { RendererApi, initExperienceRenderer } from '../renderer';
 import { createContext, ReactNode } from 'preact/compat';
 import { Object3D } from 'three';
-import { QRProcessEvents } from '../renderer/8thwall/qr-process-pipeline-module';
-import useUrlHash from '../hooks/useUrlHash';
 
 export enum RendererState {
     NONE,
@@ -52,8 +50,6 @@ export const RendererProvider = ({ children }: RendererProviderProps) => {
     const [showArtworkUnlocked, setShowArtworkUnlocked] = useState(false);
 
     const currentModelRef = useRef<Object3D | null>(null); // Track the current model
-
-    // const { handleQRFound } = useUrlHash();
     
     const initExperience = useCallback(async () => {
         const canvasEl = document.getElementById('xr-canvas') as HTMLCanvasElement;

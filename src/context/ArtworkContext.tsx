@@ -4,7 +4,15 @@ import { createContext } from 'preact/compat';
 import { ARTWORKS, ArtworkId, ArtworkModel } from '../renderer/artworks';
 import { useLocalStorageState } from 'ahooks';
 
+export enum ArtworkState {
+  NONE,
+  PLACING,
+  LOADING,
+  VIEWING,
+}
 type ArtworkContextType = {
+  artworkState: ArtworkState;
+  setArtworkState: React.Dispatch<React.SetStateAction<ArtworkState>>;
   currentArtwork: ArtworkId | undefined;
   setCurrentArtwork: React.Dispatch<React.SetStateAction<ArtworkId | undefined>>;
   viewedArtworks: ArtworkId[] | undefined;
@@ -13,6 +21,8 @@ type ArtworkContextType = {
 };
 
 export const ArtworkContext = createContext<ArtworkContextType>({
+  artworkState: ArtworkState.NONE,
+  setArtworkState: () => { },
   currentArtworkModel: undefined,
   viewedArtworks: [],
   setCurrentArtwork: () => { },
@@ -22,7 +32,8 @@ export const ArtworkContext = createContext<ArtworkContextType>({
 
 export const ArtworkProvider = ({ children }) => {
   const [currentArtwork, setCurrentArtwork] = useState<ArtworkId | undefined>(undefined);
-  console.log('current artwork', currentArtwork)
+  const [artworkState, setArtworkState] = useState<ArtworkState>(ArtworkState.NONE);
+
   const currentArtworkModel = useMemo(() => {
     return currentArtwork ? ARTWORKS[currentArtwork] : undefined;
   }, [currentArtwork]);
@@ -43,25 +54,27 @@ export const ArtworkProvider = ({ children }) => {
   // const [showArtworkClue, setShowArtworkClue] = useState(false);
   // const [showArtworkUnlocked, setShowArtworkUnlocked] = useState(false);
   console.log('viewed artworks', viewedArtworks)
-// }
+  // }
 
-return (
-  <ArtworkContext.Provider
-    value={{
-      currentArtwork,
-      setCurrentArtwork,
-      currentArtworkModel,
-      viewedArtworks,
-      setViewedArtworks,
-      // tappedArtwork,
-      // setTappedArtwork,
-      // showArtworkClue,
-      // setShowArtworkClue,
-      // showArtworkUnlocked,
-      // setShowArtworkUnlocked,
-    }}
-  >
-    {children}
-  </ArtworkContext.Provider>
-);
+  return (
+    <ArtworkContext.Provider
+      value={{
+        artworkState,
+        setArtworkState,
+        currentArtwork,
+        setCurrentArtwork,
+        currentArtworkModel,
+        viewedArtworks,
+        setViewedArtworks,
+        // tappedArtwork,
+        // setTappedArtwork,
+        // showArtworkClue,
+        // setShowArtworkClue,
+        // showArtworkUnlocked,
+        // setShowArtworkUnlocked,
+      }}
+    >
+      {children}
+    </ArtworkContext.Provider>
+  );
 };

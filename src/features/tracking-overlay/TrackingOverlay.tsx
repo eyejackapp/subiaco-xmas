@@ -4,6 +4,8 @@ import { GroundDetectionImg } from './GroundDetectionImg';
 import clsx from 'clsx';
 import { useRenderer } from '@/hooks/useRenderer';
 import { useMount } from '@/hooks/useMount';
+import { useArtwork } from '@/hooks/useArtwork';
+import { ArtworkState } from '@/context/ArtworkContext';
 
 type TrackingOverlayProps = {
     onStatusNormal: () => void;
@@ -12,11 +14,15 @@ type TrackingOverlayProps = {
 export const TrackingOverlay = memo(function TrackingOverlay({ onStatusNormal }: TrackingOverlayProps) {
     const [uiStatus, setUiStatus] = useState('LIMITED');
     const { trackingStatus } = useRenderer();
+    const {setArtworkState} = useArtwork();
+
     useMount(() => {
         setUiStatus(trackingStatus)
         const timeout = setTimeout(() => {
             if (trackingStatus === 'LIMITED') {
                 setUiStatus('NORMAL');
+                setArtworkState(ArtworkState.LOADING);
+                onStatusNormal();
             }
         }, 5000);
 
@@ -24,12 +30,6 @@ export const TrackingOverlay = memo(function TrackingOverlay({ onStatusNormal }:
             clearTimeout(timeout);
         };
     });
-
-    useEffect(() => {
-       if (uiStatus === 'NORMAL') onStatusNormal()
-    }, [onStatusNormal, uiStatus])
-
-    console.log('tracking overlay', trackingStatus, uiStatus)
 
     return (
         <>
