@@ -4,10 +4,12 @@ import { ARTWORKS_LENGTH } from '../../renderer/artworks';
 import clsx from 'clsx';
 import { HeaderBody } from './HeaderBody';
 import { useArtwork } from '@/hooks/useArtwork';
+import UserForm from '@/components/UserForm';
 
 
 export const Header = memo(function Header() {
   const [isHeaderOpen, setIsHeaderOpen] = useState(false);
+  const [isSurveyOpen, setIsSurveyOpen] = useState(false);
 
     const { viewedArtworks } = useArtwork();
 
@@ -16,6 +18,10 @@ export const Header = memo(function Header() {
     const onToggleHeader = useCallback(() => {
         setIsHeaderOpen((isOpen) => !isOpen);
         // if (!isHeaderOpen) setShowArtworkClue(false);
+    }, []);
+
+    const onSurveyOpen = useCallback(() => {
+        setIsSurveyOpen(true);
     }, []);
 
 
@@ -80,6 +86,7 @@ export const Header = memo(function Header() {
                     </div>
                 </FadeTransition>
             )} */}
+            {isSurveyOpen && <div className="fixed top-0 w-full h-full z-[100] bg-black flex items-center justify-center"><UserForm /></div>}
 
             <div
                 ref={scrollElement}
@@ -90,6 +97,7 @@ export const Header = memo(function Header() {
             >
                 <HeaderBody
                     onToggleHeader={onToggleHeader}
+                    onSurveyOpen={onSurveyOpen}
                 />
             </div>
         </div>

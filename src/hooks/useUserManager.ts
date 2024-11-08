@@ -1,3 +1,4 @@
+import { useLocalStorageState } from "ahooks";
 import { useState } from "preact/hooks";
 
 interface UserData {
@@ -28,7 +29,6 @@ function useUserManager() {
 
   const [message, setMessage] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
-  const [updating, setUpdating] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
   const addUser = async (userData: Omit<UserData, "id">) => {
@@ -56,7 +56,7 @@ function useUserManager() {
   };
 
   const updateUserEmail = async (email: string) => {
-    setUpdating(true);
+    setLoading(true);
     setError(null);
     try {
       const response = await fetch(API_URL, {
@@ -75,7 +75,7 @@ function useUserManager() {
       setError("Failed to update user email");
       console.error("Error updating user email:", err);
     } finally {
-      setUpdating(false);
+      setLoading(false);
     }
   };
 
@@ -83,7 +83,7 @@ function useUserManager() {
     try {
       const response = await fetch(API_URL);
       const data = await response.json();
-      return data.submissionsCount > 1;
+      return data.submissionsCount > 300;
     } catch (error) {
       console.error("Error fetching submission limit:", error);
       return;
@@ -97,7 +97,6 @@ function useUserManager() {
     loading,
     error,
     userId,
-    updating,
     hasHitSubmissionLimit,
   };
 }
