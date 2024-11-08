@@ -18,8 +18,6 @@ type RendererContextType = {
     loadArtwork: (artworkId: string) => Promise<void> | void;
     initExperience: () => Promise<void> | void;
     clearCurrentArtwork: () => void;
-    showArtworkUnlocked: boolean;
-    setShowArtworkUnlocked: (value: boolean) => void;
 };
 
 export const RendererContext = createContext<RendererContextType>({
@@ -30,8 +28,6 @@ export const RendererContext = createContext<RendererContextType>({
     initExperience: () => { },
     loadArtwork: (artworkId: string) => { },
     clearCurrentArtwork: () => { },
-    showArtworkUnlocked: false,
-    setShowArtworkUnlocked: (value: boolean) => { },
 });
 
 export const useRenderer = () => {
@@ -47,7 +43,6 @@ export const RendererProvider = ({ children }: RendererProviderProps) => {
     const [renderer, setRenderer] = useState<RendererApi | null>(null);
     const [rendererState, setRendererState] = useState(RendererState.NONE);
     const [trackingStatus, setTrackingStatus] = useState<'LIMITED' | 'NORMAL'>('LIMITED');
-    const [showArtworkUnlocked, setShowArtworkUnlocked] = useState(false);
 
     const currentModelRef = useRef<Object3D | null>(null); // Track the current model
     
@@ -61,7 +56,6 @@ export const RendererProvider = ({ children }: RendererProviderProps) => {
     }, [])
 
     const clearCurrentArtwork = useCallback(() => {
-        console.log('clearCurrentArtwork');
         if (currentModelRef.current) {
             // currentModelRef.current.traverse((object) => {
             //     if (object.isMesh) {
@@ -112,18 +106,13 @@ export const RendererProvider = ({ children }: RendererProviderProps) => {
         //     handleQRFound(model)
         // }
 
-        const handleUnlocked = () => {
-            setShowArtworkUnlocked(true);
-        }
+      
 
-        renderer.on('on-show-unlocked', handleUnlocked)
         renderer.on('content-loaded', handleLoaded);
         renderer.on('tracking-status', handleTrackingStatus);
-        // renderer.on('qr-scan-result', handleQR);
         return () => {
             renderer.off('content-loaded', handleLoaded);
             renderer.off('tracking-status', handleTrackingStatus);
-            // renderer.off('qr-scan-result', handleQR);
         };
     }, [renderer, clearCurrentArtwork]);
 
@@ -137,8 +126,6 @@ export const RendererProvider = ({ children }: RendererProviderProps) => {
                 initExperience,
                 loadArtwork,
                 clearCurrentArtwork,
-                showArtworkUnlocked,
-                setShowArtworkUnlocked
             }}
         >
             {children}

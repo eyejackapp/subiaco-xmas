@@ -60,7 +60,7 @@ export function init3dExperience(
     let hasShownUnlockedModal = false;
     mixer.addEventListener("finished", (event) => {
       if (hasShownUnlockedModal) return;
-      module.emitter.emit("on-show-unlocked");
+      module.emitter.emit("on-animation-loop");
       hasShownUnlockedModal = true;
       playAnimationsRepeat(model);
     });

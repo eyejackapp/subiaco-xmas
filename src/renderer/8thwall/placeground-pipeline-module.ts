@@ -26,7 +26,7 @@ export type PlaceGround3dEvents = {
     trackingStatus: string;
     'tracking-status': 'LIMITED' | 'NORMAL';
     'on-camera-down': boolean;
-    'on-show-unlocked': void;
+    'on-animation-loop': void;
 };
 
 const emitter = mitt<PlaceGround3dEvents>();

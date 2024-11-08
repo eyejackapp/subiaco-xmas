@@ -1,4 +1,4 @@
-import { useCallback, useState, useErrorBoundary, useEffect, useMemo } from "preact/hooks";
+import { useCallback, useState, useErrorBoundary, useEffect } from "preact/hooks";
 import Splash from "./features/splash";
 import { FadeTransition } from "./components/Transitions";
 import ErrorPage from "./features/error";
@@ -13,7 +13,6 @@ import Header from "./features/header";
 import { ArtworkId } from "./renderer/artworks";
 import { ModalOverlay } from "./components/Modal/ModalOverlay";
 import { Modal } from "./components/Modal/Modal";
-import { QRProcessEvents } from "./renderer/8thwall/qr-process-pipeline-module";
 import { useArtwork } from "./hooks/useArtwork";
 import { ArtworkState } from "./context/ArtworkContext";
 import { RecordingButton, useVideoRecorder } from "./features/recording-button";
@@ -23,11 +22,10 @@ export function App() {
   const [loadingArtwork, setLoadingArtwork] = useState(false);
 
   const { appState, setAppState } = useAppState();
-  const { renderer, initExperience, loadArtwork, showArtworkUnlocked, setShowArtworkUnlocked, clearCurrentArtwork } = useRenderer();
-  const { artworkState, setArtworkState, setCurrentArtwork, currentArtwork } = useArtwork();
-  const recordingState = useVideoRecorder(renderer);
+  const { renderer, initExperience, loadArtwork, clearCurrentArtwork } = useRenderer();
+  const { artworkState, setArtworkState, setCurrentArtwork, currentArtwork, tappedArtwork, showArtworkUnlocked, setShowArtworkUnlocked, } = useArtwork();
+  const recordingState = useVideoRecorder(renderer!);
 
-  // hash change handling
   const handleHashChange = useCallback(() => {
     clearCurrentArtwork();
     setArtworkState(ArtworkState.PLACING);
@@ -35,14 +33,17 @@ export function App() {
 
   const { hash, handleQRFound } = useUrlHash(handleHashChange);
 
+  const artworkToShow = tappedArtwork || currentArtwork;
+
   useEffect(() => {
     if (!renderer) return;
-    const onQRScan = (event: QRProcessEvents['qr-scan-result']) => handleQRFound(event);
-    renderer.on('qr-scan-result', onQRScan);
+    renderer.on('qr-scan-result', handleQRFound);
+    renderer.on('on-animation-loop', () => setShowArtworkUnlocked(true));
     return () => {
-      renderer.off('qr-scan-result', onQRScan);
+      renderer.off('qr-scan-result', handleQRFound);
+      renderer.off('on-animation-loop', () => setShowArtworkUnlocked(true));
     };
-  }, [renderer, handleQRFound]);
+  }, [renderer, handleQRFound, setShowArtworkUnlocked]);
 
 
   const handleInitExperience = useCallback(async () => {
@@ -56,19 +57,27 @@ export function App() {
     } catch (error) {
       console.error("Failed to initialize experience:", error);
     }
-  }, [initExperience]);
+  }, [initExperience, setAppState, setArtworkState]);
 
   const handleLoadArtwork = useCallback(async () => {
     setLoadingArtwork(true);
     const artworkId = getArtworkIdFromCode(hash) as ArtworkId;
-    console.log("Load artwork:", hash, artworkId);
     if (!artworkId) {
-      throw new Error(`Hash is not valid: ${hash}`);
+      console.error(`Invalid artwork hash: ${hash}`);
+      setLoadingArtwork(false);
+      return;
     }
-    await loadArtwork(artworkId);
-    setLoadingArtwork(false);
-    setCurrentArtwork(artworkId)
-    setArtworkState(ArtworkState.VIEWING);
+
+    try {
+      console.log("Loading artwork:", artworkId);
+      await loadArtwork(artworkId);
+      setCurrentArtwork(artworkId);
+      setArtworkState(ArtworkState.VIEWING);
+    } catch (error) {
+      console.error("Failed to load artwork:", error);
+    } finally {
+      setLoadingArtwork(false);
+    }
   }, [loadArtwork, hash, setLoadingArtwork, setCurrentArtwork, setArtworkState]);
 
 
@@ -87,7 +96,7 @@ export function App() {
     artworkState === ArtworkState.VIEWING;
 
   const [error] = useErrorBoundary();
-
+  console.log('app')
   /**
    * JSX
   */
@@ -105,17 +114,17 @@ export function App() {
       </FadeTransition>
       <FadeTransition show={appState === AppState.ARTWORK_VIEWING}>
         <div className="h-full w-full">
-          {artworkState === ArtworkState.PLACING &&
+          {artworkState === ArtworkState.PLACING && (
             <TrackingOverlay onStatusNormal={handleLoadArtwork} />
-          }
+          )}
           {
-            loadingArtwork && artworkState === ArtworkState.LOADING &&
-            <div className="bg-black bg-opacity-75 h-full w-full">
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2">
-                <Spinner />
+            loadingArtwork && artworkState === ArtworkState.LOADING && (
+              <div className="bg-black bg-opacity-75 h-full w-full">
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2">
+                  <Spinner />
+                </div>
               </div>
-            </div>
-          }
+            )}
         </div>
       </FadeTransition>
       <FadeTransition show={appState !== AppState.SPLASH}>
@@ -129,7 +138,7 @@ export function App() {
             <Modal className="centered h-fit bg-[#EA81A4] px-8 py-16 flex justify-center items-center">
               <div className="flex flex-col items-center justify-center gap-8">
                 <h2 className="text-3xl font-bold text-center">Artwork Unlocked!</h2>
-                <h3>Artwork: {currentArtwork}</h3>
+                <h3>Artwork: {artworkToShow}</h3>
                 <button
                   className="mt-4 px-4 py-2 border-white border-2 max-w-[230px] w-full text-white rounded"
                   onClick={() => setShowArtworkUnlocked(false)}
@@ -142,7 +151,7 @@ export function App() {
         </div>
       </FadeTransition>
 
-      <FadeTransition show={appState === AppState.ARTWORK_VIEWING} duration={500}>
+      <FadeTransition show={appState === AppState.ARTWORK_VIEWING && artworkState === ArtworkState.VIEWING} duration={500}>
         <div className="flex fixed bottom-4 left-1/2 justify-center items-center w-full h-full -translate-x-1/2 max-w-[94px] max-h-[94px] z-[1]">
           <RecordingButton recordingState={recordingState} />
         </div>

@@ -1,14 +1,15 @@
 import { useCallback, useEffect, useRef, useState } from 'preact/hooks';
+import { memo } from 'preact/compat';
 import { ARTWORKS_LENGTH } from '../../renderer/artworks';
 import clsx from 'clsx';
 import { HeaderBody } from './HeaderBody';
 import { useArtwork } from '@/hooks/useArtwork';
 
 
-export function Header() {
+export const Header = memo(function Header() {
   const [isHeaderOpen, setIsHeaderOpen] = useState(false);
 
-    const { viewedArtworks, currentArtwork } = useArtwork();
+    const { viewedArtworks } = useArtwork();
 
     const [isPopupOpen, setIsPopupOpen] = useState(false);
 
@@ -84,7 +85,7 @@ export function Header() {
                 ref={scrollElement}
                 className={clsx('header-bar w-full transition-[max-height] duration-500 bg-cb-dark-purple-950', {
                     'max-h-0 overflow-hidden': !isHeaderOpen,
-                    'max-h-[calc(100dvh-112px)] overflow-scroll': isHeaderOpen,
+                    'max-h-[calc(100dvh)] overflow-scroll': isHeaderOpen,
                 })}
             >
                 <HeaderBody
@@ -93,7 +94,7 @@ export function Header() {
             </div>
         </div>
     );
-}
+})
 
 // type InfoModalProps = {
 //     type: 'terms' | 'privacy';

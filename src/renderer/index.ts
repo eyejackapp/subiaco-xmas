@@ -43,7 +43,7 @@ export type RendererEvents = {
   "pause-tracking": void;
   "on-camera-down": boolean;
   "tracking-status": "show" | "hide";
-  "on-show-unlocked": void;
+  "on-animation-loop": void;
 } & PlaceGround3dEvents &
   QRProcessEvents;
 
@@ -89,7 +89,7 @@ export async function initExperienceRenderer(
   moduleEmitter.on("tracking-status", (status: "show" | "hide") => {
     emitter.emit("tracking-status", status);
   });
-  moduleEmitter.on("on-show-unlocked", () => emitter.emit("on-show-unlocked"));
+  moduleEmitter.on("on-animation-loop", () => emitter.emit("on-animation-loop"));
   moduleEmitter.on("content-loaded", () => {
     emitter.emit("content-loaded");
   });

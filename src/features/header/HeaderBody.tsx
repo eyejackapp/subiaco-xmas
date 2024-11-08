@@ -1,7 +1,6 @@
 import clsx from 'clsx';
-import { ARTWORK_ARRAY, ArtworkId, ArtworkModel } from '../../renderer/artworks';
+import { ARTWORK_ARRAY, ArtworkId } from '../../renderer/artworks';
 import QuestionMark from './assets/question.svg';
-import NotificationBar from '../../components/NotificationBar';
 import { useCallback, useState } from 'preact/hooks';
 import { createPortal } from 'preact/compat'
 import { ZoomPanPinch } from '@/components/ZoomPanPinch';
@@ -14,25 +13,7 @@ export type HeaderBodyProps = {
 };
 
 export function HeaderBody({ onToggleHeader }: HeaderBodyProps) {
-    const [tappedArtwork, setTappedArtwork] = useState<ArtworkModel>();
-    const [showArtworkClue, setShowArtworkClue] = useState(false);
     const [isMapOpen, setIsMapOpen] = useState(false);
-
-    const { viewedArtworks } = useArtwork();
-
-    const handleArtworkTap = useCallback(
-        (model: ArtworkModel, artworkId: ArtworkId) => {
-            setTappedArtwork(model);
-            if (viewedArtworks && !viewedArtworks.includes(artworkId)) {
-                setShowArtworkClue(true);
-            } else {
-                // const artwork = Object.entries(QR_CODE_LOOKUP).find(([key, val]) => val === artworkId);
-                // setIsHeaderOpen(false);
-            }
-        },
-        [viewedArtworks],
-
-    )
 
     const onMapVisible = useCallback(() => {
         setIsMapOpen((isOpen) => !isOpen);
@@ -40,21 +21,7 @@ export function HeaderBody({ onToggleHeader }: HeaderBodyProps) {
 
     return (
         <div className="w-full bg-cb-dark-purple-950 relative">
-            {showArtworkClue && tappedArtwork && (
-                <NotificationBar
-                    className={
-                        'relative w-full top-0 animate-slide-down-fade z-10 bg-cb-dark-purple-950 border-b-[0.5px] border-b-cb-iron-300 border-opacity-50'
-                    }
-                >
-                    <p className="py-4 px-5 font-light text-sm animate-fade-in">
-                        <span className="font-bold">Clue {tappedArtwork.index + 1}: </span>
-                        {tappedArtwork.clue}
-                    </p>
-                </NotificationBar>
-            )}
-            <ArtworkList
-                onArtworkTapped={handleArtworkTap}
-            />
+            <ArtworkList />
             <span className="block bg-[#424242] h-[1px] w-full"></span>
             <Map onMapVisible={onMapVisible} />
             {isMapOpen && createPortal(
@@ -129,15 +96,24 @@ export function HeaderBody({ onToggleHeader }: HeaderBodyProps) {
     );
 }
 
-type ArtworkListProps = {
-    onArtworkTapped: (model: ArtworkModel, artworkId: ArtworkId) => void;
-};
-function ArtworkList({ onArtworkTapped }: ArtworkListProps) {
-    const { viewedArtworks, currentArtwork } = useArtwork();
+
+function ArtworkList() {
+    const { viewedArtworks, currentArtwork, setTappedArtwork, setShowArtworkUnlocked } = useArtwork();
+
+    const handleArtworkTap = useCallback(
+        (artworkId: ArtworkId) => {
+            console.log('artworkId', artworkId);
+            setTappedArtwork(artworkId);
+            if (viewedArtworks && viewedArtworks.includes(artworkId)) {
+                setShowArtworkUnlocked(true);
+            }
+        },
+        [setShowArtworkUnlocked, setTappedArtwork, viewedArtworks],
+    );
     return (
         <div className="artwork-bg flex sm:gap-9 gap-7 sm:p-8 p-5 flex-wrap">
             {ARTWORK_ARRAY.map((model, index) => {
-                const isViewed = viewedArtworks.includes(model.artworkId);
+                const isViewed = viewedArtworks?.includes(model.artworkId);
                 const isCurrent = currentArtwork === model.artworkId;
                 const paddedArtworkIndex = String(index + 1).padStart(2, '0');
                 return (
@@ -152,7 +128,7 @@ function ArtworkList({ onArtworkTapped }: ArtworkListProps) {
                                 'border-white ': isViewed,
                             },
                         )}
-                        onClick={() => onArtworkTapped(model, model.artworkId)}
+                        onClick={() => handleArtworkTap(model.artworkId)}
                         data-before-content={paddedArtworkIndex}
                     >
                         <div

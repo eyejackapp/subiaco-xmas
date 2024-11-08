@@ -17,7 +17,12 @@ type ArtworkContextType = {
   setCurrentArtwork: React.Dispatch<React.SetStateAction<ArtworkId | undefined>>;
   viewedArtworks: ArtworkId[] | undefined;
   setViewedArtworks: React.Dispatch<React.SetStateAction<ArtworkId[] | undefined>>;
-  currentArtworkModel: ArtworkModel | undefined
+  currentArtworkModel: ArtworkModel | undefined;
+  tappedArtwork: ArtworkId | null;
+  setTappedArtwork: (artwork: ArtworkId | null) => void;
+  showArtworkUnlocked: boolean;
+  setShowArtworkUnlocked: (value: boolean) => void;
+
 };
 
 export const ArtworkContext = createContext<ArtworkContextType>({
@@ -28,11 +33,16 @@ export const ArtworkContext = createContext<ArtworkContextType>({
   setCurrentArtwork: () => { },
   setViewedArtworks: () => { },
   currentArtwork: undefined,
+  tappedArtwork: null,
+  setTappedArtwork: () => { },
+  showArtworkUnlocked: false,
+  setShowArtworkUnlocked: () => { },
 });
 
 export const ArtworkProvider = ({ children }) => {
   const [currentArtwork, setCurrentArtwork] = useState<ArtworkId | undefined>(undefined);
   const [artworkState, setArtworkState] = useState<ArtworkState>(ArtworkState.NONE);
+  const [showArtworkUnlocked, setShowArtworkUnlocked] = useState(false);
 
   const currentArtworkModel = useMemo(() => {
     return currentArtwork ? ARTWORKS[currentArtwork] : undefined;
@@ -50,7 +60,8 @@ export const ArtworkProvider = ({ children }) => {
     }
   }, [currentArtwork, viewedArtworks, setViewedArtworks]);
 
-  // const [tappedArtwork, setTappedArtwork] = useState(null);
+  const [tappedArtwork, setTappedArtwork] = useState<ArtworkId | null>(null);
+
   // const [showArtworkClue, setShowArtworkClue] = useState(false);
   // const [showArtworkUnlocked, setShowArtworkUnlocked] = useState(false);
   // }
@@ -65,8 +76,10 @@ export const ArtworkProvider = ({ children }) => {
         currentArtworkModel,
         viewedArtworks,
         setViewedArtworks,
-        // tappedArtwork,
-        // setTappedArtwork,
+        tappedArtwork,
+        setTappedArtwork,
+        showArtworkUnlocked,
+        setShowArtworkUnlocked,
         // showArtworkClue,
         // setShowArtworkClue,
         // showArtworkUnlocked,
