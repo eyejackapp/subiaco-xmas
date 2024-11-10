@@ -7,6 +7,7 @@ import { ZoomPanPinch } from '@/components/ZoomPanPinch';
 import { MapViewer } from './MapViewer';
 import { useArtwork } from '@/hooks/useArtwork';
 import UserForm from '@/components/UserForm';
+import useUserManager from '@/hooks/useUserManager';
 
 export type HeaderBodyProps = {
     onToggleHeader: () => void;
@@ -23,6 +24,7 @@ export function HeaderBody({ onToggleHeader, onSurveyOpen }: HeaderBodyProps) {
     }, [setIsMapOpen]);
 
     const canClaimPrize = viewedArtworks && viewedArtworks.length >= 3;
+    const { savedFormData } = useUserManager();
 
     return (
         <div className="w-full bg-cb-dark-purple-950 relative">
@@ -68,7 +70,7 @@ export function HeaderBody({ onToggleHeader, onSurveyOpen }: HeaderBodyProps) {
             <span className="block bg-[#424242] h-[1px] w-full"></span>
             <div className="w-full flex flex-col gap-4 justify-center items-center">
                 <h2 className="text-base font-bold px-5 pt-5">{canClaimPrize ? 'You have unlocked all 7!' : 'Unlock all 7 for your chance to win'}</h2>
-                <button onClick={onSurveyOpen} className="border-2 border-white max-w-[200px] w-full px-2 py-4 rounded-md disabled:bg-gray-400" disabled={!canClaimPrize}>Claim your prize</button>
+                <button onClick={onSurveyOpen} className="border-2 border-white max-w-[200px] w-full px-2 py-4 rounded-md disabled:bg-gray-400" disabled={!canClaimPrize}>{savedFormData ? 'Update Details' : 'Claim your prize'}</button>
             </div>
             <Instructions />
             {/* <FAQs /> */}

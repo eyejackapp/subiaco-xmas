@@ -27,6 +27,11 @@ function useUserManager() {
     }
   });
 
+  const [savedFormData, setSavedFormData] =
+    useLocalStorageState<UserData | null>("formData", {
+      defaultValue: undefined
+    });
+
   const [message, setMessage] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
@@ -38,7 +43,7 @@ function useUserManager() {
       const response = await fetch(API_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        mode: 'no-cors',
+        mode: "no-cors",
         body: JSON.stringify({
           action: "addUser",
           id: userId,
@@ -47,6 +52,7 @@ function useUserManager() {
       });
       await response.text();
       setMessage("Success");
+      setSavedFormData(userData as UserData); // Save data locally
     } catch (err) {
       setError("Failed to add user");
       console.error("Error adding user:", err);
@@ -62,7 +68,7 @@ function useUserManager() {
       const response = await fetch(API_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        mode: 'no-cors',
+        mode: "no-cors",
         body: JSON.stringify({
           action: "updateEmail",
           id: userId,
@@ -71,6 +77,9 @@ function useUserManager() {
       });
       await response.text();
       setMessage("Updated email");
+      if (savedFormData) {
+        setSavedFormData({ ...savedFormData, emailAddress: email });
+      }
     } catch (err) {
       setError("Failed to update user email");
       console.error("Error updating user email:", err);
@@ -86,13 +95,15 @@ function useUserManager() {
       return data.submissionsCount > 300;
     } catch (error) {
       console.error("Error fetching submission limit:", error);
-      return;
-    } 
+      return false;
+    }
   };
 
   return {
     addUser,
     updateUserEmail,
+    savedFormData,
+    setSavedFormData,
     message,
     loading,
     error,

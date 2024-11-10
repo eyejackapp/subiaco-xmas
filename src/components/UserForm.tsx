@@ -25,6 +25,7 @@ export const UserForm = () => {
     error,
     updateUserEmail,
     hasHitSubmissionLimit,
+    savedFormData
   } = useUserManager();
   const [limitReached, setLimitReached] = useState<boolean>(false);
   const [loadingForm, setLoadingForm] = useState(false);
@@ -44,10 +45,11 @@ export const UserForm = () => {
 
     return formatter.format(now);
   };
-  const [savedFormData, setSavedFormData] =
-    useLocalStorageState<UserFormData | null>("formData", {
-      defaultValue: undefined
-    });
+
+  // const [savedFormData, setSavedFormData] =
+  //   useLocalStorageState<UserFormData | null>("formData", {
+  //     defaultValue: undefined
+  //   });
 
     const [formData, setFormData] = useState<UserFormData>(() => {
     return savedFormData
@@ -80,7 +82,6 @@ export const UserForm = () => {
     } else {
       await addUser(formData);
     }
-    setSavedFormData(formData);
   };
 
   const handleUpdateData = async () => {
@@ -108,7 +109,7 @@ export const UserForm = () => {
   if (loadingForm) {
     return (
       <FadeTransition show={loadingForm}>
-        <div className="absolute inset-0 z-10 rounded-lg bg-red-500">
+        <div className="absolute inset-0 z-10 bg-gray-500">
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2">
             <Spinner />
           </div>
