@@ -10,6 +10,10 @@ import {
   Vector3,
   LoopOnce,
   LoopRepeat,
+  Raycaster,
+  Vector2,
+  PlaneGeometry,
+  ShadowMaterial,
 } from "three";
 import { Mesh, Object3D, Clock } from "three";
 import { GLTFLoader } from "three/examples/jsm/Addons.js";
@@ -24,8 +28,38 @@ export function init3dExperience(
   audio: Audio
 ) {
   let mixer: AnimationMixer;
+  let model: any;
 
   const clock = new Clock(true);
+  const raycaster = new Raycaster();
+  const tapPosition = new Vector2();
+
+  const surface = new Mesh(
+    new PlaneGeometry(100, 100, 1, 1),
+    new ShadowMaterial({
+      opacity: 0.5,
+    })
+  );
+
+  surface.rotateX(-Math.PI / 2);
+  surface.position.set(0, 0, 0);
+  surface.receiveShadow = true;
+  scene.add(surface);
+
+  module.emitter.on("place-object", (e) => {
+      tapPosition.x = (e.touches[0].clientX / window.innerWidth) * 2 - 1;
+      tapPosition.y = -(e.touches[0].clientY / window.innerHeight) * 2 + 1;
+
+      raycaster.setFromCamera(tapPosition, _camera);
+
+      const intersects = raycaster.intersectObject(surface);
+
+      if (intersects.length === 1 && intersects[0].object === surface) {
+        if (!model.scene.children[0]) return;
+        model.scene.children[0].position.set(intersects[0].point.x, 0, intersects[0].point.z);
+      }
+  });
+
   // const audioElement = document.getElementById(
   //     'ejx-audio',
   // ) as HTMLAudioElement;
@@ -35,7 +69,7 @@ export function init3dExperience(
 
   const loadArtwork = async (artworkData: ArtworkModel) => {
     const loader = new GLTFLoader();
-    const model = await loader.loadAsync(artworkData.basePath, (progress) => {
+    model = await loader.loadAsync(artworkData.basePath, (progress) => {
       module.emitter.emit("content-load-progress", {
         progress: progress.loaded,
         total: progress.total,
@@ -85,7 +119,7 @@ export function init3dExperience(
     // audioElement.oncanplay = () => {
     //     audioElement.play();
 
-    XR8.XrController.recenter()
+    XR8.XrController.recenter();
     contentContainer.add(model.scene);
     // };
 
