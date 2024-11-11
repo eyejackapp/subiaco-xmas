@@ -19,15 +19,20 @@ import { RecordingButton, useVideoRecorder } from "./features/recording-button";
 import MediaPreview from "./features/media-preview";
 import { useLocalStorageState } from "ahooks";
 import { OnboardingModals } from "./features/onboarding";
+import { c } from "vite/dist/node/types.d-aGj9QkWt";
+
+const MAX_ARTWORKS = 8;
 
 export function App() {
   const [loadingArtwork, setLoadingArtwork] = useState(false);
   const [showCongratsModal, setShowCongratsModal] = useState(false);
   const [hasViewedOnboarding, setHasViewedOnboarding] = useLocalStorageState('hasViewedOnboarding', { defaultValue: false });
+  const [hasViewedCongrats, setHasViewedCongrats] = useLocalStorageState('hasViewedCongrats', { defaultValue: false });
+  const [shouldShowArtworkUnlocked, setShouldShowArtworkUnlocked] = useState(false);
 
   const { appState, setAppState, setIsSurveyOpen, showThankYouModal, setShowThankYouModal } = useAppState();
   const { renderer, initExperience, loadArtwork, clearCurrentArtwork } = useRenderer();
-  const { artworkState, setArtworkState, setCurrentArtwork, currentArtwork, tappedArtwork, showArtworkUnlocked, setShowArtworkUnlocked, viewedArtworks } = useArtwork();
+  const { artworkState, setArtworkState, setCurrentArtwork, currentArtwork, tappedArtwork, showArtworkUnlocked, setShowArtworkUnlocked, viewedArtworks, setViewedArtworks } = useArtwork();
   const recordingState = useVideoRecorder(renderer!);
 
   const handleHashChange = useCallback(() => {
@@ -41,19 +46,24 @@ export function App() {
 
   useEffect(() => {
     if (!renderer) return;
+    const handleShowingArtworkUnlockedModal = () => {
+      if (shouldShowArtworkUnlocked) {
+        setShowArtworkUnlocked(true)
+      }
+    }
+
     renderer.on('qr-scan-result', handleQRFound);
-    renderer.on('on-animation-loop', () => setShowArtworkUnlocked(true));
+    renderer.on('on-animation-loop', handleShowingArtworkUnlockedModal);
     return () => {
       renderer.off('qr-scan-result', handleQRFound);
-      renderer.off('on-animation-loop', () => setShowArtworkUnlocked(true));
+      renderer.off('on-animation-loop', handleShowingArtworkUnlockedModal);
     };
-  }, [renderer, handleQRFound, setShowArtworkUnlocked]);
+  }, [renderer, handleQRFound, setShowArtworkUnlocked, shouldShowArtworkUnlocked]);
 
 
   const handleInitExperience = useCallback(async () => {
     try {
       await initExperience();
-      // const hasViewedOnboarding = true;
       setAppState(
         hasViewedOnboarding ? AppState.ARTWORK_VIEWING : AppState.ONBOARDING
       );
@@ -77,12 +87,17 @@ export function App() {
       await loadArtwork(artworkId);
       setCurrentArtwork(artworkId);
       setArtworkState(ArtworkState.VIEWING);
+
+      if (!viewedArtworks?.includes(artworkId)) {
+        setViewedArtworks([...viewedArtworks!, artworkId]);
+        setShouldShowArtworkUnlocked(true);
+      }
     } catch (error) {
       console.error("Failed to load artwork:", error);
     } finally {
       setLoadingArtwork(false);
     }
-  }, [loadArtwork, hash, setLoadingArtwork, setCurrentArtwork, setArtworkState]);
+  }, [loadArtwork, hash, setLoadingArtwork, setCurrentArtwork, setArtworkState, viewedArtworks, setViewedArtworks]);
 
 
   const onVideoCleared = useCallback(() => {
@@ -101,15 +116,16 @@ export function App() {
 
   const handleCloseArtworkUnlockedModal = useCallback(() => {
     setShowArtworkUnlocked(false);
-    if (viewedArtworks!.length === 8) {
+    if (viewedArtworks!.length === MAX_ARTWORKS && !hasViewedCongrats) {
       setShowCongratsModal(true);
     }
-  }, [setShowArtworkUnlocked, viewedArtworks]);
+  }, [setShowArtworkUnlocked, viewedArtworks, hasViewedCongrats]);
 
   const handleEnterDetails = useCallback(() => {
     setShowCongratsModal(false);
     setIsSurveyOpen(true);
-  }, [setIsSurveyOpen]);
+    setHasViewedCongrats(true);
+  }, [setIsSurveyOpen, setHasViewedCongrats]);
 
   useMemo(() => {
     return !hasViewedOnboarding ? renderer?.pauseTracking() : renderer?.resumeTracking();
@@ -140,7 +156,7 @@ export function App() {
       </FadeTransition>
       <FadeTransition show={appState === AppState.ONBOARDING} duration={500}>
         <div className="h-full w-full">
-        <OnboardingModals onClose={handleOnboardingClose} />
+          <OnboardingModals onClose={handleOnboardingClose} />
         </div>
       </FadeTransition>
       <FadeTransition show={appState === AppState.ARTWORK_VIEWING}>

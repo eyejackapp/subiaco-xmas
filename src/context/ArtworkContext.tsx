@@ -52,19 +52,7 @@ export const ArtworkProvider = ({ children }) => {
     defaultValue: [],
   });
 
-  useEffect(() => {
-    if (currentArtwork && viewedArtworks) {
-      if (!viewedArtworks.includes(currentArtwork)) {
-        setViewedArtworks([...viewedArtworks, currentArtwork]);
-      }
-    }
-  }, [currentArtwork, viewedArtworks, setViewedArtworks]);
-
   const [tappedArtwork, setTappedArtwork] = useState<ArtworkId | null>(null);
-
-  // const [showArtworkClue, setShowArtworkClue] = useState(false);
-  // const [showArtworkUnlocked, setShowArtworkUnlocked] = useState(false);
-  // }
 
   return (
     <ArtworkContext.Provider
