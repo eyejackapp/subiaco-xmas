@@ -89,7 +89,9 @@ export async function initExperienceRenderer(
   moduleEmitter.on("tracking-status", (status: "show" | "hide") => {
     emitter.emit("tracking-status", status);
   });
-  moduleEmitter.on("on-animation-loop", () => emitter.emit("on-animation-loop"));
+  moduleEmitter.on("on-animation-loop", () =>
+    emitter.emit("on-animation-loop")
+  );
   moduleEmitter.on("content-loaded", () => {
     emitter.emit("content-loaded");
   });
@@ -112,12 +114,6 @@ export async function initExperienceRenderer(
      *
      * @param artworkId - Artwork to load.
      */
-    pauseTracking() {
-      emitter.emit("pause-tracking");
-    },
-    resumeTracking() {
-      emitter.emit("resume-tracking");
-    },
     pauseAudio() {
       if (audio) {
         audio.context.suspend();
@@ -139,6 +135,12 @@ export async function initExperienceRenderer(
         );
       const model = await module3d.loadArtwork(artworkData);
       return model;
+    },
+    pauseTracking() {
+      moduleEmitter.emit("pause-tracking");
+    },
+    resumeTracking() {
+      moduleEmitter.emit("resume-tracking");
     },
 
     // TODO return a promise

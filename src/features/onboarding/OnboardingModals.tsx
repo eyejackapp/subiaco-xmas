@@ -7,7 +7,7 @@ import OnboardingBg from './assets/bg.jpg';
 import OnboardingBg2 from './assets/bg-2.png';
 import ScanImg from './assets/scan.svg';
 import TrackImg from './assets/track.svg';
-import { SliderControlButton } from '../../components/SliderControlButton';
+import { SliderControlButton } from '../../components/Slider/SliderControlButton';
 import Lockup from '../../components/Lockup';
 import LockupSm from './assets/logo-2.png';
 

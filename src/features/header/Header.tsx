@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'preact/hooks';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'preact/hooks';
 import { memo } from 'preact/compat';
 import { ARTWORKS_LENGTH } from '../../renderer/artworks';
 import clsx from 'clsx';
@@ -6,6 +6,7 @@ import { HeaderBody } from './HeaderBody';
 import { useArtwork } from '@/hooks/useArtwork';
 import UserForm from '@/components/UserForm';
 import { useAppState } from '@/hooks/useAppState';
+import { useRenderer } from '@/context/RendererContext';
 
 
 export const Header = () => {
@@ -13,12 +14,18 @@ export const Header = () => {
 
     const { isSurveyOpen } = useAppState();
     const { viewedArtworks } = useArtwork();
+    const { renderer } = useRenderer();
 
     const [isPopupOpen, setIsPopupOpen] = useState(false);
 
     const onToggleHeader = useCallback(() => {
         setIsHeaderOpen((isOpen) => !isOpen);
     }, []);
+
+    useMemo(() => {
+        return isHeaderOpen ? renderer?.pauseTracking() :renderer?.resumeTracking();
+    } ,[isHeaderOpen, renderer]);
+
 
     const scrollElement = useRef<HTMLDivElement>(null);
     useEffect(() => {

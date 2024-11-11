@@ -38,14 +38,13 @@ export type RendererProviderProps = {
     children: ReactNode;
 }
 
-
 export const RendererProvider = ({ children }: RendererProviderProps) => {
     const [renderer, setRenderer] = useState<RendererApi | null>(null);
     const [rendererState, setRendererState] = useState(RendererState.NONE);
     const [trackingStatus, setTrackingStatus] = useState<'LIMITED' | 'NORMAL'>('LIMITED');
 
     const currentModelRef = useRef<Object3D | null>(null); // Track the current model
-    
+
     const initExperience = useCallback(async () => {
         const canvasEl = document.getElementById('xr-canvas') as HTMLCanvasElement;
         if (!canvasEl) throw new Error('No Canvas element.');
@@ -87,10 +86,6 @@ export const RendererProvider = ({ children }: RendererProviderProps) => {
         }
     }, [renderer]);
 
-
-
-
-    // Handle renderer events and update state
     useEffect(() => {
         if (!renderer) return;
 
@@ -101,12 +96,6 @@ export const RendererProvider = ({ children }: RendererProviderProps) => {
         const handleTrackingStatus = (status: 'LIMITED' | 'NORMAL') => {
             setTrackingStatus(status);
         }
-        // const handleQR = (model: QRProcessEvents['qr-scan-result']) => {
-        //     if (model.status === 'none') return;
-        //     handleQRFound(model)
-        // }
-
-      
 
         renderer.on('content-loaded', handleLoaded);
         renderer.on('tracking-status', handleTrackingStatus);

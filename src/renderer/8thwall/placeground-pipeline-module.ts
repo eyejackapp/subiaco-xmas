@@ -28,6 +28,8 @@ export type PlaceGround3dEvents = {
   "on-camera-down": boolean;
   "on-animation-loop": void;
   "place-object": TouchEvent;
+  "pause-tracking": void;
+  "resume-tracking": void;
 };
 
 const emitter = mitt<PlaceGround3dEvents>();

@@ -29,6 +29,7 @@ export function init3dExperience(
 ) {
   let mixer: AnimationMixer;
   let model: any;
+  let pauseRender = true;
 
   const clock = new Clock(true);
   const raycaster = new Raycaster();
@@ -138,7 +139,16 @@ export function init3dExperience(
   const contentContainer = new Object3D();
   scene.add(contentContainer);
 
+  module.emitter.on('resume-tracking', () => {
+    pauseRender = false
+    clock.start()
+  });
+  module.emitter.on('pause-tracking', () => {
+    pauseRender = true});
+    clock.stop();
+
   module.emitter.on("on-update", () => {
+    if (pauseRender) return;
     if (!mixer) {
       return;
     }
