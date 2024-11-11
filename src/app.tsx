@@ -1,4 +1,4 @@
-import { useCallback, useState, useErrorBoundary, useEffect } from "preact/hooks";
+import { useCallback, useState, useErrorBoundary, useEffect, useMemo } from "preact/hooks";
 import Splash from "./features/splash";
 import { FadeTransition } from "./components/Transitions";
 import ErrorPage from "./features/error";
@@ -18,11 +18,12 @@ import { ArtworkState } from "./context/ArtworkContext";
 import { RecordingButton, useVideoRecorder } from "./features/recording-button";
 import MediaPreview from "./features/media-preview";
 import { useLocalStorageState } from "ahooks";
+import { OnboardingModals } from "./features/onboarding";
 
 export function App() {
   const [loadingArtwork, setLoadingArtwork] = useState(false);
   const [showCongratsModal, setShowCongratsModal] = useState(false);
-  const [hasViewedCongrats, setHasViewedCongrats] = useLocalStorageState('hasViewedCongrats', { defaultValue: false });
+  const [hasViewedOnboarding, setHasViewedOnboarding] = useLocalStorageState('hasViewedOnboarding', { defaultValue: false });
 
   const { appState, setAppState, setIsSurveyOpen, showThankYouModal, setShowThankYouModal } = useAppState();
   const { renderer, initExperience, loadArtwork, clearCurrentArtwork } = useRenderer();
@@ -52,7 +53,7 @@ export function App() {
   const handleInitExperience = useCallback(async () => {
     try {
       await initExperience();
-      const hasViewedOnboarding = true;
+      // const hasViewedOnboarding = true;
       setAppState(
         hasViewedOnboarding ? AppState.ARTWORK_VIEWING : AppState.ONBOARDING
       );
@@ -60,7 +61,7 @@ export function App() {
     } catch (error) {
       console.error("Failed to initialize experience:", error);
     }
-  }, [initExperience, setAppState, setArtworkState]);
+  }, [initExperience, setAppState, setArtworkState, hasViewedOnboarding]);
 
   const handleLoadArtwork = useCallback(async () => {
     setLoadingArtwork(true);
@@ -110,6 +111,16 @@ export function App() {
     setIsSurveyOpen(true);
   }, [setIsSurveyOpen]);
 
+  useMemo(() => {
+    return !hasViewedOnboarding ? renderer?.pauseTracking() : renderer?.resumeTracking();
+  }, [hasViewedOnboarding, renderer]);
+
+  const handleOnboardingClose = () => {
+    setHasViewedOnboarding(true);
+    setAppState(AppState.ARTWORK_VIEWING);
+    setArtworkState(ArtworkState.PLACING);
+  }
+
   const [error] = useErrorBoundary();
 
   /**
@@ -125,6 +136,11 @@ export function App() {
       <FadeTransition show={appState === AppState.SPLASH}>
         <div className="h-full w-full">
           <Splash onPermissionsGranted={handleInitExperience} />
+        </div>
+      </FadeTransition>
+      <FadeTransition show={appState === AppState.ONBOARDING} duration={500}>
+        <div className="h-full w-full">
+        <OnboardingModals onClose={handleOnboardingClose} />
         </div>
       </FadeTransition>
       <FadeTransition show={appState === AppState.ARTWORK_VIEWING}>
