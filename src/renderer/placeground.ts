@@ -14,6 +14,8 @@ import {
   Vector2,
   PlaneGeometry,
   ShadowMaterial,
+  MeshStandardMaterial,
+  MeshPhysicalMaterial,
 } from "three";
 import { Mesh, Object3D, Clock } from "three";
 import { GLTFLoader } from "three/examples/jsm/Addons.js";
@@ -48,17 +50,21 @@ export function init3dExperience(
   scene.add(surface);
 
   module.emitter.on("place-object", (e) => {
-      tapPosition.x = (e.touches[0].clientX / window.innerWidth) * 2 - 1;
-      tapPosition.y = -(e.touches[0].clientY / window.innerHeight) * 2 + 1;
+    tapPosition.x = (e.touches[0].clientX / window.innerWidth) * 2 - 1;
+    tapPosition.y = -(e.touches[0].clientY / window.innerHeight) * 2 + 1;
 
-      raycaster.setFromCamera(tapPosition, _camera);
+    raycaster.setFromCamera(tapPosition, _camera);
 
-      const intersects = raycaster.intersectObject(surface);
+    const intersects = raycaster.intersectObject(surface);
 
-      if (intersects.length === 1 && intersects[0].object === surface) {
-        if (!model.scene.children[0]) return;
-        model.scene.children[0].position.set(intersects[0].point.x, 0, intersects[0].point.z);
-      }
+    if (intersects.length === 1 && intersects[0].object === surface) {
+      if (!model.scene.children[0]) return;
+      model.scene.children[0].position.set(
+        intersects[0].point.x,
+        0,
+        intersects[0].point.z
+      );
+    }
   });
 
   // const audioElement = document.getElementById(
@@ -75,12 +81,6 @@ export function init3dExperience(
         progress: progress.loaded,
         total: progress.total,
       });
-    });
-
-    model.scene.traverse((child) => {
-      if ((child as Mesh).isMesh) {
-        child.frustumCulled = false;
-      }
     });
 
     // animate the model
@@ -100,18 +100,40 @@ export function init3dExperience(
       playAnimationsRepeat(model);
     });
 
-    scene.traverse((object) => {
-      object.frustumCulled = false;
-    });
     module.emitter.emit("content-loaded");
-    // model.scene.scale.set(0.001, 0.001, 0.001);
+
     model.scene.scale.set(0.8, 0.8, 0.8);
 
     // const soundFile = model.parser.json.scenes[0].extras;
 
-    model.scene.traverse((child) => {
+    model.scene.traverse((child: Object3D) => {
       if ((child as Mesh).isMesh) {
         child.frustumCulled = false;
+        const mesh = child as Mesh;
+        if (mesh.material) {
+          if (Array.isArray(mesh.material)) {
+            mesh.material.forEach((material) => {
+              if (
+                material instanceof MeshStandardMaterial ||
+                material instanceof MeshPhysicalMaterial
+              ) {
+                material.roughness = 0.3;
+                material.metalness = 0.8;
+                material.needsUpdate = true;
+              }
+            });
+          } else {
+            const material = mesh.material;
+            if (
+              material instanceof MeshStandardMaterial ||
+              material instanceof MeshPhysicalMaterial
+            ) {
+              material.roughness = 0.3;
+              material.metalness = 0.8;
+              material.needsUpdate = true;
+            }
+          }
+        }
       }
     });
 
@@ -139,13 +161,14 @@ export function init3dExperience(
   const contentContainer = new Object3D();
   scene.add(contentContainer);
 
-  module.emitter.on('resume-tracking', () => {
-    pauseRender = false
-    clock.start()
+  module.emitter.on("resume-tracking", () => {
+    pauseRender = false;
+    clock.start();
   });
-  module.emitter.on('pause-tracking', () => {
-    pauseRender = true});
-    clock.stop();
+  module.emitter.on("pause-tracking", () => {
+    pauseRender = true;
+  });
+  clock.stop();
 
   module.emitter.on("on-update", () => {
     if (pauseRender) return;
