@@ -1,5 +1,6 @@
+import { useContext, useState } from "preact/hooks";
+import { createContext } from "preact/compat";
 import { useLocalStorageState } from "ahooks";
-import { useState } from "preact/hooks";
 
 interface UserData {
   id: string;
@@ -15,7 +16,22 @@ interface UserData {
 
 const API_URL = import.meta.env.VITE_GOOGLE_APPS_SCRIPT_URL;
 
-function useUserManager() {
+interface UserFormContextType {
+  userId: string;
+  savedFormData: UserData | null | undefined;
+  setSavedFormData: (data: UserData | undefined | null) => void;
+  message: string | null;
+  loading: boolean;
+  error: string | null;
+  hasSentData: boolean;
+  addUser: (userData: Omit<UserData, "id">) => Promise<void>;
+  updateUserEmail: (email: string) => Promise<void>;
+  hasHitSubmissionLimit: () => Promise<boolean>;
+}
+
+const UserFormContext = createContext<UserFormContextType | null>(null);
+
+export const UserFormProvider = ({ children }: { children: React.ReactNode }) => {
   const [userId, setUserId] = useState<string>(() => {
     const existingId = localStorage.getItem("userId");
     if (existingId) {
@@ -28,13 +44,13 @@ function useUserManager() {
   });
 
   const [savedFormData, setSavedFormData] =
-    useLocalStorageState<UserData | null>("formData", {
-      defaultValue: undefined
-    });
+    useLocalStorageState<UserData | null>("formData", { defaultValue: undefined });
 
   const [message, setMessage] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+
+  const hasSentData = !!savedFormData;
 
   const addUser = async (userData: Omit<UserData, "id">) => {
     setLoading(true);
@@ -52,7 +68,7 @@ function useUserManager() {
       });
       await response.text();
       setMessage("Success");
-      setSavedFormData(userData as UserData); // Save data locally
+      setSavedFormData(userData as UserData);
     } catch (err) {
       setError("Failed to add user");
       console.error("Error adding user:", err);
@@ -99,17 +115,30 @@ function useUserManager() {
     }
   };
 
-  return {
-    addUser,
-    updateUserEmail,
-    savedFormData,
-    setSavedFormData,
-    message,
-    loading,
-    error,
-    userId,
-    hasHitSubmissionLimit,
-  };
-}
+  return (
+    <UserFormContext.Provider
+      value={{
+        userId,
+        savedFormData,
+        setSavedFormData,
+        message,
+        loading,
+        error,
+        hasSentData,
+        addUser,
+        updateUserEmail,
+        hasHitSubmissionLimit,
+      }}
+    >
+      {children}
+    </UserFormContext.Provider>
+  );
+};
 
-export default useUserManager;
+export const useUserForm = () => {
+  const context = useContext(UserFormContext);
+  if (!context) {
+    throw new Error("useUserForm must be used within a UserFormProvider");
+  }
+  return context;
+};

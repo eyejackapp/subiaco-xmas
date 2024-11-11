@@ -5,25 +5,20 @@ import clsx from 'clsx';
 import { HeaderBody } from './HeaderBody';
 import { useArtwork } from '@/hooks/useArtwork';
 import UserForm from '@/components/UserForm';
+import { useAppState } from '@/hooks/useAppState';
 
 
-export const Header = memo(function Header() {
-  const [isHeaderOpen, setIsHeaderOpen] = useState(false);
-  const [isSurveyOpen, setIsSurveyOpen] = useState(false);
+export const Header = () => {
+    const [isHeaderOpen, setIsHeaderOpen] = useState(false);
 
+    const { isSurveyOpen } = useAppState();
     const { viewedArtworks } = useArtwork();
 
     const [isPopupOpen, setIsPopupOpen] = useState(false);
 
     const onToggleHeader = useCallback(() => {
         setIsHeaderOpen((isOpen) => !isOpen);
-        // if (!isHeaderOpen) setShowArtworkClue(false);
     }, []);
-
-    const onSurveyOpen = useCallback(() => {
-        setIsSurveyOpen(true);
-    }, []);
-
 
     const scrollElement = useRef<HTMLDivElement>(null);
     useEffect(() => {
@@ -49,7 +44,7 @@ export const Header = memo(function Header() {
                 onClick={onToggleHeader}
             >
                 <h2 className="-mb-2 text-[18px] font-bold tracking-[1px] leading-none">
-                    <span className="pr-1 text-4xl font-extrabold leading-none">{viewedArtworks.length}</span> OF{' '}
+                    <span className="pr-1 text-4xl font-extrabold leading-none">{viewedArtworks?.length ?? 0}</span> OF{' '}
                     <span className="px-1 text-4xl font-extrabold leading-none">{ARTWORKS_LENGTH}</span> FOUND
                 </h2>
                 <p className="flex items-center -mb-2 font-base tracking-[1px] font-bold">
@@ -97,12 +92,11 @@ export const Header = memo(function Header() {
             >
                 <HeaderBody
                     onToggleHeader={onToggleHeader}
-                    onSurveyOpen={onSurveyOpen}
                 />
             </div>
         </div>
     );
-})
+}
 
 // type InfoModalProps = {
 //     type: 'terms' | 'privacy';

@@ -17,13 +17,16 @@ import { useArtwork } from "./hooks/useArtwork";
 import { ArtworkState } from "./context/ArtworkContext";
 import { RecordingButton, useVideoRecorder } from "./features/recording-button";
 import MediaPreview from "./features/media-preview";
+import { useLocalStorageState } from "ahooks";
 
 export function App() {
   const [loadingArtwork, setLoadingArtwork] = useState(false);
+  const [showCongratsModal, setShowCongratsModal] = useState(false);
+  const [hasViewedCongrats, setHasViewedCongrats] = useLocalStorageState('hasViewedCongrats', { defaultValue: false });
 
-  const { appState, setAppState } = useAppState();
+  const { appState, setAppState, setIsSurveyOpen, showThankYouModal, setShowThankYouModal } = useAppState();
   const { renderer, initExperience, loadArtwork, clearCurrentArtwork } = useRenderer();
-  const { artworkState, setArtworkState, setCurrentArtwork, currentArtwork, tappedArtwork, showArtworkUnlocked, setShowArtworkUnlocked, } = useArtwork();
+  const { artworkState, setArtworkState, setCurrentArtwork, currentArtwork, tappedArtwork, showArtworkUnlocked, setShowArtworkUnlocked, viewedArtworks } = useArtwork();
   const recordingState = useVideoRecorder(renderer!);
 
   const handleHashChange = useCallback(() => {
@@ -95,8 +98,20 @@ export function App() {
     recordingState.state === 'none' &&
     artworkState === ArtworkState.VIEWING;
 
+  const handleCloseArtworkUnlockedModal = useCallback(() => {
+    setShowArtworkUnlocked(false);
+    if (viewedArtworks!.length === 8) {
+      setShowCongratsModal(true);
+    }
+  }, [setShowArtworkUnlocked, viewedArtworks]);
+
+  const handleEnterDetails = useCallback(() => {
+    setShowCongratsModal(false);
+    setIsSurveyOpen(true);
+  }, [setIsSurveyOpen]);
+
   const [error] = useErrorBoundary();
-  console.log('app')
+
   /**
    * JSX
   */
@@ -141,7 +156,7 @@ export function App() {
                 <h3>Artwork: {artworkToShow}</h3>
                 <button
                   className="mt-4 px-4 py-2 border-white border-2 max-w-[230px] w-full text-white rounded"
-                  onClick={() => setShowArtworkUnlocked(false)}
+                  onClick={handleCloseArtworkUnlockedModal}
                 >
                   OK
                 </button>
@@ -160,6 +175,43 @@ export function App() {
       <FadeTransition show={appState === AppState.MEDIA_SHARE}>
         <div className="w-full h-full">
           <MediaPreview recordingState={recordingState} onVideoCleared={onVideoCleared} />
+        </div>
+      </FadeTransition>
+
+
+      <FadeTransition show={showCongratsModal}>
+        <div className="w-full h-full">
+          <ModalOverlay>
+            <Modal className="centered h-fit bg-[#EA81A4] px-8 py-16 flex justify-center items-center">
+              <div className="flex flex-col items-center justify-center gap-8">
+                <h2 className="text-3xl font-bold text-center">CONGRATULATIONS</h2>
+                <button
+                  className="mt-4 px-4 py-2 border-white border-2 max-w-[230px] w-full text-white rounded"
+                  onClick={handleEnterDetails}
+                >
+                  Enter your details
+                </button>
+              </div>
+            </Modal>
+          </ModalOverlay>
+        </div>
+      </FadeTransition>
+
+      <FadeTransition show={showThankYouModal}>
+        <div className="w-full h-full">
+          <ModalOverlay>
+            <Modal className="centered h-fit bg-[#EA81A4] px-8 py-16 flex justify-center items-center">
+              <div className="flex flex-col items-center justify-center gap-8">
+                <h2 className="text-3xl font-bold text-center">THANK YOU!</h2>
+                <button
+                  className="mt-4 px-4 py-2 border-white border-2 max-w-[230px] w-full text-white rounded"
+                  onClick={() => setShowThankYouModal(false)}
+                >
+                  Ok
+                </button>
+              </div>
+            </Modal>
+          </ModalOverlay>
         </div>
       </FadeTransition>
     </div>

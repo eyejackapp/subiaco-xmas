@@ -14,6 +14,10 @@ export enum AppState {
 export type AppStateContext = {
   appState: AppState;
   setAppState: (state: AppState) => void;
+  isSurveyOpen: boolean;
+  setIsSurveyOpen: (isOpen: boolean) => void;
+  showThankYouModal: boolean;
+  setShowThankYouModal: (isOpen: boolean) => void;
 }
 
 export const AppStateContext = createContext<AppStateContext | null>(null);
@@ -23,9 +27,11 @@ export type AppStateProviderProps = {
 }
 export const AppStateProvider = ({ children }: AppStateProviderProps) => {
   const [appState, setAppState] = useState<AppState>(AppState.SPLASH);
+  const [isSurveyOpen, setIsSurveyOpen] = useState(false);
+  const [showThankYouModal, setShowThankYouModal] = useState(false);
 
   return (
-    <AppStateContext.Provider value={{ appState, setAppState }}>
+    <AppStateContext.Provider value={{ appState, setAppState, isSurveyOpen, setIsSurveyOpen, showThankYouModal, setShowThankYouModal }}>
       {children}
     </AppStateContext.Provider>
   );

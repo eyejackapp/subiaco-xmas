@@ -6,6 +6,7 @@ import * as Sentry from '@sentry/react';
 import { AppStateProvider } from './context/AppStateContext.tsx';
 import { RendererProvider } from './context/RendererContext.tsx';
 import { ArtworkProvider } from './context/ArtworkContext.tsx';
+import { UserFormProvider } from './hooks/useUserForm.tsx';
 
 // ReactGA.initialize('G-L0317D6T4W');
 
@@ -16,4 +17,4 @@ import { ArtworkProvider } from './context/ArtworkContext.tsx';
 //     });
 // }
 
-render(<AppStateProvider><RendererProvider><ArtworkProvider><App /></ArtworkProvider></RendererProvider></AppStateProvider>, document.getElementById('app')!);
+render(<AppStateProvider><RendererProvider><ArtworkProvider><UserFormProvider><App /></UserFormProvider></ArtworkProvider></RendererProvider></AppStateProvider>, document.getElementById('app')!);

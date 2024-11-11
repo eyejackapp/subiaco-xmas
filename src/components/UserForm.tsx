@@ -1,10 +1,11 @@
 import { useState } from "preact/hooks";
 import { ChangeEvent, FormEvent } from "preact/compat";
-import useUserManager from "@/hooks/useUserManager";
 import { FadeTransition } from "./Transitions";
 import { Spinner } from "./Spinner";
 import { useLocalStorageState } from "ahooks";
 import { useMount } from "@/hooks/useMount";
+import { useAppState } from "@/hooks/useAppState";
+import { useUserForm } from "@/hooks/useUserForm";
 
 interface UserFormData {
   date: string;
@@ -26,9 +27,11 @@ export const UserForm = () => {
     updateUserEmail,
     hasHitSubmissionLimit,
     savedFormData
-  } = useUserManager();
+  } = useUserForm();
   const [limitReached, setLimitReached] = useState<boolean>(false);
   const [loadingForm, setLoadingForm] = useState(false);
+
+  const { setIsSurveyOpen, setShowThankYouModal } = useAppState();
 
   const getLocalTime = () => {
     const now = new Date();
@@ -46,12 +49,7 @@ export const UserForm = () => {
     return formatter.format(now);
   };
 
-  // const [savedFormData, setSavedFormData] =
-  //   useLocalStorageState<UserFormData | null>("formData", {
-  //     defaultValue: undefined
-  //   });
-
-    const [formData, setFormData] = useState<UserFormData>(() => {
+  const [formData, setFormData] = useState<UserFormData>(() => {
     return savedFormData
       ? savedFormData
       : {
@@ -81,7 +79,9 @@ export const UserForm = () => {
       await handleUpdateData()
     } else {
       await addUser(formData);
+      setShowThankYouModal(true);
     }
+    setIsSurveyOpen(false);
   };
 
   const handleUpdateData = async () => {
@@ -120,6 +120,7 @@ export const UserForm = () => {
 
   return (
     <div className="bg-white p-6 max-w-lg mx-auto rounded-lg shadow-md relative">
+      <button onClick={() => setIsSurveyOpen(false)} className="absolute top-4 right-2 text-black">Close</button>
       <h1 className="text-2xl font-semibold text-gray-800 mb-4">
         {limitReached ? "Different Form" : "User Form"}
       </h1>
