@@ -66,7 +66,7 @@ export const placegroundPipelineModule =
                     },
                 );
 
-                camera.position.set(0, 2, 2);
+                camera.position.set(0, 2, 0);
 
                 emitter.emit('setup', { scene, camera });
 

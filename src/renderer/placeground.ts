@@ -70,7 +70,7 @@ export function init3dExperience(
     });
     module.emitter.emit("content-loaded");
     // model.scene.scale.set(0.001, 0.001, 0.001);
-    model.scene.scale.set(1, 1, 1);
+    model.scene.scale.set(0.8, 0.8, 0.8);
 
     // const soundFile = model.parser.json.scenes[0].extras;
 
@@ -84,6 +84,8 @@ export function init3dExperience(
     // audioElement.load();
     // audioElement.oncanplay = () => {
     //     audioElement.play();
+
+    XR8.XrController.recenter()
     contentContainer.add(model.scene);
     // };
 

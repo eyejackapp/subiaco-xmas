@@ -6,7 +6,7 @@ export const QR_CODE_LOOKUP = {
     '5': 'santa-selfie',
     '6': 'present-storm',
     '7': 'snow-man',
-    '8': 'artwork-8',
+    '8': 'orbs',
 } as const;
 
 const validCodes = Object.keys(QR_CODE_LOOKUP);

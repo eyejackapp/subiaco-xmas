@@ -107,10 +107,10 @@ export const ARTWORKS = {
         link: 'https://twitter.com/',
         index: 6,
     },
-    'artwork-8': {
+    'orbs': {
         name: 'Utopia',
         artist: 'Artist 8',
-        basePath: '/artworks/story-8/',
+        basePath: '/content/Orbs.glb',
         clue: 'A new world at the forecourt.',
         image: Artwork8Thumbnail,
         artistImage: Artwork8,
