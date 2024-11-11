@@ -16,6 +16,9 @@ import {
   ShadowMaterial,
   MeshStandardMaterial,
   MeshPhysicalMaterial,
+  DoubleSide,
+  MeshBasicMaterial,
+  RingGeometry,
 } from "three";
 import { Mesh, Object3D, Clock } from "three";
 import { GLTFLoader } from "three/examples/jsm/Addons.js";
@@ -49,23 +52,47 @@ export function init3dExperience(
   surface.receiveShadow = true;
   scene.add(surface);
 
-  module.emitter.on("place-object", (e) => {
-    tapPosition.x = (e.touches[0].clientX / window.innerWidth) * 2 - 1;
-    tapPosition.y = -(e.touches[0].clientY / window.innerHeight) * 2 + 1;
+  const contentContainer = new Object3D();
+  scene.add(contentContainer);
 
-    raycaster.setFromCamera(tapPosition, _camera);
+  const reticle = new Mesh(
+    new RingGeometry(0.1, 0.2, 32),
+    new MeshBasicMaterial({
+      color: 0xffffff,
+      transparent: true,
+      side: DoubleSide,
+      depthTest: false,
+      depthWrite: false,
+    })
+  );
+  reticle.rotation.x = -Math.PI / 2;
+  reticle.position.set(0, 0, -1);
+  reticle.name = "Reticle";
+  reticle.visible = false;
+  scene.add(reticle);
 
-    const intersects = raycaster.intersectObject(surface);
+module.emitter.on("place-object", (e) => {
+  tapPosition.x = (e.touches[0].clientX / window.innerWidth) * 2 - 1;
+  tapPosition.y = -(e.touches[0].clientY / window.innerHeight) * 2 + 1;
 
-    if (intersects.length === 1 && intersects[0].object === surface) {
-      if (!model.scene.children[0]) return;
-      model.scene.children[0].position.set(
-        intersects[0].point.x,
-        0,
-        intersects[0].point.z
-      );
-    }
-  });
+  raycaster.setFromCamera(tapPosition, _camera);
+
+  const intersects = raycaster.intersectObject(surface);
+
+  if (intersects.length === 1 && intersects[0].object === surface) {
+    if (!model.scene.children[0]) return;
+    reticle.visible = true;
+    reticle.position.copy(intersects[0].point);
+    model.scene.children[0].position.set(
+      intersects[0].point.x,
+      0,
+      intersects[0].point.z
+    );
+  } else {
+    reticle.visible = false;
+  }
+});
+
 
   // const audioElement = document.getElementById(
   //     'ejx-audio',
@@ -144,7 +171,6 @@ export function init3dExperience(
 
     XR8.XrController.recenter();
     contentContainer.add(model.scene);
-    // };
 
     return model.scene;
   };
@@ -157,9 +183,6 @@ export function init3dExperience(
       action.play();
     });
   };
-
-  const contentContainer = new Object3D();
-  scene.add(contentContainer);
 
   module.emitter.on("resume-tracking", () => {
     pauseRender = false;
