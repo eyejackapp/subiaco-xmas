@@ -83,6 +83,9 @@ export function init3dExperience(
   surface.receiveShadow = true;
   scene.add(surface);
 
+  const targetModelPosition = new Vector3();
+  const modelLerpSpeed = 0.25;
+
   const contentContainer = new Object3D();
   scene.add(contentContainer);
 
@@ -129,7 +132,7 @@ export function init3dExperience(
     if (intersects.length === 1 && intersects[0].object === surface) {
       if (!model.scene.children[0]) return;
 
-      model.scene.children[0].position.set(
+      targetModelPosition.set(
         intersects[0].point.x,
         0,
         intersects[0].point.z
@@ -271,6 +274,7 @@ export function init3dExperience(
         }
       }
     }
+    if (model.scene) model.scene.children[0].position.lerp(targetModelPosition, modelLerpSpeed);
 
     const delta = clock.getDelta();
     mixer.update(delta);
