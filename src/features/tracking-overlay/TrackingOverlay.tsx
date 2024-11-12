@@ -11,13 +11,20 @@ type TrackingOverlayProps = {
     onStatusNormal: () => void;
 }
 
-export const TrackingOverlay = memo(function TrackingOverlay({ onStatusNormal }: TrackingOverlayProps) {
-    const [uiStatus, setUiStatus] = useState('LIMITED');
+export const TrackingOverlay = ({ onStatusNormal }: TrackingOverlayProps) => {
     const { trackingStatus } = useRenderer();
-    const {setArtworkState} = useArtwork();
+    const [uiStatus, setUiStatus] = useState(trackingStatus ?? 'LIMITED');
+    const { setArtworkState } = useArtwork();
 
     useMount(() => {
+        console.log('tracking: ', trackingStatus, 'ui:', uiStatus)
         setUiStatus(trackingStatus)
+        if (trackingStatus === 'NORMAL') {
+            setUiStatus('NORMAL');
+            setArtworkState(ArtworkState.LOADING);
+            onStatusNormal();
+            return;
+        }
         const timeout = setTimeout(() => {
             if (trackingStatus === 'LIMITED') {
                 setUiStatus('NORMAL');
@@ -49,4 +56,4 @@ export const TrackingOverlay = memo(function TrackingOverlay({ onStatusNormal }:
             )}
         </>
     );
-})
+}
