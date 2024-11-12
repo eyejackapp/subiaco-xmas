@@ -14,15 +14,20 @@ export const CopyToClipboardTrigger = ({ text, children = 'COPY LINK' }: CopyToC
 
     return (
         <>
-            <div className="relative">
+            <div className="relative ">
                 {copyResult && (
                     <div className="absolute link !font-normal -bottom-6 left-0 w-full text-xs text-center flex justify-center gap-2">
                         <img src={greenTickImg} />
                         Copied to Clipboard!
                     </div>
                 )}
-                <button className="cursor-pointer" onClick={handleClickCopy}>
+                <button className="cursor-pointer rounded-button" style={{
+                    justifyContent: 'center',
+                    borderColor: 'white',
+                    color: 'white',
+                }} onClick={handleClickCopy}>
                     {children}
+                    
                 </button>
             </div>
         </>

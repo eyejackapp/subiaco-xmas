@@ -9,6 +9,29 @@
         url("/fonts/URWDIN.woff2") format("woff2");
 }
 
+@font-face {
+    font-family: 'MinionPro';
+    src: url('/fonts/MinionPro-Regular.otf') format('opentype');
+    font-weight: normal;
+    font-style: normal;
+  }
+  
+  @font-face {
+    font-family: 'NexaSlab';
+    src: url('/fonts/NexaSlab-Bold.otf') format('opentype');
+    font-weight: bold;
+    font-style: normal;
+  }
+  
+  @font-face {
+    font-family: 'Macaria';
+    src: url('/fonts/Macaria 2.otf') format('opentype');
+    font-weight: normal;
+    font-style: normal;
+  }
+  
+  
+
 * {
     touch-action: pan-x pan-y;
     user-select: none;
@@ -49,7 +72,7 @@ a {
     left: 0;
     color: white;
     -webkit-font-smoothing: antialiased;
-    font-family: "space-grotesk-variable", sans-serif;
+    font-family: "space-grotesk-variable", 'MinionPro', 'NexaSlab', 'Macaria', sans-serif;
     font-variation-settings: "wght" 300;
 }
 
@@ -123,4 +146,34 @@ transform-style: preserve-3d;
 #loadingContainer {
     display: none !important;
     z-index: -1000 !important;
+}
+
+.rounded-button {
+    display: flex;
+    padding: 17px 10px;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+    border-radius: 100px;
+    width: 230px;
+    height: 56px;
+    border: 2px solid #FEF0D5;
+    font-family: 'Macaria';
+
+    color: #FAEFD5;
+    text-align: center;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-family: Macaria;
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 26px; /* 144.444% */
+}
+
+.rounded-button:active {
+    /* invert colors */
+    background-color: #FEF0D5;
+    color: #971741;
 }

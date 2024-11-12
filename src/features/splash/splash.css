@@ -1,0 +1,119 @@
+
+
+#splash-bg {
+    background-color: #F0493C;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    overflow: hidden;
+}
+
+#splash-top-half {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 50vh;
+    z-index: 1;
+}
+
+#splash-bottom-half {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 40vh;
+    /* align-self: baseline; */
+    align-items: center;
+    z-index: 1;
+}
+
+#spinner {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;    
+}
+
+#see-subiaco-logo {
+    width: 118.5px;
+    height: 42.48px;
+    margin-top: 50px;
+    align-self: center;
+}
+
+#main-logo {
+    width: 285px;
+    height: 151.4px;
+    position: relative;
+}
+
+.p-main {
+    color: #FAEFD5;
+    text-align: center;
+    font-family: 'Macaria';
+    font-size: 24px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 106%; /* 25.44px */
+    letter-spacing: -0.576px;
+}
+
+.link {
+    color: #EF9CB6;
+    cursor: pointer;
+    text-decoration: underline  ;
+}
+
+/* MASKED TREE */
+#masked-tree-mobile {
+    transition: 1000ms ease-in-out;
+    width: 100vw;
+    height: 600px;
+    position: absolute;
+    bottom: 30%;
+    left: 0;
+    z-index: 0;
+    /* background-size: cover; */
+    background-size: calc(100% + 5px) 100%;
+    /* center */
+    background-position: center;
+}
+
+#tree-desktop {
+    position: absolute;
+    z-index: 0;
+    width: 100vw;
+    height: 100vh;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+#bottom-tree {
+    transition: 1000ms ease-in-out;
+    background-color: #971741;
+    width: 100vw;
+    height: calc(100vh - 600px);
+    position: absolute;
+    /* top: 600px; */
+    top: 70%;
+    left: 0;
+    z-index: 0;
+    overflow: hidden;
+}
+
+
+
+/* SNOW FLAKE ANIMATION */
+.snowflake {
+    transition: 1000ms ease-in-out;
+    animation: rotate 5s linear infinite;
+  }
+  
+  @keyframes rotate {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
