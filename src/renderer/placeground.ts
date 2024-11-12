@@ -21,11 +21,13 @@ import {
   RingGeometry,
 } from "three";
 import { Mesh, Object3D, Clock } from "three";
-import { GLTFLoader } from "three/examples/jsm/Addons.js";
+import { GLTFLoader } from "three/examples/jsm/Addons.js"; // Note: Ensure the correct path if issues arise
 import { ArtworkModel, ARTWORKS } from "./artworks";
+
 export type I3dPipeline = {
   loadArtwork: (artworkData: ArtworkModel) => Promise<Group<Object3DEventMap>>;
 };
+
 export function init3dExperience(
   module: PlacegroundPipelineModuleResult,
   scene: Scene,
@@ -39,6 +41,35 @@ export function init3dExperience(
   const clock = new Clock(true);
   const raycaster = new Raycaster();
   const tapPosition = new Vector2();
+
+  /*
+  const reticle = new Mesh(
+    new RingGeometry(0.1, 0.2, 32),
+    new MeshBasicMaterial({
+      color: 0xffffff,
+      transparent: true,
+      side: DoubleSide,
+      depthTest: false,
+      depthWrite: false,
+    })
+  );
+  reticle.rotation.x = -Math.PI / 2;
+  reticle.position.set(0, 0, -1);
+  reticle.name = "Reticle";
+  reticle.visible = false;
+  scene.add(reticle);
+  */
+
+  const activeRings: Array<{
+    mesh: Mesh;
+    startTime: number;
+    duration: number;
+  }> = [];
+
+  const ringLifetime = 0.4; 
+  const ringDelays = [0.0, 0.133, 0.266]; 
+  const minScale = 0.1; 
+  const maxScale = 1.0; 
 
   const surface = new Mesh(
     new PlaneGeometry(100, 100, 1, 1),
@@ -55,44 +86,58 @@ export function init3dExperience(
   const contentContainer = new Object3D();
   scene.add(contentContainer);
 
-  const reticle = new Mesh(
-    new RingGeometry(0.1, 0.2, 32),
-    new MeshBasicMaterial({
-      color: 0xffffff,
-      transparent: true,
-      side: DoubleSide,
-      depthTest: false,
-      depthWrite: false,
-    })
-  );
-  reticle.rotation.x = -Math.PI / 2;
-  reticle.position.set(0, 0, -1);
-  reticle.name = "Reticle";
-  reticle.visible = false;
-  scene.add(reticle);
+  function createPulsingRings(position: Vector3) {
+    const numRings = 3;
 
-module.emitter.on("place-object", (e) => {
-  tapPosition.x = (e.touches[0].clientX / window.innerWidth) * 2 - 1;
-  tapPosition.y = -(e.touches[0].clientY / window.innerHeight) * 2 + 1;
+    for (let i = 0; i < numRings; i++) {
+      const ringGeometry = new RingGeometry(
+        0.1,
+        0.115, 
+        32
+      );
+      const ringMaterial = new MeshBasicMaterial({
+        color: 0xffffff, 
+        transparent: true,
+        opacity: 1.0,
+        side: DoubleSide,
+      });
+      const ring = new Mesh(ringGeometry, ringMaterial);
+      ring.rotation.x = -Math.PI / 2; 
+      ring.position.copy(position); 
+      ring.scale.set(minScale, minScale, minScale); 
 
-  raycaster.setFromCamera(tapPosition, _camera);
+      ring.position.y += 0.001 * (i + 1);
 
-  const intersects = raycaster.intersectObject(surface);
+      scene.add(ring); 
 
-  if (intersects.length === 1 && intersects[0].object === surface) {
-    if (!model.scene.children[0]) return;
-    reticle.visible = true;
-    reticle.position.copy(intersects[0].point);
-    model.scene.children[0].position.set(
-      intersects[0].point.x,
-      0,
-      intersects[0].point.z
-    );
-  } else {
-    reticle.visible = false;
+      activeRings.push({
+        mesh: ring,
+        startTime: clock.getElapsedTime() + ringDelays[i],
+        duration: ringLifetime,
+      });
+    }
   }
-});
 
+  module.emitter.on("place-object", (e) => {
+    tapPosition.x = (e.touches[0].clientX / window.innerWidth) * 2 - 1;
+    tapPosition.y = -(e.touches[0].clientY / window.innerHeight) * 2 + 1;
+
+    raycaster.setFromCamera(tapPosition, _camera);
+
+    const intersects = raycaster.intersectObject(surface);
+
+    if (intersects.length === 1 && intersects[0].object === surface) {
+      if (!model.scene.children[0]) return;
+
+      model.scene.children[0].position.set(
+        intersects[0].point.x,
+        0,
+        intersects[0].point.z
+      );
+
+      createPulsingRings(new Vector3(intersects[0].point.x, 0, intersects[0].point.z));
+    }
+  });
 
   // const audioElement = document.getElementById(
   //     'ejx-audio',
@@ -110,7 +155,6 @@ module.emitter.on("place-object", (e) => {
       });
     });
 
-    // animate the model
     mixer = new AnimationMixer(model.scene);
     model.animations.forEach((clip: AnimationClip) => {
       const action = mixer.clipAction(clip.optimize());
@@ -202,6 +246,31 @@ module.emitter.on("place-object", (e) => {
 
     const isCameraFaceDown = cameraWorldDirection.y < -0.55;
     module.emitter.emit("on-camera-down", isCameraFaceDown);
+
+    if (activeRings.length > 0) {
+      const currentTime = clock.getElapsedTime();
+
+      for (let i = activeRings.length - 1; i >= 0; i--) {
+        const ring = activeRings[i];
+        const elapsed = currentTime - ring.startTime;
+        if (elapsed < 0) {
+          continue;
+        }
+        if (elapsed < ring.duration) {
+          const progress = elapsed / ring.duration;
+
+          const scale = minScale + (maxScale - minScale) * progress;
+          ring.mesh.scale.set(scale, scale, scale);
+
+          ring.mesh.material.opacity = 1.0 - progress;
+        } else {
+          scene.remove(ring.mesh);
+          ring.mesh.geometry.dispose();
+          ring.mesh.material.dispose();
+          activeRings.splice(i, 1);
+        }
+      }
+    }
 
     const delta = clock.getDelta();
     mixer.update(delta);
