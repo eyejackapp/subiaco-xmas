@@ -21,6 +21,7 @@ import {
   RingGeometry,
   Euler,
   Quaternion,
+  AxesHelper,
 } from "three";
 import { Mesh, Object3D, Clock } from "three";
 import { GLTFLoader } from "three/examples/jsm/Addons.js"; // Note: Ensure the correct path if issues arise
@@ -194,8 +195,8 @@ export function init3dExperience(
                 material instanceof MeshStandardMaterial ||
                 material instanceof MeshPhysicalMaterial
               ) {
-                material.roughness = 0.3;
-                material.metalness = 0.8;
+                material.roughness = 0.4;
+                material.metalness = 0.6;
                 material.needsUpdate = true;
               }
             });
@@ -205,8 +206,8 @@ export function init3dExperience(
               material instanceof MeshStandardMaterial ||
               material instanceof MeshPhysicalMaterial
             ) {
-              material.roughness = 0.3;
-              material.metalness = 0.8;
+              material.roughness = 0.4;
+              material.metalness = 0.6;
               material.needsUpdate = true;
             }
           }
@@ -224,8 +225,10 @@ export function init3dExperience(
 
     if (model.scene.children[0]) {
       targetModelPosition.copy(model.scene.children[0].position);
+      const axesHelper = new AxesHelper(1);
+      model.scene.children[0].add(axesHelper);
     }
-    
+
     return model.scene;
   };
 
@@ -287,7 +290,10 @@ export function init3dExperience(
         modelLerpSpeed
       );
 
-      model.scene.children[0].quaternion.slerp(targetQuaternion, modelLerpSpeed);
+      model.scene.children[0].quaternion.slerp(
+        targetQuaternion,
+        modelLerpSpeed
+      );
     }
 
     const delta = clock.getDelta();
