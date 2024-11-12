@@ -19,6 +19,8 @@ import {
   DoubleSide,
   MeshBasicMaterial,
   RingGeometry,
+  Euler,
+  Quaternion,
 } from "three";
 import { Mesh, Object3D, Clock } from "three";
 import { GLTFLoader } from "three/examples/jsm/Addons.js"; // Note: Ensure the correct path if issues arise
@@ -66,10 +68,10 @@ export function init3dExperience(
     duration: number;
   }> = [];
 
-  const ringLifetime = 0.4; 
-  const ringDelays = [0.0, 0.133, 0.266]; 
-  const minScale = 0.1; 
-  const maxScale = 1.0; 
+  const ringLifetime = 0.4;
+  const ringDelays = [0.0, 0.133, 0.266];
+  const minScale = 0.1;
+  const maxScale = 1.0;
 
   const surface = new Mesh(
     new PlaneGeometry(100, 100, 1, 1),
@@ -93,25 +95,21 @@ export function init3dExperience(
     const numRings = 3;
 
     for (let i = 0; i < numRings; i++) {
-      const ringGeometry = new RingGeometry(
-        0.1,
-        0.115, 
-        32
-      );
+      const ringGeometry = new RingGeometry(0.1, 0.115, 32);
       const ringMaterial = new MeshBasicMaterial({
-        color: 0xffffff, 
+        color: 0xffffff,
         transparent: true,
         opacity: 1.0,
         side: DoubleSide,
       });
       const ring = new Mesh(ringGeometry, ringMaterial);
-      ring.rotation.x = -Math.PI / 2; 
-      ring.position.copy(position); 
-      ring.scale.set(minScale, minScale, minScale); 
+      ring.rotation.x = -Math.PI / 2;
+      ring.position.copy(position);
+      ring.scale.set(minScale, minScale, minScale);
 
       ring.position.y += 0.001 * (i + 1);
 
-      scene.add(ring); 
+      scene.add(ring);
 
       activeRings.push({
         mesh: ring,
@@ -120,6 +118,9 @@ export function init3dExperience(
       });
     }
   }
+  const tempVec3 = new Vector3();
+  const tempEuler = new Euler();
+  const targetQuaternion = new Quaternion();
 
   module.emitter.on("place-object", (e) => {
     tapPosition.x = (e.touches[0].clientX / window.innerWidth) * 2 - 1;
@@ -132,13 +133,15 @@ export function init3dExperience(
     if (intersects.length === 1 && intersects[0].object === surface) {
       if (!model.scene.children[0]) return;
 
-      targetModelPosition.set(
-        intersects[0].point.x,
-        0,
-        intersects[0].point.z
-      );
+      targetModelPosition.set(intersects[0].point.x, 0, intersects[0].point.z);
 
-      createPulsingRings(new Vector3(intersects[0].point.x, 0, intersects[0].point.z));
+      const dirToCam = tempVec3;
+      dirToCam.copy(_camera.position).sub(targetModelPosition).normalize();
+      const rotationY = Math.atan2(dirToCam.x, dirToCam.z);
+      const rotationEuler = tempEuler;
+      rotationEuler.set(0, rotationY, 0, "XYZ");
+      targetQuaternion.setFromEuler(rotationEuler);
+      createPulsingRings(targetModelPosition);
     }
   });
 
@@ -278,7 +281,14 @@ export function init3dExperience(
         }
       }
     }
-    if (model.scene) model.scene.children[0].position.lerp(targetModelPosition, modelLerpSpeed);
+    if (model.scene) {
+      model.scene.children[0].position.lerp(
+        targetModelPosition,
+        modelLerpSpeed
+      );
+
+      model.scene.children[0].quaternion.slerp(targetQuaternion, modelLerpSpeed);
+    }
 
     const delta = clock.getDelta();
     mixer.update(delta);
