@@ -206,8 +206,8 @@ export function init3dExperience(
               material instanceof MeshStandardMaterial ||
               material instanceof MeshPhysicalMaterial
             ) {
-              material.roughness = 0.4;
-              material.metalness = 0.6;
+              material.roughness = 0.35;
+              material.metalness = 0.7;
               material.needsUpdate = true;
             }
           }
