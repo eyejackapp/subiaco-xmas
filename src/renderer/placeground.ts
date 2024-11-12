@@ -219,6 +219,10 @@ export function init3dExperience(
     XR8.XrController.recenter();
     contentContainer.add(model.scene);
 
+    if (model.scene.children[0]) {
+      targetModelPosition.copy(model.scene.children[0].position);
+    }
+    
     return model.scene;
   };
 
