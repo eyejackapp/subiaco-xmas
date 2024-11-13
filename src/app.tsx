@@ -1,4 +1,4 @@
-import { useCallback, useState, useErrorBoundary, useEffect, useMemo, useRef } from "preact/hooks";
+import { useCallback, useState, useErrorBoundary, useEffect, useMemo } from "preact/hooks";
 import Splash from "./features/splash";
 import { FadeTransition } from "./components/Transitions";
 import ErrorPage from "./features/error";
@@ -19,6 +19,7 @@ import { RecordingButton, useVideoRecorder } from "./features/recording-button";
 import MediaPreview from "./features/media-preview";
 import { useLocalStorageState } from "ahooks";
 import { OnboardingModals } from "./features/onboarding";
+import { useUserForm } from "./hooks/useUserForm";
 
 export function App() {
   const [loadingArtwork, setLoadingArtwork] = useState(false);
@@ -26,11 +27,14 @@ export function App() {
   const [hasViewedOnboarding, setHasViewedOnboarding] = useLocalStorageState('hasViewedOnboarding', { defaultValue: false });
   const [hasViewedCongrats, setHasViewedCongrats] = useLocalStorageState('hasViewedCongrats', { defaultValue: false });
   const [shouldShowArtworkUnlocked, setShouldShowArtworkUnlocked] = useState(false);
+  const [limitReached, setLimitReached] = useState<boolean>(false);
+
 
   const { appState, setAppState, setIsSurveyOpen, showThankYouModal, setShowThankYouModal } = useAppState();
   const { renderer, initExperience, loadArtwork, clearCurrentArtwork } = useRenderer();
   const { artworkState, setArtworkState, setCurrentArtwork, currentArtwork, regularArtworks, tappedArtwork, showArtworkUnlocked, setShowArtworkUnlocked, viewedArtworks, setViewedArtworks } = useArtwork();
   const recordingState = useVideoRecorder(renderer!);
+  const { hasHitSubmissionLimit } = useUserForm();
 
   const handleHashChange = useCallback(() => {
     clearCurrentArtwork();
@@ -43,18 +47,18 @@ export function App() {
 
   useEffect(() => {
     const handleVisiblityChange = () => {
-        if (document.visibilityState === 'visible') {
-          //
-        } else {
-          renderer?.pauseAudio()
-        }
+      if (document.visibilityState === 'visible') {
+        //
+      } else {
+        renderer?.pauseAudio()
+      }
     };
 
     window.addEventListener('visibilitychange', handleVisiblityChange);
     return () => {
-        window.removeEventListener('visibilitychange', handleVisiblityChange);
+      window.removeEventListener('visibilitychange', handleVisiblityChange);
     };
-}, [renderer]);
+  }, [renderer]);
 
   const artworkToShow = tappedArtwork || currentArtwork;
 
@@ -89,29 +93,43 @@ export function App() {
 
   const handleLoadArtwork = useCallback(async () => {
     setLoadingArtwork(true);
-    const artworkId = getArtworkIdFromCode(hash) as ArtworkId;
-    if (!artworkId) {
-      console.error(`Invalid artwork hash: ${hash}`);
-      setLoadingArtwork(false);
-      return;
-    }
-
     try {
-      console.log("Loading artwork:", artworkId);
+      const artworkId = getArtworkIdFromCode(hash) as ArtworkId;
+      if (!artworkId) {
+        console.error(`Invalid artwork hash: ${hash}`);
+        return;
+      }
+
+      const viewedArtworksList = viewedArtworks ?? []; 
+      if (!viewedArtworksList?.includes(artworkId)) {
+        setViewedArtworks([...viewedArtworksList, artworkId]);
+        setShouldShowArtworkUnlocked(true);
+
+        if (
+          regularArtworks?.length === ARTWORKS_LENGTH - 1 &&
+          !artworkId.startsWith("bonus") &&
+          !hasViewedCongrats
+        ) {
+          try {
+            const isLimitReached = await hasHitSubmissionLimit();
+            if (isLimitReached) {
+              setLimitReached(isLimitReached);
+            }
+          } catch (submissionLimitError) {
+            console.error("Error checking submission limit:", submissionLimitError);
+          }
+        }
+      }
+
       await loadArtwork(artworkId);
       setCurrentArtwork(artworkId);
       setArtworkState(ArtworkState.VIEWING);
-
-      if (!viewedArtworks?.includes(artworkId)) {
-        setViewedArtworks([...viewedArtworks!, artworkId]);
-        setShouldShowArtworkUnlocked(true);
-      }
     } catch (error) {
       console.error("Failed to load artwork:", error);
     } finally {
       setLoadingArtwork(false);
     }
-  }, [loadArtwork, hash, setLoadingArtwork, setCurrentArtwork, setArtworkState, viewedArtworks, setViewedArtworks]);
+  }, [loadArtwork, hash, setLoadingArtwork, setCurrentArtwork, setArtworkState, viewedArtworks, setViewedArtworks, hasViewedCongrats, regularArtworks, hasHitSubmissionLimit]);
 
 
   const onVideoCleared = useCallback(() => {
@@ -230,7 +248,7 @@ export function App() {
           <ModalOverlay>
             <Modal className="centered h-fit bg-[#EA81A4] px-8 py-16 flex justify-center items-center">
               <div className="flex flex-col items-center justify-center gap-8">
-                <h2 className="text-3xl font-bold text-center">CONGRATULATIONS</h2>
+                <h2 className="text-3xl font-bold text-center">{limitReached ? 'CONGRATS 2' : 'CONGRATULATIONS'}</h2>
                 <button
                   className="mt-4 px-4 py-2 border-white border-2 max-w-[230px] w-full text-white rounded"
                   onClick={handleEnterDetails}

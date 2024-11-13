@@ -63,7 +63,7 @@ export function MediaPreview({ recordingState, onVideoCleared }: MediaPreviewPro
                     )}
                 </div>
                 <div className="flex flex-col flex-shrink-0 justify-center items-center text-white">
-                    {(recordingState.state === 'ready' || true) && (
+                    {(recordingState.state === 'ready') && (
                         <>
                             <button
                                 className="mt-4 refraction-button bg-[#11d398] border-[#11d398] active:opacity-70"

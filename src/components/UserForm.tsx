@@ -1,8 +1,5 @@
 import { useState } from "preact/hooks";
 import { ChangeEvent, FormEvent } from "preact/compat";
-import { FadeTransition } from "./Transitions";
-import { Spinner } from "./Spinner";
-import { useMount } from "@/hooks/useMount";
 import { useAppState } from "@/hooks/useAppState";
 import { useUserForm } from "@/hooks/useUserForm";
 
@@ -24,11 +21,8 @@ export const UserForm = () => {
     loading,
     error,
     updateUserFields,
-    hasHitSubmissionLimit,
     savedFormData
   } = useUserForm();
-  const [limitReached, setLimitReached] = useState<boolean>(false);
-  const [loadingForm, setLoadingForm] = useState(false);
 
   const { setIsSurveyOpen, setShowThankYouModal } = useAppState();
 
@@ -94,106 +88,78 @@ export const UserForm = () => {
       return;
     }
     try {
-      await updateUserFields(updates); 
+      await updateUserFields(updates);
     } catch (err) {
       console.error("Failed to update user data:", err);
     }
   };
 
-  useMount(() => {
-    const checkSubmissionLimit = async () => {
-      try {
-        setLoadingForm(true);
-        const isLimitReached = await hasHitSubmissionLimit();
-        if (isLimitReached) {
-          setLimitReached(isLimitReached);
-        }
-      } catch (error) {
-        console.error("Error loading form", error);
-      } finally {
-        setLoadingForm(false);
-      }
-    };
-
-    checkSubmissionLimit();
-  });
-
-  if (loadingForm) {
-    return (
-      <FadeTransition show={loadingForm}>
-        <div className="absolute inset-0 z-10 bg-gray-500">
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2">
-            <Spinner />
-          </div>
-        </div>
-      </FadeTransition>
-    );
-  }
-
   return (
-    <div className="bg-white p-6 max-w-lg mx-auto rounded-lg shadow-md relative">
+    <div className="p-6 max-w-[360px] w-full h-full relative bg-[#EA81A4] overflow-y-scroll">
       <button onClick={() => setIsSurveyOpen(false)} className="absolute top-4 right-2 text-black">Close</button>
       <h1 className="text-2xl font-semibold text-gray-800 mb-4">
-        {limitReached ? "Different Form" : "User Form"}
       </h1>
-      <form onSubmit={handleSubmit} className="space-y-4 text-black">
+      <form onSubmit={handleSubmit} className=" text-white text-[13px]">
+        <label for="fullName">Full Name*</label>
         <input
           type="text"
           name="fullName"
-          placeholder="Full Name"
           value={formData.fullName}
           onChange={handleChange}
           required
-          className="w-full p-2 border rounded-md focus:outline-none focus:border-blue-500"
+          className="w-full p-3 border rounded-[3px] bg-[#EA81A4] focus:outline-none focus:border-gray-300 mb-5"
         />
+        <label for="postcode">Postcode*</label>
         <input
           type="text"
           name="postcode"
-          placeholder="Postcode"
           value={formData.postcode}
           onChange={handleChange}
-          className="w-full p-2 border rounded-md focus:outline-none focus:border-blue-500"
+          className="w-full p-3 border rounded-[3px] bg-[#EA81A4] focus:outline-none focus:border-gray-300 mb-5"
+          required
         />
+        <label for="emailAddress">Email Address*</label>
         <input
           type="email"
           name="emailAddress"
-          placeholder="Email Address"
           value={formData.emailAddress}
           onChange={handleChange}
           required
-          className="w-full p-2 border rounded-md focus:outline-none focus:border-blue-500"
+          className="w-full p-3 border rounded-[3px] bg-[#EA81A4] focus:outline-none focus:border-gray-300 mb-5"
         />
+        <label for="phone">Contact Number*</label>
         <input
           type="text"
           name="phone"
-          placeholder="Phone"
           value={formData.phone}
           onChange={handleChange}
-          className="w-full p-2 border rounded-md focus:outline-none focus:border-blue-500"
+          required
+          className="w-full p-3 border rounded-[3px] bg-[#EA81A4] focus:outline-none focus:border-gray-300 mb-5"
         />
+        <label for="hearSource">How did you rate the Subiaco Twilight Trail?</label>
         <input
           type="text"
           name="hearSource"
-          placeholder="How did you hear?"
           value={formData.hearSource}
           onChange={handleChange}
-          className="w-full p-2 border rounded-md focus:outline-none focus:border-blue-500"
+          className="w-full p-3 border rounded-[3px] bg-[#EA81A4] focus:outline-none focus:border-gray-300 mb-5"
         />
+        <label for="visitedBusinesses">Did you visit any businesses while you were on the trail?</label>
         <input
           type="text"
           name="visitedBusinesses"
-          placeholder="Did you visit any businesses?"
           value={formData.visitedBusinesses}
           onChange={handleChange}
-          className="w-full p-2 border rounded-md focus:outline-none focus:border-blue-500"
+          className="w-full p-3 border rounded-[3px] bg-[#EA81A4] focus:outline-none focus:border-gray-300 mb-5"
         />
+        <label for="encouragedExplore">Did the trail encourage you to explore any new businesses you've not been to before?</label>
         <input
           type="text"
           name="encouragedExplore"
           placeholder="Did the trail encourage you to explore?"
           value={formData.encouragedExplore}
           onChange={handleChange}
-          className="w-full p-2 border rounded-md focus:outline-none focus:border-blue-500"
+          className="w-full p-3 border rounded-[3px] bg-[#EA81A4] focus:outline-none focus:border-gray-300 mb-5"
         />
 
         <button

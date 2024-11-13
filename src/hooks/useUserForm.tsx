@@ -16,6 +16,8 @@ interface UserData {
 
 const API_URL = import.meta.env.VITE_GOOGLE_APPS_SCRIPT_URL;
 
+const SUBMISSION_LIMIT = 300;
+
 interface UserFormContextType {
   userId: string;
   savedFormData: UserData | null | undefined;
@@ -108,7 +110,7 @@ export const UserFormProvider = ({ children }: { children: React.ReactNode }) =>
     try {
       const response = await fetch(API_URL);
       const data = await response.json();
-      return data.submissionsCount > 300;
+      return data.submissionsCount >= SUBMISSION_LIMIT;
     } catch (error) {
       console.error("Error fetching submission limit:", error);
       return false;

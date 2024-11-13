@@ -88,7 +88,7 @@ export const Header = () => {
                     </div>
                 </FadeTransition>
             )} */}
-            {isSurveyOpen && <div className="fixed top-0 w-full h-full z-[100] bg-black flex items-center justify-center"><UserForm /></div>}
+            {isSurveyOpen && <div className="fixed top-0 w-full h-full z-[100] bg-[#EA81A4] flex items-center justify-center"><UserForm /></div>}
 
             <div
                 ref={scrollElement}
