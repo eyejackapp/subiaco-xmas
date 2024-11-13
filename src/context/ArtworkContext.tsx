@@ -22,6 +22,7 @@ type ArtworkContextType = {
   setTappedArtwork: (artwork: ArtworkId | null) => void;
   showArtworkUnlocked: boolean;
   setShowArtworkUnlocked: (value: boolean) => void;
+  regularArtworks: ArtworkId[] | undefined;
 
 };
 
@@ -37,6 +38,7 @@ export const ArtworkContext = createContext<ArtworkContextType>({
   setTappedArtwork: () => { },
   showArtworkUnlocked: false,
   setShowArtworkUnlocked: () => { },
+  regularArtworks: [],
 });
 
 export const ArtworkProvider = ({ children }) => {
@@ -51,6 +53,8 @@ export const ArtworkProvider = ({ children }) => {
   const [viewedArtworks, setViewedArtworks] = useLocalStorageState<ArtworkId[] | undefined>('viewedArtworks', {
     defaultValue: [],
   });
+
+  const regularArtworks = useMemo(() => viewedArtworks?.filter((artwork) => !artwork.startsWith('bonus')), [viewedArtworks]);
 
   const [tappedArtwork, setTappedArtwork] = useState<ArtworkId | null>(null);
 
@@ -68,10 +72,7 @@ export const ArtworkProvider = ({ children }) => {
         setTappedArtwork,
         showArtworkUnlocked,
         setShowArtworkUnlocked,
-        // showArtworkClue,
-        // setShowArtworkClue,
-        // showArtworkUnlocked,
-        // setShowArtworkUnlocked,
+        regularArtworks,
       }}
     >
       {children}

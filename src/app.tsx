@@ -1,4 +1,4 @@
-import { useCallback, useState, useErrorBoundary, useEffect, useMemo } from "preact/hooks";
+import { useCallback, useState, useErrorBoundary, useEffect, useMemo, useRef } from "preact/hooks";
 import Splash from "./features/splash";
 import { FadeTransition } from "./components/Transitions";
 import ErrorPage from "./features/error";
@@ -10,7 +10,7 @@ import { getArtworkIdFromCode } from "./utils/qrUtils";
 import TrackingOverlay from "./features/tracking-overlay";
 import { Spinner } from "./components/Spinner";
 import Header from "./features/header";
-import { ArtworkId } from "./renderer/artworks";
+import { ArtworkId, ARTWORKS_LENGTH } from "./renderer/artworks";
 import { ModalOverlay } from "./components/Modal/ModalOverlay";
 import { Modal } from "./components/Modal/Modal";
 import { useArtwork } from "./hooks/useArtwork";
@@ -19,9 +19,6 @@ import { RecordingButton, useVideoRecorder } from "./features/recording-button";
 import MediaPreview from "./features/media-preview";
 import { useLocalStorageState } from "ahooks";
 import { OnboardingModals } from "./features/onboarding";
-import { c } from "vite/dist/node/types.d-aGj9QkWt";
-
-const MAX_ARTWORKS = 8;
 
 export function App() {
   const [loadingArtwork, setLoadingArtwork] = useState(false);
@@ -32,7 +29,7 @@ export function App() {
 
   const { appState, setAppState, setIsSurveyOpen, showThankYouModal, setShowThankYouModal } = useAppState();
   const { renderer, initExperience, loadArtwork, clearCurrentArtwork } = useRenderer();
-  const { artworkState, setArtworkState, setCurrentArtwork, currentArtwork, tappedArtwork, showArtworkUnlocked, setShowArtworkUnlocked, viewedArtworks, setViewedArtworks } = useArtwork();
+  const { artworkState, setArtworkState, setCurrentArtwork, currentArtwork, regularArtworks, tappedArtwork, showArtworkUnlocked, setShowArtworkUnlocked, viewedArtworks, setViewedArtworks } = useArtwork();
   const recordingState = useVideoRecorder(renderer!);
 
   const handleHashChange = useCallback(() => {
@@ -42,6 +39,22 @@ export function App() {
   }, [clearCurrentArtwork, setArtworkState, renderer]);
 
   const { hash, handleQRFound } = useUrlHash(handleHashChange);
+
+
+  useEffect(() => {
+    const handleVisiblityChange = () => {
+        if (document.visibilityState === 'visible') {
+          //
+        } else {
+          renderer?.pauseAudio()
+        }
+    };
+
+    window.addEventListener('visibilitychange', handleVisiblityChange);
+    return () => {
+        window.removeEventListener('visibilitychange', handleVisiblityChange);
+    };
+}, [renderer]);
 
   const artworkToShow = tappedArtwork || currentArtwork;
 
@@ -117,10 +130,10 @@ export function App() {
 
   const handleCloseArtworkUnlockedModal = useCallback(() => {
     setShowArtworkUnlocked(false);
-    if (viewedArtworks!.length === MAX_ARTWORKS && !hasViewedCongrats) {
+    if (regularArtworks!.length == ARTWORKS_LENGTH && !hasViewedCongrats) {
       setShowCongratsModal(true);
     }
-  }, [setShowArtworkUnlocked, viewedArtworks, hasViewedCongrats]);
+  }, [setShowArtworkUnlocked, hasViewedCongrats, regularArtworks]);
 
   const handleEnterDetails = useCallback(() => {
     setShowCongratsModal(false);

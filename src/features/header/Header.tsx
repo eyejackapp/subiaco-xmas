@@ -13,7 +13,7 @@ export const Header = () => {
     const [isHeaderOpen, setIsHeaderOpen] = useState(false);
 
     const { isSurveyOpen } = useAppState();
-    const { viewedArtworks } = useArtwork();
+    const { regularArtworks } = useArtwork();
     const { renderer } = useRenderer();
 
     const [isPopupOpen, setIsPopupOpen] = useState(false);
@@ -51,7 +51,7 @@ export const Header = () => {
                 onClick={onToggleHeader}
             >
                 <h2 className="-mb-2 text-[18px] font-bold tracking-[1px] leading-none">
-                    <span className="pr-1 text-4xl font-extrabold leading-none">{viewedArtworks?.length ?? 0}</span> OF{' '}
+                    <span className="pr-1 text-4xl font-extrabold leading-none">{regularArtworks?.length ?? 0}</span> OF{' '}
                     <span className="px-1 text-4xl font-extrabold leading-none">{ARTWORKS_LENGTH}</span> FOUND
                 </h2>
                 <p className="flex items-center -mb-2 font-base tracking-[1px] font-bold">

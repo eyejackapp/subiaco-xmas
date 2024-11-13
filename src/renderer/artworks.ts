@@ -115,7 +115,7 @@ export const ARTWORKS = {
     link: "https://twitter.com/",
     index: 6,
   },
-  orbs: {
+  "bonus-orbs": {
     name: "Utopia",
     artist: "Artist 8",
     basePath: "/content/Orbs.glb",
@@ -129,7 +129,8 @@ export const ARTWORKS = {
   },
 } satisfies Record<string, ArtworkDefiniton>;
 
-export const ARTWORKS_LENGTH = Object.keys(ARTWORKS).length;
+// -1 because of bonus artwork
+export const ARTWORKS_LENGTH = Object.keys(ARTWORKS).length - 1;
 
 export const ARTWORK_ARRAY = Object.entries(ARTWORKS).map(
   ([artworkId, definiton]) => ({

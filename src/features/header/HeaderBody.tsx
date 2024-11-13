@@ -1,5 +1,5 @@
 import clsx from 'clsx';
-import { ARTWORK_ARRAY, ArtworkId } from '../../renderer/artworks';
+import { ARTWORK_ARRAY, ArtworkId, ARTWORKS_LENGTH } from '../../renderer/artworks';
 import QuestionMark from './assets/question.svg';
 import { useCallback, useState } from 'preact/hooks';
 import { createPortal } from 'preact/compat'
@@ -17,14 +17,15 @@ export type HeaderBodyProps = {
 export function HeaderBody({ onToggleHeader }: HeaderBodyProps) {
     const [isMapOpen, setIsMapOpen] = useState(false);
 
-    const { viewedArtworks } = useArtwork();
+    const { regularArtworks } = useArtwork();
     const {setIsSurveyOpen} = useAppState();
 
     const onMapVisible = useCallback(() => {
         setIsMapOpen((isOpen) => !isOpen);
     }, [setIsMapOpen]);
 
-    const canClaimPrize = viewedArtworks && viewedArtworks.length >= 3;
+    const canClaimPrize = regularArtworks && regularArtworks.length === ARTWORKS_LENGTH;
+
     const { hasSentData } = useUserForm();
 
     return (
@@ -116,7 +117,6 @@ function ArtworkList() {
 
     const handleArtworkTap = useCallback(
         (artworkId: ArtworkId) => {
-            console.log('artworkId', artworkId);
             setTappedArtwork(artworkId);
             if (viewedArtworks && viewedArtworks.includes(artworkId)) {
                 setShowArtworkUnlocked(true);
