@@ -22,6 +22,8 @@ import {
   Euler,
   Quaternion,
   AxesHelper,
+  AnimationAction,
+  Material,
 } from "three";
 import { Mesh, Object3D, Clock } from "three";
 import { GLTFLoader } from "three/examples/jsm/Addons.js"; // Note: Ensure the correct path if issues arise
@@ -44,24 +46,6 @@ export function init3dExperience(
   const clock = new Clock(true);
   const raycaster = new Raycaster();
   const tapPosition = new Vector2();
-
-  /*
-  const reticle = new Mesh(
-    new RingGeometry(0.1, 0.2, 32),
-    new MeshBasicMaterial({
-      color: 0xffffff,
-      transparent: true,
-      side: DoubleSide,
-      depthTest: false,
-      depthWrite: false,
-    })
-  );
-  reticle.rotation.x = -Math.PI / 2;
-  reticle.position.set(0, 0, -1);
-  reticle.name = "Reticle";
-  reticle.visible = false;
-  scene.add(reticle);
-  */
 
   const activeRings: Array<{
     mesh: Mesh;
@@ -146,86 +130,120 @@ export function init3dExperience(
     }
   });
 
-  const audioElement = document.getElementById(
-      'ejx-audio',
-  ) as HTMLAudioElement;
+  const audioElement = document.getElementById("ejx-audio") as HTMLAudioElement;
   audio.setMediaElementSource(audioElement);
   audio.hasPlaybackControl = true;
 
   const cameraWorldDirection = new Vector3();
 
   const loadArtwork = async (artworkData: ArtworkModel) => {
-    const loader = new GLTFLoader();
-    model = await loader.loadAsync(artworkData.basePath, (progress) => {
-      module.emitter.emit("content-load-progress", {
-        progress: progress.loaded,
-        total: progress.total,
+    try {
+      const loader = new GLTFLoader();
+      model = await loader.loadAsync(artworkData.basePath, (progress) => {
+        module.emitter.emit("content-load-progress", {
+          progress: progress.loaded,
+          total: progress.total,
+        });
       });
-    });
 
-    mixer = new AnimationMixer(model.scene);
-   
+      mixer = new AnimationMixer(model.scene);
 
-    module.emitter.emit("content-loaded");
+      module.emitter.emit("content-loaded");
 
-    model.scene.scale.set(0.8, 0.8, 0.8);
+      model.scene.scale.set(0.8, 0.8, 0.8);
+      adjustMaterials(model.scene);
 
-    model.scene.traverse((child: Object3D) => {
+      XR8.XrController.recenter();
+
+      setupModelScene(model.scene);
+
+      await prepareAudio(artworkData.audioPath);
+
+      const actions = setupAnimations(model.animations, mixer);
+
+      contentContainer.add(model.scene);
+      startPlayback(actions);
+
+      return model.scene;
+    } catch (error) {
+      console.error("Error loading artwork:", error);
+      throw error;
+    }
+  };
+
+  const adjustMaterials = (scene: Object3D) => {
+    scene.traverse((child) => {
       if ((child as Mesh).isMesh) {
-        child.frustumCulled = false;
         const mesh = child as Mesh;
-        if (mesh.material) {
-            const material = mesh.material;
-            if (
-              material instanceof MeshStandardMaterial ||
-              material instanceof MeshPhysicalMaterial
-            ) {
-              material.roughness = 0.2;
-              material.metalness = 0.9;
-              material.needsUpdate = true;
-            }
+        mesh.frustumCulled = false;
+
+        const material = mesh.material as Material;
+        if (
+          material instanceof MeshStandardMaterial ||
+          material instanceof MeshPhysicalMaterial
+        ) {
+          material.roughness = 0.2;
+          material.metalness = 0.9;
+          material.needsUpdate = true;
         }
       }
     });
+  };
 
-    XR8.XrController.recenter();
-
-    if (model.scene.children[0]) {
-      targetModelPosition.copy(model.scene.children[0].position);
-      const axesHelper = new AxesHelper(1);
-      model.scene.children[0].add(axesHelper);
+  const setupModelScene = (scene: Object3D) => {
+    const firstChild = scene.children[0];
+    if (firstChild) {
+      targetModelPosition.copy(firstChild.position);
+      firstChild.add(new AxesHelper(1));
     }
-    
-    contentContainer.add(model.scene);
+  };
 
+  const prepareAudio = (audioPath: string): Promise<void> => {
+    return new Promise((resolve) => {
+      audioElement.src = audioPath;
+      audioElement.load();
 
-    audioElement.src = artworkData.audioPath;
-    audioElement.load();
-    audioElement.oncanplay = () => {
-      console.log('CAN PLAY', audio)
-      audio.context.resume();
-    audioElement.play();
-    };
+      const onCanPlayThrough = () => {
+        audioElement.removeEventListener("canplaythrough", onCanPlayThrough);
+        audio.context.resume();
+        resolve();
+      };
 
-    model.animations.forEach((clip: AnimationClip) => {
+      if (audioElement.readyState >= HTMLMediaElement.HAVE_ENOUGH_DATA) {
+        audio.context.resume();
+        resolve();
+      } else {
+        audioElement.addEventListener("canplaythrough", onCanPlayThrough);
+      }
+    });
+  };
+
+  const setupAnimations = (
+    animations: AnimationClip[],
+    mixer: AnimationMixer
+  ): AnimationAction[] => {
+    return animations.map((clip) => {
       const action = mixer.clipAction(clip.optimize());
       action.setLoop(LoopOnce);
       action.clampWhenFinished = true;
-      action.play();
+      return action;
     });
-
-    let hasShownUnlockedModal = false;
-    mixer.addEventListener("finished", (event) => {
-      if (hasShownUnlockedModal) return;
-      module.emitter.emit("on-animation-loop");
-      hasShownUnlockedModal = true;
-      playAnimationsRepeat(model);
-    });
-
-    return model.scene;
   };
 
-  const playAnimationsRepeat = (model) => {
+  const startPlayback = (actions: AnimationAction[]) => {
+    const onMixerFinished = () => {
+      console.log("Event listener executed once.");
+      loopAnimations(model); 
+      mixer.removeEventListener("finished", onMixerFinished);
+    };
+
+    mixer.addEventListener("finished", onMixerFinished);
+
+    audioElement.play();
+    actions.forEach((action) => action.play());
+  };
+
+  const loopAnimations = (model) => {
     model.animations.forEach((clip: AnimationClip) => {
       const action = mixer.clipAction(clip.optimize());
       action.stop();
@@ -248,6 +266,7 @@ export function init3dExperience(
     if (!mixer) {
       return;
     }
+
     _camera.getWorldDirection(cameraWorldDirection);
 
     const isCameraFaceDown = cameraWorldDirection.y < -0.55;
