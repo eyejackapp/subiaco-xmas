@@ -25,7 +25,7 @@ interface UserFormContextType {
   error: string | null;
   hasSentData: boolean;
   addUser: (userData: Omit<UserData, "id">) => Promise<void>;
-  updateUserEmail: (email: string) => Promise<void>;
+  updateUserFields: (updates:Partial<UserData>) => Promise<void>;
   hasHitSubmissionLimit: () => Promise<boolean>;
 }
 
@@ -76,8 +76,7 @@ export const UserFormProvider = ({ children }: { children: React.ReactNode }) =>
       setLoading(false);
     }
   };
-
-  const updateUserEmail = async (email: string) => {
+  const updateUserFields = async (updates: Partial<UserData>) => {
     setLoading(true);
     setError(null);
     try {
@@ -86,24 +85,25 @@ export const UserFormProvider = ({ children }: { children: React.ReactNode }) =>
         headers: { "Content-Type": "application/json" },
         mode: "no-cors",
         body: JSON.stringify({
-          action: "updateEmail",
-          id: userId,
-          emailAddress: email,
+          action: "updateUser",
+          id: userId, 
+          updates, 
         }),
       });
       await response.text();
-      setMessage("Updated email");
+      setMessage("User updated successfully");
+  
       if (savedFormData) {
-        setSavedFormData({ ...savedFormData, emailAddress: email });
+        setSavedFormData({ ...savedFormData, ...updates });
       }
     } catch (err) {
-      setError("Failed to update user email");
-      console.error("Error updating user email:", err);
+      setError("Failed to update user");
+      console.error("Error updating user:", err);
     } finally {
       setLoading(false);
     }
   };
-
+  
   const hasHitSubmissionLimit = async () => {
     try {
       const response = await fetch(API_URL);
@@ -126,7 +126,7 @@ export const UserFormProvider = ({ children }: { children: React.ReactNode }) =>
         error,
         hasSentData,
         addUser,
-        updateUserEmail,
+        updateUserFields,
         hasHitSubmissionLimit,
       }}
     >

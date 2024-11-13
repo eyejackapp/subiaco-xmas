@@ -2,7 +2,6 @@ import { useState } from "preact/hooks";
 import { ChangeEvent, FormEvent } from "preact/compat";
 import { FadeTransition } from "./Transitions";
 import { Spinner } from "./Spinner";
-import { useLocalStorageState } from "ahooks";
 import { useMount } from "@/hooks/useMount";
 import { useAppState } from "@/hooks/useAppState";
 import { useUserForm } from "@/hooks/useUserForm";
@@ -24,7 +23,7 @@ export const UserForm = () => {
     message,
     loading,
     error,
-    updateUserEmail,
+    updateUserFields,
     hasHitSubmissionLimit,
     savedFormData
   } = useUserForm();
@@ -85,7 +84,20 @@ export const UserForm = () => {
   };
 
   const handleUpdateData = async () => {
-    await updateUserEmail(formData.emailAddress);
+    const updates = Object.entries(formData).reduce((acc, [key, value]) => {
+      if (savedFormData && value !== savedFormData[key as keyof UserFormData]) {
+        acc[key as keyof UserFormData] = value;
+      }
+      return acc;
+    }, {} as Partial<UserFormData>);
+    if (Object.keys(updates).length === 0) {
+      return;
+    }
+    try {
+      await updateUserFields(updates); 
+    } catch (err) {
+      console.error("Failed to update user data:", err);
+    }
   };
 
   useMount(() => {
