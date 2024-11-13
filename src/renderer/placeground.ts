@@ -146,10 +146,11 @@ export function init3dExperience(
     }
   });
 
-  // const audioElement = document.getElementById(
-  //     'ejx-audio',
-  // ) as HTMLAudioElement;
-  // audio.setMediaElementSource(audioElement);
+  const audioElement = document.getElementById(
+      'ejx-audio',
+  ) as HTMLAudioElement;
+  audio.setMediaElementSource(audioElement);
+  audio.hasPlaybackControl = true;
 
   const cameraWorldDirection = new Vector3();
 
@@ -163,6 +164,49 @@ export function init3dExperience(
     });
 
     mixer = new AnimationMixer(model.scene);
+   
+
+    module.emitter.emit("content-loaded");
+
+    model.scene.scale.set(0.8, 0.8, 0.8);
+
+    model.scene.traverse((child: Object3D) => {
+      if ((child as Mesh).isMesh) {
+        child.frustumCulled = false;
+        const mesh = child as Mesh;
+        if (mesh.material) {
+            const material = mesh.material;
+            if (
+              material instanceof MeshStandardMaterial ||
+              material instanceof MeshPhysicalMaterial
+            ) {
+              material.roughness = 0.2;
+              material.metalness = 0.9;
+              material.needsUpdate = true;
+            }
+        }
+      }
+    });
+
+    XR8.XrController.recenter();
+
+    if (model.scene.children[0]) {
+      targetModelPosition.copy(model.scene.children[0].position);
+      const axesHelper = new AxesHelper(1);
+      model.scene.children[0].add(axesHelper);
+    }
+    
+    contentContainer.add(model.scene);
+
+
+    audioElement.src = artworkData.audioPath;
+    audioElement.load();
+    audioElement.oncanplay = () => {
+      console.log('CAN PLAY', audio)
+      audio.context.resume();
+    audioElement.play();
+    };
+
     model.animations.forEach((clip: AnimationClip) => {
       const action = mixer.clipAction(clip.optimize());
       action.setLoop(LoopOnce);
@@ -177,57 +221,6 @@ export function init3dExperience(
       hasShownUnlockedModal = true;
       playAnimationsRepeat(model);
     });
-
-    module.emitter.emit("content-loaded");
-
-    model.scene.scale.set(0.8, 0.8, 0.8);
-
-    // const soundFile = model.parser.json.scenes[0].extras;
-
-    model.scene.traverse((child: Object3D) => {
-      if ((child as Mesh).isMesh) {
-        child.frustumCulled = false;
-        const mesh = child as Mesh;
-        if (mesh.material) {
-          if (Array.isArray(mesh.material)) {
-            mesh.material.forEach((material) => {
-              if (
-                material instanceof MeshStandardMaterial ||
-                material instanceof MeshPhysicalMaterial
-              ) {
-                material.roughness = 0.4;
-                material.metalness = 0.6;
-                material.needsUpdate = true;
-              }
-            });
-          } else {
-            const material = mesh.material;
-            if (
-              material instanceof MeshStandardMaterial ||
-              material instanceof MeshPhysicalMaterial
-            ) {
-              material.roughness = 0.2;
-              material.metalness = 0.9;
-              material.needsUpdate = true;
-            }
-          }
-        }
-      }
-    });
-
-    // audioElement.src = soundFile.sound_file_64;
-    // audioElement.load();
-    // audioElement.oncanplay = () => {
-    //     audioElement.play();
-
-    XR8.XrController.recenter();
-    contentContainer.add(model.scene);
-
-    if (model.scene.children[0]) {
-      targetModelPosition.copy(model.scene.children[0].position);
-      const axesHelper = new AxesHelper(1);
-      model.scene.children[0].add(axesHelper);
-    }
 
     return model.scene;
   };
