@@ -194,7 +194,6 @@ export function init3dExperience(
     const firstChild = scene.children[0];
     if (firstChild) {
       targetModelPosition.copy(firstChild.position);
-      firstChild.add(new AxesHelper(1));
     }
   };
 
@@ -234,6 +233,7 @@ export function init3dExperience(
     const onMixerFinished = () => {
       console.log("Event listener executed once.");
       loopAnimations(model); 
+      module.emitter.emit("on-animation-loop");
       mixer.removeEventListener("finished", onMixerFinished);
     };
 
