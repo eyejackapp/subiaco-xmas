@@ -267,6 +267,9 @@ export function init3dExperience(
       return;
     }
 
+    const delta = clock.getDelta();
+    mixer.update(delta);
+
     _camera.getWorldDirection(cameraWorldDirection);
 
     const isCameraFaceDown = cameraWorldDirection.y < -0.55;
@@ -296,6 +299,7 @@ export function init3dExperience(
         }
       }
     }
+
     if (model.scene) {
       model.scene.children[0].position.lerp(
         targetModelPosition,
@@ -308,8 +312,6 @@ export function init3dExperience(
       );
     }
 
-    const delta = clock.getDelta();
-    mixer.update(delta);
   });
 
   return { loadArtwork };
