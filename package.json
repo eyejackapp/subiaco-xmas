@@ -19,6 +19,8 @@
     "ahooks": "^3.8.1",
     "clsx": "^2.1.1",
     "comlink": "^4.4.1",
+    "embla-carousel": "^8.3.1",
+    "embla-carousel-react": "^8.3.1",
     "keen-slider": "^6.8.6",
     "mitt": "^3.0.1",
     "preact": "^10.24.3",
