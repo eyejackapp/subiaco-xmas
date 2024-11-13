@@ -21,6 +21,9 @@ import {
   RingGeometry,
   Euler,
   Quaternion,
+  AxesHelper,
+  AnimationAction,
+  Material,
 } from "three";
 import { Mesh, Object3D, Clock } from "three";
 import { GLTFLoader } from "three/examples/jsm/Addons.js"; // Note: Ensure the correct path if issues arise
@@ -43,24 +46,6 @@ export function init3dExperience(
   const clock = new Clock(true);
   const raycaster = new Raycaster();
   const tapPosition = new Vector2();
-
-  /*
-  const reticle = new Mesh(
-    new RingGeometry(0.1, 0.2, 32),
-    new MeshBasicMaterial({
-      color: 0xffffff,
-      transparent: true,
-      side: DoubleSide,
-      depthTest: false,
-      depthWrite: false,
-    })
-  );
-  reticle.rotation.x = -Math.PI / 2;
-  reticle.position.set(0, 0, -1);
-  reticle.name = "Reticle";
-  reticle.visible = false;
-  scene.add(reticle);
-  */
 
   const activeRings: Array<{
     mesh: Mesh;
@@ -145,91 +130,120 @@ export function init3dExperience(
     }
   });
 
-  // const audioElement = document.getElementById(
-  //     'ejx-audio',
-  // ) as HTMLAudioElement;
-  // audio.setMediaElementSource(audioElement);
+  const audioElement = document.getElementById("ejx-audio") as HTMLAudioElement;
+  audio.setMediaElementSource(audioElement);
+  audio.hasPlaybackControl = true;
 
   const cameraWorldDirection = new Vector3();
 
   const loadArtwork = async (artworkData: ArtworkModel) => {
-    const loader = new GLTFLoader();
-    model = await loader.loadAsync(artworkData.basePath, (progress) => {
-      module.emitter.emit("content-load-progress", {
-        progress: progress.loaded,
-        total: progress.total,
+    try {
+      const loader = new GLTFLoader();
+      model = await loader.loadAsync(artworkData.basePath, (progress) => {
+        module.emitter.emit("content-load-progress", {
+          progress: progress.loaded,
+          total: progress.total,
+        });
       });
-    });
 
-    mixer = new AnimationMixer(model.scene);
-    model.animations.forEach((clip: AnimationClip) => {
-      const action = mixer.clipAction(clip.optimize());
-      action.setLoop(LoopOnce);
-      action.clampWhenFinished = true;
-      action.play();
-    });
+      mixer = new AnimationMixer(model.scene);
 
-    let hasShownUnlockedModal = false;
-    mixer.addEventListener("finished", (event) => {
-      if (hasShownUnlockedModal) return;
-      module.emitter.emit("on-animation-loop");
-      hasShownUnlockedModal = true;
-      playAnimationsRepeat(model);
-    });
+      module.emitter.emit("content-loaded");
 
-    module.emitter.emit("content-loaded");
+      model.scene.scale.set(0.8, 0.8, 0.8);
+      adjustMaterials(model.scene);
 
-    model.scene.scale.set(0.8, 0.8, 0.8);
+      XR8.XrController.recenter();
 
-    // const soundFile = model.parser.json.scenes[0].extras;
+      setupModelScene(model.scene);
 
-    model.scene.traverse((child: Object3D) => {
+      await prepareAudio(artworkData.audioPath);
+
+      const actions = setupAnimations(model.animations, mixer);
+
+      contentContainer.add(model.scene);
+      startPlayback(actions);
+
+      return model.scene;
+    } catch (error) {
+      console.error("Error loading artwork:", error);
+      throw error;
+    }
+  };
+
+  const adjustMaterials = (scene: Object3D) => {
+    scene.traverse((child) => {
       if ((child as Mesh).isMesh) {
-        child.frustumCulled = false;
         const mesh = child as Mesh;
-        if (mesh.material) {
-          if (Array.isArray(mesh.material)) {
-            mesh.material.forEach((material) => {
-              if (
-                material instanceof MeshStandardMaterial ||
-                material instanceof MeshPhysicalMaterial
-              ) {
-                material.roughness = 0.3;
-                material.metalness = 0.8;
-                material.needsUpdate = true;
-              }
-            });
-          } else {
-            const material = mesh.material;
-            if (
-              material instanceof MeshStandardMaterial ||
-              material instanceof MeshPhysicalMaterial
-            ) {
-              material.roughness = 0.3;
-              material.metalness = 0.8;
-              material.needsUpdate = true;
-            }
-          }
+        mesh.frustumCulled = false;
+
+        const material = mesh.material as Material;
+        if (
+          material instanceof MeshStandardMaterial ||
+          material instanceof MeshPhysicalMaterial
+        ) {
+          material.roughness = 0.2;
+          material.metalness = 0.9;
+          material.needsUpdate = true;
         }
       }
     });
-
-    // audioElement.src = soundFile.sound_file_64;
-    // audioElement.load();
-    // audioElement.oncanplay = () => {
-    //     audioElement.play();
-
-    XR8.XrController.recenter();
-    contentContainer.add(model.scene);
-
-    if (model.scene.children[0]) {
-      targetModelPosition.copy(model.scene.children[0].position);
-    }
-    
-    return model.scene;
   };
 
-  const playAnimationsRepeat = (model) => {
+  const setupModelScene = (scene: Object3D) => {
+    const firstChild = scene.children[0];
+    if (firstChild) {
+      targetModelPosition.copy(firstChild.position);
+      firstChild.add(new AxesHelper(1));
+    }
+  };
+
+  const prepareAudio = (audioPath: string): Promise<void> => {
+    return new Promise((resolve) => {
+      audioElement.src = audioPath;
+      audioElement.load();
+
+      const onCanPlayThrough = () => {
+        audioElement.removeEventListener("canplaythrough", onCanPlayThrough);
+        audio.context.resume();
+        resolve();
+      };
+
+      if (audioElement.readyState >= HTMLMediaElement.HAVE_ENOUGH_DATA) {
+        audio.context.resume();
+        resolve();
+      } else {
+        audioElement.addEventListener("canplaythrough", onCanPlayThrough);
+      }
+    });
+  };
+
+  const setupAnimations = (
+    animations: AnimationClip[],
+    mixer: AnimationMixer
+  ): AnimationAction[] => {
+    return animations.map((clip) => {
+      const action = mixer.clipAction(clip.optimize());
+      action.setLoop(LoopOnce);
+      action.clampWhenFinished = true;
+      return action;
+    });
+  };
+
+  const startPlayback = (actions: AnimationAction[]) => {
+    const onMixerFinished = () => {
+      console.log("Event listener executed once.");
+      loopAnimations(model); 
+      mixer.removeEventListener("finished", onMixerFinished);
+    };
+
+    mixer.addEventListener("finished", onMixerFinished);
+
+    audioElement.play();
+    actions.forEach((action) => action.play());
+  };
+
+  const loopAnimations = (model) => {
     model.animations.forEach((clip: AnimationClip) => {
       const action = mixer.clipAction(clip.optimize());
       action.stop();
@@ -252,6 +266,7 @@ export function init3dExperience(
     if (!mixer) {
       return;
     }
+
     _camera.getWorldDirection(cameraWorldDirection);
 
     const isCameraFaceDown = cameraWorldDirection.y < -0.55;
@@ -287,7 +302,10 @@ export function init3dExperience(
         modelLerpSpeed
       );
 
-      model.scene.children[0].quaternion.slerp(targetQuaternion, modelLerpSpeed);
+      model.scene.children[0].quaternion.slerp(
+        targetQuaternion,
+        modelLerpSpeed
+      );
     }
 
     const delta = clock.getDelta();

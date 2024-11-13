@@ -63,7 +63,7 @@ export const placegroundPipelineModule =
             function (texture) {
                 texture.mapping = THREE.EquirectangularReflectionMapping;
 
-                scene.environment = texture;
+                scene.environment = texture;  
             },
         );
 

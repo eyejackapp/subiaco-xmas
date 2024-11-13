@@ -38,7 +38,8 @@ export function App() {
   const handleHashChange = useCallback(() => {
     clearCurrentArtwork();
     setArtworkState(ArtworkState.PLACING);
-  }, [clearCurrentArtwork, setArtworkState]);
+    renderer?.pauseAudio();
+  }, [clearCurrentArtwork, setArtworkState, renderer]);
 
   const { hash, handleQRFound } = useUrlHash(handleHashChange);
 

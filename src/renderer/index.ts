@@ -137,9 +137,11 @@ export async function initExperienceRenderer(
       return model;
     },
     pauseTracking() {
+      this.pauseAudio()
       moduleEmitter.emit("pause-tracking");
     },
     resumeTracking() {
+      this.resumeAudio()
       moduleEmitter.emit("resume-tracking");
     },
 

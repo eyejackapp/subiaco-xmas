@@ -1,5 +1,5 @@
 import clsx from 'clsx';
-import { useEffect, useMemo, useState } from 'preact/hooks';
+import { useMemo, useState } from 'preact/hooks';
 import useUserDevice from '../../hooks/useUserDevice';
 import { Logo8thWall } from './Logo8thWall';
 import { Spinner } from '../../components/Spinner';
@@ -13,6 +13,7 @@ import TreeDesktop from './assets/tree-desktop.png';
 import Snowflake from './assets/snowflake.svg';
 import { CopyToClipboardTrigger } from './CopyToClipboardTrigger';
 import ClipboardImg from '../../assets/clipboard.svg';
+import useUnlockAudio from '@/hooks/useUnlockAudio';
 
 type SplashProps = {
     onPermissionsGranted: () => void;
@@ -22,6 +23,7 @@ export function Splash({ onPermissionsGranted }: SplashProps) {
     const [pageType, setPageType] = useState<'loading' | 'begin' | 'default'>('loading');
     const [uiType, setUiType] = useState<'loading' | 'default'>('default');
     const { device } = useUserDevice();
+    useUnlockAudio("ejx-audio");
 
     const [permissionDenied, setPermissionDenied] = useState<'camera-denied' | 'motion-denied' | undefined>(undefined);
 
@@ -32,7 +34,7 @@ export function Splash({ onPermissionsGranted }: SplashProps) {
 
     const requestCamera = () => {
         navigator.mediaDevices
-            .getUserMedia({ video: true, audio: true })
+            .getUserMedia({ video: true, audio: false })
             .then(() => {
                 onPermissionsGranted();
                 setUiType('loading');
