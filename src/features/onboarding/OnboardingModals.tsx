@@ -154,6 +154,7 @@ export const OnboardingModals = ({ onClose }: OnboardingModalsProps) => {
                   justifyContent: "center",
                   textAlign: "center",
                   gap: "20px",
+                  fontFamily: "Inter"
                 }}
               >
                 <p>
@@ -197,7 +198,7 @@ export const OnboardingModals = ({ onClose }: OnboardingModalsProps) => {
               <div></div>
               <div
                 style={{
-                  marginTop: "60px",
+                  marginTop: "70px",
                   marginLeft: "30px",
                   marginRight: "30px",
                   display: "flex",
@@ -206,6 +207,7 @@ export const OnboardingModals = ({ onClose }: OnboardingModalsProps) => {
                   justifyContent: "center",
                   textAlign: "center",
                   gap: "20px",
+                  fontFamily: "Inter"
                 }}
               >
                 <p>
