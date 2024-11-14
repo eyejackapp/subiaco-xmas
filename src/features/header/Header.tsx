@@ -10,13 +10,13 @@ import { Modal } from '@/components/Modal/Modal';
 
 
 export const Header = () => {
-    const [isHeaderOpen, setIsHeaderOpen] = useState(false);
     const [infoModalType, setInfoModalType] = useState<'terms' | 'privacy' | undefined>(undefined);
     const onShowInfoModal = (type: 'terms' | 'privacy') => {
         setInfoModalType(type);
     };
+    // const [isHeaderOpen, setIsHeaderOpen] = useState(false);
 
-    const { isSurveyOpen } = useAppState();
+    const { isSurveyOpen, isHeaderOpen, setIsHeaderOpen } = useAppState();
     const { regularArtworks } = useArtwork();
     const { renderer } = useRenderer();
 
@@ -24,14 +24,28 @@ export const Header = () => {
 
     const onToggleHeader = useCallback(() => {
         setIsHeaderOpen((isOpen) => !isOpen);
-    }, []);
+        // isHeaderOpenRef.current = !isHeaderOpenRef.current;
+    }, [setIsHeaderOpen]);
+
+    // useMemo(() => {
+    //     return isHeaderOpen ? setIsHeaderOpen(true) : setIsHeaderOpen(false);
+    // }, [isHeaderOpen]);
+
 
     useMemo(() => {
         return isHeaderOpen ? renderer?.pauseTracking() : renderer?.resumeTracking();
     }, [isHeaderOpen, renderer]);
 
-
     const scrollElement = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        console.log('isSurveyOpen', isSurveyOpen);
+        if (isSurveyOpen) {
+            console.log('scrollElement', scrollElement.current);
+            window.scrollTo(0, 0);
+        }
+    }, [isSurveyOpen, scrollElement]);
+
     useEffect(() => {
         if (!isHeaderOpen) {
             setTimeout(() => {
@@ -40,11 +54,11 @@ export const Header = () => {
         } else {
             if (isPopupOpen) setIsPopupOpen(false);
         }
-    }, [isHeaderOpen, scrollElement, isPopupOpen]);
+    }, [isHeaderOpen, scrollElement, isPopupOpen, isSurveyOpen]);
 
     return (
         <div
-            className={clsx('header-child relative top-0 w-full z-10 bg-gray-100 Header pointer-events-auto', {
+            className={clsx('header-child relative h-full top-0 w-full z-10 bg-gray-100 Header pointer-events-auto', {
                 // 'animate-slide-down': recordingState.state === 'none',
                 // 'animate-slide-up': recordingState.state !== 'none',
             })}
@@ -82,7 +96,7 @@ export const Header = () => {
                 ref={scrollElement}
                 className={clsx('header-bar w-full transition-[max-height] duration-500 ', {
                     'max-h-0 overflow-hidden': !isHeaderOpen,
-                    'max-h-[calc(100dvh)] overflow-scroll': isHeaderOpen,
+                    'max-h-[calc(100dvh)] overflow-scroll pointer-events-auto': isHeaderOpen,
                 })}
             >
                 <HeaderBody

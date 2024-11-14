@@ -1,9 +1,12 @@
-import { useState } from "preact/hooks";
+import { useCallback, useState } from "preact/hooks";
 import { ChangeEvent, FormEvent } from "preact/compat";
 import { useAppState } from "@/hooks/useAppState";
 import { useUserForm } from "@/hooks/useUserForm";
 import clsx from "clsx";
 import { Spinner } from "./Spinner";
+import { useArtwork } from "@/hooks/useArtwork";
+import { ArtworkState } from "@/context/ArtworkContext";
+import { useRenderer } from "@/hooks/useRenderer";
 
 interface UserFormData {
   date: string;
@@ -25,8 +28,10 @@ export const UserForm = () => {
     savedFormData,
   } = useUserForm();
 
-  const { setIsSurveyOpen, setShowThankYouModal } = useAppState();
-
+  const { setIsSurveyOpen, setShowThankYouModal, setIsHeaderOpen, isHeaderOpen } = useAppState();
+  const { artworkState, setArtworkState } = useArtwork();
+  const { renderer } = useRenderer();
+  
   const getLocalTime = () => {
     const now = new Date();
 
@@ -135,6 +140,7 @@ export const UserForm = () => {
       await handleUpdateData();
     } else {
       await addUser(formData);
+      setIsHeaderOpen(false);
       setShowThankYouModal(true);
     }
     setIsSurveyOpen(false);
@@ -157,10 +163,22 @@ export const UserForm = () => {
     }
   };
 
+  const handleClose = useCallback(() => {
+    setIsSurveyOpen(false);
+    console.log("artworkState", artworkState, isHeaderOpen);
+    if (artworkState === ArtworkState.NONE) {
+      renderer?.resumeTracking();
+      setArtworkState(ArtworkState.PLACING); 
+    }
+    if (artworkState === ArtworkState.VIEWING && !isHeaderOpen) {
+      renderer?.resumeTracking();
+    }
+  }, [setIsSurveyOpen, artworkState, setArtworkState, renderer,  isHeaderOpen]);
+
   return (
     <div className="px-6 py-12 max-w-[360px] w-full h-full relative bg-[#EA81A4] overflow-y-scroll">
       <button
-        onClick={() => setIsSurveyOpen(false)}
+        onClick={handleClose}
         className="absolute top-4 right-2 text-black"
       >
         <svg width="33" height="33" viewBox="0 0 33 33" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -171,7 +189,7 @@ export const UserForm = () => {
       <h2 className="text-2xl font-secondary-sans mb-4 text-center">
         Enter your details<br />TO CLAIM YOUR PRIZE!
       </h2>
-      <form onSubmit={handleSubmit} className="flex flex-col items-center text-white text-[13px] leading-[16px]">
+      <form onSubmit={handleSubmit} className="flex flex-col items-center text-white text-[16px] leading-[16px]">
         <div className="relative pb-5 w-full">
           <label htmlFor="fullName">Full Name*</label>
           <input

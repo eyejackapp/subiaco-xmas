@@ -1,4 +1,5 @@
 import { useCallback, useState, useErrorBoundary, useEffect, useMemo } from "preact/hooks";
+import { createPortal } from "preact/compat";
 import Splash from "./features/splash";
 import { FadeTransition } from "./components/Transitions";
 import ErrorPage from "./features/error";
@@ -33,7 +34,7 @@ export function App() {
   const [limitReached, setLimitReached] = useState<boolean>(false);
 
 
-  const { appState, setAppState, setIsSurveyOpen, showThankYouModal, setShowThankYouModal } = useAppState();
+  const { appState, setAppState, isHeaderOpen, setIsSurveyOpen, showThankYouModal, setShowThankYouModal } = useAppState();
   const { renderer, initExperience, loadArtwork, clearCurrentArtwork } = useRenderer();
   const { artworkState, setArtworkState, setCurrentArtwork, currentArtworkModel, regularArtworks, showArtworkUnlocked, setShowArtworkUnlocked, viewedArtworks, setViewedArtworks } = useArtwork();
   const recordingState = useVideoRecorder(renderer!);
@@ -160,12 +161,14 @@ export function App() {
     setShouldShowArtworkUnlocked(false);
     if (regularArtworks!.length == ARTWORKS_LENGTH && !hasViewedCongrats) {
       setShowCongratsModal(true);
+      renderer?.pauseTracking();
     }
-    if (artworkState === ArtworkState.NONE) {
+    if (artworkState === ArtworkState.NONE && hasViewedCongrats) {
       setArtworkState(ArtworkState.PLACING);
+      renderer?.resumeTracking();
 
     }
-  }, [setShowArtworkUnlocked, hasViewedCongrats, regularArtworks, artworkState, setArtworkState]);
+  }, [setShowArtworkUnlocked, hasViewedCongrats, regularArtworks, artworkState, setArtworkState, renderer]);
 
   const handleEnterDetails = useCallback(() => {
     setShowCongratsModal(false);
@@ -173,9 +176,17 @@ export function App() {
     setHasViewedCongrats(true);
   }, [setIsSurveyOpen, setHasViewedCongrats]);
 
-  useMemo(() => {
-    return !hasViewedOnboarding ? renderer?.pauseTracking() : renderer?.resumeTracking();
-  }, [hasViewedOnboarding, renderer]);
+  const shouldRendererPause = useMemo(() => {
+    return (
+      appState === AppState.ONBOARDING ||
+      recordingState.state === 'ready'
+      // (screenOrientation?.includes('landscape') && isMobile)
+    );
+  }, [appState, recordingState]);
+
+  useEffect(() => {
+    return shouldRendererPause ? renderer?.pauseTracking() : renderer?.resumeTracking();
+  }, [shouldRendererPause, renderer]);
 
   const handleOnboardingClose = () => {
     setHasViewedOnboarding(true);
@@ -183,8 +194,31 @@ export function App() {
     setArtworkState(ArtworkState.PLACING);
   }
 
+  const handleThankYouClose = useCallback(() => {
+    setShowThankYouModal(false);
+    if (artworkState === ArtworkState.NONE) {
+      setArtworkState(ArtworkState.PLACING);
+      renderer?.resumeTracking();
+    }
+    if (artworkState === ArtworkState.VIEWING && !isHeaderOpen) {
+      renderer?.resumeTracking();
+
+    }
+  }, [artworkState, setShowThankYouModal, setArtworkState, renderer,  isHeaderOpen]);
+
   const [error] = useErrorBoundary();
 
+  useEffect(() => {
+    console.log('limitReached', limitReached)
+  }, [limitReached])
+
+  useEffect(() => {
+    console.log('artworkStateChange', artworkState)
+  }, [artworkState])
+
+  useEffect(() => {
+    console.log('appStateChange', appState)
+  }, [appState])
   /**
    * JSX
   */
@@ -221,7 +255,7 @@ export function App() {
         </div>
       </FadeTransition>
       <FadeTransition show={appState !== AppState.SPLASH}>
-        <div className="absolute top-0 w-full">
+        <div className="absolute top-0 w-full z-10">
           <Header />
         </div>
       </FadeTransition>
@@ -302,7 +336,7 @@ export function App() {
       </FadeTransition>
 
       <FadeTransition show={showThankYouModal}>
-        <div className="w-full h-full">
+        <div className="w-full h-full absolute inset-0">
           <ModalOverlay>
             <Modal className="centered h-fit bg-[#EA81A4] px-6 py-16 flex justify-center items-center">
               <div className="flex flex-col items-center xjustify-center gap-5 xs:gap-7 xoverflow-scroll">
@@ -326,10 +360,10 @@ export function App() {
                 }
                 <button
                   className="px-4 py-2 border-white border-2 max-w-[220px] xs:max-w-[240px] h-12 xs:h-14 w-full text-white rounded-full font-secondary-sans text-base xs:text-lg"
-                  onClick={handleEnterDetails}
+                  onClick={handleThankYouClose}
                 >
                   <span className="block pt-[2px]">
-                    Enter your details
+                    OK
                   </span>
                 </button>
 
