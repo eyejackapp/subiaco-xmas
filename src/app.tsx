@@ -144,7 +144,11 @@ export function App() {
 
   const onVideoCleared = useCallback(() => {
     setAppState(AppState.ARTWORK_VIEWING);
-  }, [setAppState]);
+    renderer?.resumeTracking()
+    if (recordingState.state === 'ready') {
+      recordingState.clear();
+    }
+  }, [setAppState, renderer, recordingState]);
 
   useEffect(() => {
     if (recordingState.state !== 'ready') return;
