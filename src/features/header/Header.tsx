@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'preact/hooks';
-import { memo } from 'preact/compat';
 import { ARTWORKS_LENGTH } from '../../renderer/artworks';
 import clsx from 'clsx';
 import { HeaderBody } from './HeaderBody';
