@@ -1,12 +1,12 @@
 export const QR_CODE_LOOKUP = {
-    '1': 'xmas-tree',
-    '2': 'toy-parade',
+    '1': 'present-storm',
+    '2': 'santa-sleigh',
     '3': 'snow-globe',
-    '4': 'santa-sleigh',
-    '5': 'santa-selfie',
-    '6': 'present-storm',
-    '7': 'snow-man',
-    '8': 'bonus-orbs',
+    '4': 'santa-selfie',
+    '5': 'xmas-tree',
+    '6': 'toy-parade',
+    '7': 'orbs',
+    '8': 'bonus-snowman',
 } as const;
 
 const validCodes = Object.keys(QR_CODE_LOOKUP);

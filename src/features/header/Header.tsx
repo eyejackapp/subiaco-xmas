@@ -43,7 +43,6 @@ export const Header = () => {
         }
     }, [isHeaderOpen, scrollElement, isPopupOpen]);
 
-
     return (
         <div
             className={clsx('header-child relative top-0 w-full z-10 bg-gray-100 Header pointer-events-auto', {

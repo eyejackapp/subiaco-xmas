@@ -20,6 +20,7 @@ import MediaPreview from "./features/media-preview";
 import { useLocalStorageState } from "ahooks";
 import { OnboardingModals } from "./features/onboarding";
 import { useUserForm } from "./hooks/useUserForm";
+import Star from './assets/star-lg.svg';
 
 export function App() {
   const [loadingArtwork, setLoadingArtwork] = useState(false);
@@ -32,7 +33,7 @@ export function App() {
 
   const { appState, setAppState, setIsSurveyOpen, showThankYouModal, setShowThankYouModal } = useAppState();
   const { renderer, initExperience, loadArtwork, clearCurrentArtwork } = useRenderer();
-  const { artworkState, setArtworkState, setCurrentArtwork, currentArtwork, regularArtworks, tappedArtwork, showArtworkUnlocked, setShowArtworkUnlocked, viewedArtworks, setViewedArtworks } = useArtwork();
+  const { artworkState, setArtworkState, setCurrentArtwork, currentArtwork, currentArtworkModel, regularArtworks, tappedArtwork, showArtworkUnlocked, setShowArtworkUnlocked, viewedArtworks, setViewedArtworks } = useArtwork();
   const recordingState = useVideoRecorder(renderer!);
   const { hasHitSubmissionLimit } = useUserForm();
 
@@ -100,7 +101,7 @@ export function App() {
         return;
       }
 
-      const viewedArtworksList = viewedArtworks ?? []; 
+      const viewedArtworksList = viewedArtworks ?? [];
       if (!viewedArtworksList?.includes(artworkId)) {
         setViewedArtworks([...viewedArtworksList, artworkId]);
         setShouldShowArtworkUnlocked(true);
@@ -214,15 +215,18 @@ export function App() {
       <FadeTransition show={showArtworkUnlockedModal}>
         <div className="w-full h-full">
           <ModalOverlay>
-            <Modal className="centered h-fit bg-[#EA81A4] px-8 py-16 flex justify-center items-center">
-              <div className="flex flex-col items-center justify-center gap-8">
-                <h2 className="text-3xl font-bold text-center">Artwork Unlocked!</h2>
-                <h3>Artwork: {artworkToShow}</h3>
+            <Modal className="centered h-fit bg-[#EA81A4] px-6 xs:px-8 py-12 flex justify-center items-center">
+              <div className="flex flex-col gap-8 items-center w-full">
+                {currentArtworkModel?.unlockedInfo && <img src={Star} className="absolute -top-9 left-1/2 -translate-x-1/2 z-10" />}
+                <h2 className="text-2xl text-center font-secondary-sans">{currentArtworkModel?.artist}<br /> Unlocked!</h2>
+                {currentArtworkModel?.unlockedLogo && (<img src={currentArtworkModel?.unlockedLogo} className="" />)}
+                {currentArtworkModel?.unlockedInfo && <p className="leading-[20px] text-center" dangerouslySetInnerHTML={{ __html: currentArtworkModel?.unlockedInfo ?? '' }}></p>}
                 <button
-                  className="mt-4 px-4 py-2 border-white border-2 max-w-[230px] w-full text-white rounded"
+                  className="px-4 py-2 border-white border-2 max-w-[230px] h-14 w-full text-white rounded-full font-secondary-sans text-lg"
                   onClick={handleCloseArtworkUnlockedModal}
                 >
-                  OK
+                  <span className="block pt-[2px]">OK</span>
+
                 </button>
               </div>
             </Modal>

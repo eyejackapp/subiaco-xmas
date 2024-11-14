@@ -8,11 +8,11 @@ type ModalProps = {
     children: ReactNode;
 };
 
-export const Modal = ({ maxWidth = 'max-w-[370px]', maxHeight = 'max-h-[600px]', className, children }: ModalProps) => {
+export const Modal = ({ maxWidth = 'max-w-[390px]', maxHeight = 'max-h-[600px]', className, children }: ModalProps) => {
     return (
         <div
             className={clsx(
-                'bg-cover z-50 overflow-hidden w-[90%] h-[90%] rounded-3xl',
+                'bg-cover z-50 xoverflow-hidden w-[90%] h-[90%] rounded-3xl',
                 className,
                 maxWidth,
                 maxHeight,
