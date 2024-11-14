@@ -35,18 +35,30 @@ export function App() {
 
   const { appState, setAppState, setIsSurveyOpen, showThankYouModal, setShowThankYouModal } = useAppState();
   const { renderer, initExperience, loadArtwork, clearCurrentArtwork } = useRenderer();
-  const { artworkState, setArtworkState, setCurrentArtwork, currentArtwork, currentArtworkModel, regularArtworks, tappedArtwork, showArtworkUnlocked, setShowArtworkUnlocked, viewedArtworks, setViewedArtworks } = useArtwork();
+  const { artworkState, setArtworkState, setCurrentArtwork, currentArtworkModel, regularArtworks, showArtworkUnlocked, setShowArtworkUnlocked, viewedArtworks, setViewedArtworks } = useArtwork();
   const recordingState = useVideoRecorder(renderer!);
   const { hasHitSubmissionLimit } = useUserForm();
 
+  const handleShowingArtworkUnlockedModal = useCallback(() => {
+    if (shouldShowArtworkUnlocked) {
+      setShowArtworkUnlocked(true)
+    }
+
+  }, [shouldShowArtworkUnlocked, setShowArtworkUnlocked]);
+
   const handleHashChange = useCallback(() => {
+    if (shouldShowArtworkUnlocked) {
+      setArtworkState(ArtworkState.NONE);
+      setShowArtworkUnlocked(true)
+    } else {
+      setArtworkState(ArtworkState.PLACING);
+
+    }
     clearCurrentArtwork();
-    setArtworkState(ArtworkState.PLACING);
     renderer?.pauseAudio();
-  }, [clearCurrentArtwork, setArtworkState, renderer]);
+  }, [clearCurrentArtwork, setArtworkState, renderer, shouldShowArtworkUnlocked, setShowArtworkUnlocked]);
 
   const { hash, handleQRFound } = useUrlHash(handleHashChange);
-
 
   useEffect(() => {
     const handleVisiblityChange = () => {
@@ -63,15 +75,9 @@ export function App() {
     };
   }, [renderer]);
 
-  const artworkToShow = tappedArtwork || currentArtwork;
 
   useEffect(() => {
     if (!renderer) return;
-    const handleShowingArtworkUnlockedModal = () => {
-      if (shouldShowArtworkUnlocked) {
-        setShowArtworkUnlocked(true)
-      }
-    }
 
     renderer.on('qr-scan-result', handleQRFound);
     renderer.on('on-animation-loop', handleShowingArtworkUnlockedModal);
@@ -79,7 +85,7 @@ export function App() {
       renderer.off('qr-scan-result', handleQRFound);
       renderer.off('on-animation-loop', handleShowingArtworkUnlockedModal);
     };
-  }, [renderer, handleQRFound, setShowArtworkUnlocked, shouldShowArtworkUnlocked]);
+  }, [renderer, handleQRFound, setShowArtworkUnlocked, shouldShowArtworkUnlocked, handleShowingArtworkUnlockedModal]);
 
 
   const handleInitExperience = useCallback(async () => {
@@ -147,14 +153,19 @@ export function App() {
   const showArtworkUnlockedModal =
     showArtworkUnlocked &&
     recordingState.state === 'none' &&
-    artworkState === ArtworkState.VIEWING;
+    (artworkState === ArtworkState.VIEWING || artworkState === ArtworkState.NONE);
 
   const handleCloseArtworkUnlockedModal = useCallback(() => {
     setShowArtworkUnlocked(false);
+    setShouldShowArtworkUnlocked(false);
     if (regularArtworks!.length == ARTWORKS_LENGTH && !hasViewedCongrats) {
       setShowCongratsModal(true);
     }
-  }, [setShowArtworkUnlocked, hasViewedCongrats, regularArtworks]);
+    if (artworkState === ArtworkState.NONE) {
+      setArtworkState(ArtworkState.PLACING);
+
+    }
+  }, [setShowArtworkUnlocked, hasViewedCongrats, regularArtworks, artworkState, setArtworkState]);
 
   const handleEnterDetails = useCallback(() => {
     setShowCongratsModal(false);

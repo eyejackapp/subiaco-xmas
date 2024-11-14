@@ -139,7 +139,7 @@ function ArtworkList() {
             {ARTWORK_ARRAY.map((model, index) => {
                 const isViewed = viewedArtworks?.includes(model.artworkId);
                 const isBonus = model.artworkId.startsWith("bonus") && !isViewed;
-                const hasPrize = 'unlockedInfo' in model;
+                const hasPrize = model.unlockedInfo;
                 const paddedArtworkIndex = String(index + 1).padStart(2, '0');
 
                 return (

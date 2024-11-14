@@ -45,10 +45,13 @@ export const ArtworkProvider = ({ children }) => {
   const [currentArtwork, setCurrentArtwork] = useState<ArtworkId | undefined>(undefined);
   const [artworkState, setArtworkState] = useState<ArtworkState>(ArtworkState.NONE);
   const [showArtworkUnlocked, setShowArtworkUnlocked] = useState(false);
+  const [tappedArtwork, setTappedArtwork] = useState<ArtworkId | null>(null);
+
+  const artworkToShow = tappedArtwork || currentArtwork;
 
   const currentArtworkModel = useMemo(() => {
-    return currentArtwork ? ARTWORKS[currentArtwork] : undefined;
-  }, [currentArtwork]);
+    return artworkToShow ? ARTWORKS[artworkToShow] : undefined;
+  }, [artworkToShow]);
 
   const [viewedArtworks, setViewedArtworks] = useLocalStorageState<ArtworkId[] | undefined>('viewedArtworks', {
     defaultValue: [],
@@ -56,7 +59,6 @@ export const ArtworkProvider = ({ children }) => {
 
   const regularArtworks = useMemo(() => viewedArtworks?.filter((artwork) => !artwork.startsWith('bonus')), [viewedArtworks]);
 
-  const [tappedArtwork, setTappedArtwork] = useState<ArtworkId | null>(null);
 
   return (
     <ArtworkContext.Provider

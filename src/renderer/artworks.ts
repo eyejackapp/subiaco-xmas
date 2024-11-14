@@ -17,8 +17,8 @@ type ArtworkDefiniton = {
   basePath: string;
   audioPath: string;
   image: string;
-  unlockedInfo?: string;
-  unlockedLogo?: string;
+  unlockedInfo: string;
+  unlockedLogo: string;
   index: number;
 };
 
@@ -39,6 +39,8 @@ export const ARTWORKS = {
     basePath: "/content/Santa_Sleigh.glb",
     audioPath: "/content/audio/Santa_Sleigh.mp3",
     image: SantaSleigh,
+    unlockedInfo: "",
+    unlockedLogo: "",
     index: 1,
   },
   "snow-globe": {
@@ -47,6 +49,8 @@ export const ARTWORKS = {
     basePath: "/content/Snow_Globe.glb",
     audioPath: "/content/audio/Snow_Globe.mp3",
     image: SnowGlobe,
+    unlockedInfo: "",
+    unlockedLogo: "",
     index: 2,
   },
   "santa-selfie": {
@@ -55,6 +59,8 @@ export const ARTWORKS = {
     basePath: "/content/Santa_Selfie.glb",
     audioPath: "/content/audio/Santa_Selfie.mp3",
     image: SantaSelfie,
+    unlockedInfo: "",
+    unlockedLogo: "",
     index: 3,
   },
   "xmas-tree": {
@@ -73,6 +79,8 @@ export const ARTWORKS = {
     basePath: "/content/Toy_Parade.glb",
     audioPath: "/content/audio/Toy_Parade.mp3",
     image: ToyParade,
+    unlockedInfo: "",
+    unlockedLogo: "",
     index: 5,
   },
   "orbs": {
@@ -81,6 +89,8 @@ export const ARTWORKS = {
     basePath: "/content/Orbs.glb",
     audioPath: "/content/audio/Orbs.mp3",
     image: Orbs,
+    unlockedInfo: "",
+    unlockedLogo: "",
     index: 6,
   },
   "bonus-snowman": {

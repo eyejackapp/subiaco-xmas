@@ -164,10 +164,9 @@ export const UserForm = () => {
         className="absolute top-4 right-2 text-black"
       >
         <svg width="33" height="33" viewBox="0 0 33 33" fill="none" xmlns="http://www.w3.org/2000/svg">
-<circle opacity="0.1" cx="16.5" cy="16.5" r="16.5" fill="white"/>
-<path fill-rule="evenodd" clip-rule="evenodd" d="M12.6291 11.3033C12.263 10.9372 11.6694 10.9372 11.3033 11.3033C10.9372 11.6694 10.9372 12.263 11.3033 12.6292L15.2808 16.6066L11.3033 20.5841C10.9372 20.9502 10.9372 21.5438 11.3033 21.9099C11.6694 22.276 12.263 22.276 12.6291 21.9099L16.6066 17.9325L20.5841 21.9099C20.9502 22.276 21.5438 22.276 21.9099 21.9099C22.276 21.5438 22.276 20.9502 21.9099 20.5841L17.9324 16.6066L21.9099 12.6292C22.276 12.263 22.276 11.6694 21.9099 11.3033C21.5438 10.9372 20.9502 10.9372 20.5841 11.3033L16.6066 15.2808L12.6291 11.3033Z" fill="white"/>
-</svg>
-
+          <circle opacity="0.1" cx="16.5" cy="16.5" r="16.5" fill="white" />
+          <path fill-rule="evenodd" clip-rule="evenodd" d="M12.6291 11.3033C12.263 10.9372 11.6694 10.9372 11.3033 11.3033C10.9372 11.6694 10.9372 12.263 11.3033 12.6292L15.2808 16.6066L11.3033 20.5841C10.9372 20.9502 10.9372 21.5438 11.3033 21.9099C11.6694 22.276 12.263 22.276 12.6291 21.9099L16.6066 17.9325L20.5841 21.9099C20.9502 22.276 21.5438 22.276 21.9099 21.9099C22.276 21.5438 22.276 20.9502 21.9099 20.5841L17.9324 16.6066L21.9099 12.6292C22.276 12.263 22.276 11.6694 21.9099 11.3033C21.5438 10.9372 20.9502 10.9372 20.5841 11.3033L16.6066 15.2808L12.6291 11.3033Z" fill="white" />
+        </svg>
       </button>
       <h2 className="text-2xl font-secondary-sans mb-4 text-center">
         Enter your details<br />TO CLAIM YOUR PRIZE!
@@ -287,22 +286,22 @@ export const UserForm = () => {
             <path fill-rule="evenodd" clip-rule="evenodd" d="M6.37622 8.40688C5.99629 9.09766 5.00371 9.09766 4.62378 8.40688L0.815055 1.48192C0.448505 0.815465 0.930668 0 1.69127 0L9.30873 0C10.0693 0 10.5515 0.815466 10.1849 1.48192L6.37622 8.40688Z" fill="#FAEFD5" />
           </svg>
         </div>
-      <button
-        type="submit"
-        disabled={!isFormValid || loading}
-        className={clsx("px-4 py-2 border-white border-2 max-w-[220px] xs:max-w-[240px] h-12 xs:h-14 w-full text-white rounded-full font-secondary-sans text-base xs:text-lg", {
-          "opacity-50 cursor-not-allowed": !isFormValid || loading,
-        })}
-      >
-        {loading ?  <span className="block h-full w-full pt-[2px]"><div className=" absolute left-1/2 -translate-x-1/2"><Spinner size="md" className=""/></div></span> :
-         <span className="block pt-[2px]">
-         { savedFormData ? "Update" : "Send"}
-         </span>
-        }
-       
-      </button>
+        <button
+          type="submit"
+          disabled={!isFormValid || loading}
+          className={clsx("px-4 py-2 border-white border-2 max-w-[220px] xs:max-w-[240px] h-12 xs:h-14 w-full text-white rounded-full font-secondary-sans text-base xs:text-lg", {
+            "opacity-50 cursor-not-allowed": !isFormValid || loading,
+          })}
+        >
+          {loading ? <span className="block h-full w-full pt-[2px]"><div className=" absolute left-1/2 -translate-x-1/2"><Spinner size="md" className="" /></div></span> :
+            <span className="block pt-[2px]">
+              {savedFormData ? "Update" : "Send"}
+            </span>
+          }
+
+        </button>
       </form>
-     
+
       {error && <p className="mt-4 text-[#FF454A]">{error}</p>}
     </div>
   );
