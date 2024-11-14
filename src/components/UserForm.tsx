@@ -167,13 +167,13 @@ export const UserForm = () => {
     setIsSurveyOpen(false);
     console.log("artworkState", artworkState, isHeaderOpen);
     if (artworkState === ArtworkState.NONE) {
-      renderer?.resumeTracking();
+      // renderer?.resumeTracking();
       setArtworkState(ArtworkState.PLACING); 
     }
     if (artworkState === ArtworkState.VIEWING && !isHeaderOpen) {
       renderer?.resumeTracking();
     }
-  }, [setIsSurveyOpen, artworkState, setArtworkState, renderer,  isHeaderOpen]);
+  }, [setIsSurveyOpen, artworkState, setArtworkState, isHeaderOpen, renderer]);
 
   return (
     <div className="px-6 py-12 max-w-[360px] w-full h-full relative bg-[#EA81A4] overflow-y-scroll">

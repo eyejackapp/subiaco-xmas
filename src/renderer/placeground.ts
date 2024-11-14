@@ -228,26 +228,35 @@ export function init3dExperience(
       return action;
     });
   };
-
+  
   const startPlayback = (actions: AnimationAction[]) => {
+    let hasShownUnlockedModal = false;
     const onMixerFinished = () => {
+      console.log('run listener every time')
+      audioElement.currentTime = 0;
+      loopAnimations(model);
+      if (hasShownUnlockedModal) return;
       console.log("Event listener executed once.");
-      loopAnimations(model); 
       module.emitter.emit("on-animation-loop");
-      mixer.removeEventListener("finished", onMixerFinished);
+      // mixer.removeEventListener("finished", onMixerFinished);
+      hasShownUnlockedModal = true;
     };
+      mixer.removeEventListener("finished", onMixerFinished);
 
     mixer.addEventListener("finished", onMixerFinished);
-
+    // audioElement.currentTime = 0;
     audioElement.play();
-    actions.forEach((action) => action.play());
+    actions.forEach((action) => {
+      action.play();
+    });
   };
 
+  
   const loopAnimations = (model) => {
     model.animations.forEach((clip: AnimationClip) => {
       const action = mixer.clipAction(clip.optimize());
       action.stop();
-      action.setLoop(LoopRepeat);
+      action.setLoop(LoopOnce, 0);
       action.play();
     });
   };
@@ -311,7 +320,6 @@ export function init3dExperience(
         modelLerpSpeed
       );
     }
-
   });
 
   return { loadArtwork };
