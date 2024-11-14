@@ -254,7 +254,7 @@ export function App() {
           <ModalOverlay>
             <Modal className="centered h-fit bg-[#EA81A4] px-6 xs:px-8 py-10 xs:py-12 flex justify-center xitems-center max-h-[655px]">
               <div className="flex flex-col items-center xjustify-center gap-5 xs:gap-7 xoverflow-scroll">
-              <img src={CongratsStars} className="absolute -top-10 xs:-top-12 left-1/2 -translate-x-1/2 max-w-[160px] xs:max-w-[195px] w-full h-auto" />
+                <img src={CongratsStars} className="absolute -top-10 xs:-top-12 left-1/2 -translate-x-1/2 max-w-[160px] xs:max-w-[195px] w-full h-auto" />
                 <h2 className="text-xl sm:text-2xl text-center font-secondary-sans">Congratulations!</h2>
                 <img src={CongratsLogo} className="w-[100px] xs:w-[140px] h-auto" />
                 {limitReached ?
@@ -282,7 +282,6 @@ export function App() {
                   <span className="block pt-[2px]">
                     Enter your details
                   </span>
-
                 </button>
 
               </div>
@@ -294,15 +293,35 @@ export function App() {
       <FadeTransition show={showThankYouModal}>
         <div className="w-full h-full">
           <ModalOverlay>
-            <Modal className="centered h-fit bg-[#EA81A4] px-8 py-16 flex justify-center items-center">
-              <div className="flex flex-col items-center justify-center gap-8">
-                <h2 className="text-3xl font-bold text-center">THANK YOU!</h2>
+            <Modal className="centered h-fit bg-[#EA81A4] px-6 py-16 flex justify-center items-center">
+              <div className="flex flex-col items-center xjustify-center gap-5 xs:gap-7 xoverflow-scroll">
+                <h2 className="text-xl sm:text-2xl text-center font-secondary-sans">Thank You!</h2>
+                {limitReached ?
+                  <p className="text-sm xs:text-base leading-[18px] xs:leading-[20px] text-center">
+                    We hope you enjoyed the Twinkling Treasure Hunt as part of the Subiaco Twilight Trail!
+                    <br /><br />
+                    Please present this screen at Whisk Creamery to claim a free ice-cream to the value of $6.50. You are also in the draw to win a year's worth of free ice-cream from Whisk Creamery. Winners will be contacted on 6 January.
+                    <br /><br />
+                    To stay up to date visit <a href="https://seesubiaco.com.au/" target="_blank" className="underline active:opacity-75">seesubiaco.com.au</a>
+                  </p>
+                  :
+                  <p className="text-sm xs:text-base leading-[18px] xs:leading-[20px] text-center">
+                    We hope you enjoyed the Twinkling Treasure Hunt as part of the Subiaco Twilight Trail!
+                    <br /><br />
+                    You are now in the draw to win a year's worth of free ice-cream from Whisk Creamery or one of four merch packs. Winners will be contacted on 6 January.
+                    <br /><br />
+                    To stay up to date visit <a href="https://seesubiaco.com.au/" target="_blank" className="underline active:opacity-75">seesubiaco.com.au</a>
+                  </p>
+                }
                 <button
-                  className="mt-4 px-4 py-2 border-white border-2 max-w-[230px] w-full text-white rounded"
-                  onClick={() => setShowThankYouModal(false)}
+                  className="px-4 py-2 border-white border-2 max-w-[220px] xs:max-w-[240px] h-12 xs:h-14 w-full text-white rounded-full font-secondary-sans text-base xs:text-lg"
+                  onClick={handleEnterDetails}
                 >
-                  Ok
+                  <span className="block pt-[2px]">
+                    Enter your details
+                  </span>
                 </button>
+
               </div>
             </Modal>
           </ModalOverlay>
