@@ -13,7 +13,7 @@ export default {
             },
             fontFamily: {
                 sans: ['Inter', ...defaultTheme.fontFamily.sans],
-                'secondary-sans': ['roboto', ...defaultTheme.fontFamily.sans],
+                'secondary-sans': ['macaria', ...defaultTheme.fontFamily.sans],
                 'number-sans': ['URWDIN', ...defaultTheme.fontFamily.sans],
             },
             animation: {

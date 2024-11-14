@@ -65,7 +65,7 @@ a {
 @layer base {
     html,
     body {
-        @apply !bg-[#1a2358];
+        /* @apply !bg-[#1a2358]; */
     }
 }
 #app {
@@ -96,6 +96,10 @@ a {
         text-shadow:
             0px 0px 20px rgba(0, 0, 0, 0.15),
             0px 2px 0px rgba(0, 0, 0, 0.25);
+    }
+    .font-light {
+        /* weird bug with variable fonts - this is 'regular' boldness */
+        font-weight: 300;
     }
     .font-regular {
         /* weird bug with variable fonts - this is 'regular' boldness */

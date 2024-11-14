@@ -10,21 +10,18 @@ import { MapViewer } from './MapViewer';
 import { useArtwork } from '@/hooks/useArtwork';
 import { useAppState } from '@/hooks/useAppState';
 import { useUserForm } from '@/hooks/useUserForm';
+import { FadeTransition } from '@/components/Transitions';
 
 export type HeaderBodyProps = {
     onToggleHeader: () => void;
-    // onShowInfoModal: (type: 'terms' | 'privacy') => void;
+    onShowInfoModal: (type: 'terms' | 'privacy') => void;
 };
 
-export function HeaderBody({ onToggleHeader }: HeaderBodyProps) {
+export function HeaderBody({ onToggleHeader, onShowInfoModal }: HeaderBodyProps) {
     const [isMapOpen, setIsMapOpen] = useState(false);
 
     const { regularArtworks } = useArtwork();
     const { setIsSurveyOpen } = useAppState();
-
-    const onMapVisible = useCallback(() => {
-        setIsMapOpen((isOpen) => !isOpen);
-    }, [setIsMapOpen]);
 
     const canClaimPrize = regularArtworks && regularArtworks.length === ARTWORKS_LENGTH;
 
@@ -34,16 +31,24 @@ export function HeaderBody({ onToggleHeader }: HeaderBodyProps) {
         <div className="w-full relative bg-[#F0493C]">
             <ArtworkList />
             <span className="block h-[1px] w-full"></span>
-            <Map onMapVisible={onMapVisible} />
+
+            <div className="bg-[url('/src/features/header/assets/map-sm.webp')] w-full h-44 flex items-center justify-center bg-contain">
+                <button
+                    className="w-[230px] h-14 font-secondary-sans rounded-full text-lg bg-[#C4A056] active:bg-white active:text-[#C4A056]"
+                    onClick={() => setIsMapOpen(true)}
+                >
+                    <span className="block pt-[2px]">View Locations</span>
+                </button>
+            </div>
             {isMapOpen && createPortal(
-                <div className="fixed z-[1000] inset-0 pointer-events-auto h-full w-full animate-fade-in">
+                <div className="fixed z-[1000] inset-0 pointer-events-auto h-full w-full animate-fade-in bg-[#C4A056]">
                     <ZoomPanPinch>
                         <MapViewer />
                     </ZoomPanPinch>
 
                     <button
                         className="fixed bottom-10 z-50 left-1/2 -translate-x-1/2 active:text-[#C4A056]"
-                        onClick={onMapVisible}
+                        onClick={() => setIsMapOpen(false)}
                     >
                         <svg
                             className="group"
@@ -73,19 +78,20 @@ export function HeaderBody({ onToggleHeader }: HeaderBodyProps) {
                             />
                         </svg>
                     </button>
-                </div>, document.body
-            )}
-            <div className="w-full flex flex-col gap-4 justify-center items-center">
-                <h2 className="text-base font-bold px-5 pt-5">{canClaimPrize ? 'You have unlocked all 7!' : 'Unlock all 7 for your chance to win'}</h2>
-                <button onClick={() => setIsSurveyOpen(true)} className="border-2 border-white max-w-[200px] w-full px-2 py-4 rounded-md disabled:bg-gray-400" disabled={!canClaimPrize}>{hasSentData ? 'Update Details' : 'Claim your prize'}</button>
+                </div>, document.body)}
+            <div className="w-full flex flex-col gap-6 justify-center items-center bg-[#F184AE] px-5 py-10">
+                <h2 className="text-base font-bold px-5">{canClaimPrize ? 'You have unlocked all 7!' : 'Unlock all 7 for your chance to win'}</h2>
+                <button onClick={() => setIsSurveyOpen(true)} className="w-[230px] h-14 font-secondary-sans rounded-full text-lg border-2 border-white active:bg-white active:text-black disabled:opacity-50 disabled:bg-transparent disabled:text-white " disabled={!canClaimPrize}>
+                    <span className="block pt-[2px]">
+                        {hasSentData ? 'Update Details' : 'Claim your prize'}</span></button>
             </div>
             <Instructions />
             {/* <FAQs /> */}
             <div className="flex justify-between items-end px-5">
-                <div className="text-base flex gap-4 ">
-                    {/* <button className="text-xs font-[500] underline" onClick={() => onShowInfoModal('terms')}>
+                <div className="text-base">
+                    <button className="text-xs font-[500] underline pr-4" onClick={() => onShowInfoModal('terms')}>
                         Terms & Conditions
-                    </button> */}
+                    </button>
                     <a href="https://eyejackapp.com/pages/privacy" target="_blank" rel="noreferrer">
                         <button className="text-xs font-[500] underline">Privacy Policy</button>
                     </a>
@@ -101,7 +107,7 @@ export function HeaderBody({ onToggleHeader }: HeaderBodyProps) {
                     >
                         <path
                             d="M13 13L1 12.9999M13 13L13 7L13 1M13 13L2 2"
-                            stroke="#82FFD9"
+                            stroke="#ffffff"
                             strokeWidth="2"
                             strokeLinecap="round"
                             strokeLinejoin="round"
@@ -118,7 +124,7 @@ export function HeaderBody({ onToggleHeader }: HeaderBodyProps) {
 
 
 function ArtworkList() {
-    const { viewedArtworks, currentArtwork, setTappedArtwork, setShowArtworkUnlocked, regularArtworks } = useArtwork();
+    const { viewedArtworks, setTappedArtwork, setShowArtworkUnlocked } = useArtwork();
 
     const handleArtworkTap = useCallback(
         (artworkId: ArtworkId) => {
@@ -135,16 +141,15 @@ function ArtworkList() {
                 const isBonus = model.artworkId.startsWith("bonus") && !isViewed;
                 const hasPrize = 'unlockedInfo' in model;
                 const paddedArtworkIndex = String(index + 1).padStart(2, '0');
+
                 return (
                     <div
                         key={model.artworkId}
                         className={clsx(
-                            `basis-[27%] h-full aspect-square border-2 rounded-full relative text-[10px] font-bold text-oslo-gray-400 before:content-[attr(data-before-content)] before:absolute before:-top-[2px] before:-left-[2px] before:font-number-sans active:border-opacity-50 `,
+                            `basis-[27%] h-full aspect-square outline xborder-2 xoutline-2 outline-offset-[-1px] rounded-full relative text-[10px] font-bold text-oslo-gray-400 before:content-[attr(data-before-content)] before:absolute before:-top-[2px] before:-left-[2px] before:font-number-sans active:opacity-90 `,
                             {
-                                // 'border-2': !isCurrent,
-                                // 'border-3': isCurrent,
-                                'border-[#FEF0D5]': !isViewed,
-                                'border-[#FFE033]' : isViewed && hasPrize,
+                                'outline-[#FEF0D5] xborder-[#FEF0D5]': !isViewed,
+                                'outline-[#FFE033] xborder-[#FFE033]': isViewed && hasPrize,
                                 'xborder-white ': isViewed,
                             },
                         )}
@@ -152,16 +157,16 @@ function ArtworkList() {
                         data-before-content={paddedArtworkIndex}
                     >
                         <div
-                            className={clsx('absolute  w-full h-full aspect-square overflow-hidden rounded-full', {
+                            className={clsx('absolute  w-full h-full aspect-square overflow-hidden rounded-full ', {
                                 'opacity-100': isViewed,
                                 ' bg-black': !isViewed,
                             })}
                         >
-                            {!isViewed && <div className="absolute bg-black w-full h-full opacity-70"></div>}
+                            {!isViewed && <div className="absolute bg-black w-full h-full opacity-70 "></div>}
                             <img src={model.image} alt="image of artwork" className="w-full h-full aspect-square" />
                         </div>
                         {!isBonus && !isViewed && <img src={QuestionMark} className="absolute w-full h-full p-3 xs:p-5 sm:p-7 aspect-square" />}
-                        {isBonus && <img src={Bonus} className="absolute w-full h-full p-3 aspect-square" />}
+                        {isBonus && !isViewed && <img src={Bonus} className="absolute w-full h-full p-3 aspect-square" />}
                         {hasPrize && isViewed && <img src={Star} className="absolute left-1/2 -translate-x-1/2 -top-4 aspect-square" />}
                     </div>
                 );
@@ -170,49 +175,23 @@ function ArtworkList() {
     );
 }
 
-type MapProps = {
-    onMapVisible: () => void;
-};
-function Map({ onMapVisible }: MapProps) {
-    return (
-        <div className="bg-[url('/src/features/header/assets/map-sm.png')] w-full h-44 flex items-center justify-center bg-contain">
-            <button
-                className="w-56 h-14 font-regular rounded-full text-lg bg-cb-green-500 active:bg-white active:text-cb-blue-950"
-                onClick={onMapVisible}
-            >
-                <span className="block pt-[2px]">View Locations</span>
-            </button>
-        </div>
-    );
-}
-
 function Instructions() {
     return (
         <div className="flex flex-col gap-y-4 px-5 py-10">
-            <h2 className="text-base font-bold">About</h2>
-            <p className="text-sm text-cb-iron-300 leading-[18px] tracking-[-0.2px]">
-                Bankstown Arts Centre is home to engaging contemporary arts. As a multi-art form organisation, we
-                champion experimental art practices and diverse artistic expressions for social impact and creative
-                excellence. <br />
-                <br />
-                Explore the heart of Bankstown with Ginger the cat. He navigates the culturally diverse streets of the
-                CBD and uncovers the creative hubs, sights, tastes and sounds of a thriving precinct.
+            <h2 className="text-base font-secondary-sans font-bold">About</h2>
+            <p className="text-sm leading-[18px] tracking-[-0.2px]">
+                Step into the twilight and experience Subiaco as you've never seen it before! The Subiaco Twilight Trail invites you to wander through glowing streets and enchanting spaces past 8 stunning installations. PLUS! Immerse yourself in the magic by activating the Twinkling Treasure Hunt for some added surprises.
             </p>
-            <h2 className="text-base font-bold">Instructions</h2>
-            <p className="text-sm text-cb-iron-300 leading-[18px]">
-                Start your journey at any one of the 8 locations.
+            <h2 className="text-base font-secondary-sans font-bold">Instructions</h2>
+            <p className="text-sm leading-[18px] tracking-[-0.2px]">
+                Start your journey at any of the 7 Subiaco locations or the bonus Shenton Park stop by viewing the map online or below.   your journey at any one of the 8 locations.
                 <br />
                 <br />
-                Navigate your way through Bankstown to discover all 8 Augmented Reality experiences.
+                Follow the map to discover each installation and scan the EyeJack QR code to watch them come to life. Collect special offers and gifts at select stops along the way.                  <br />
                 <br />
+                Activate all 7 Subiaco installations to go in the draw to WIN a year's worth of FREE ice-cream from Whisk Creamery! Plus the first 300 people to complete the trail will also win an instant prize!                  <br />
                 <br />
-                Scan the QR code at each location and point your device to an open space to activate the experience.
-                <br />
-                <br />
-                Don’t forget to record and share your experience to your socials.
-                <br />
-                <br />
-                <span className="font-extrabold text-white">Remember to #bankstownwander #bankstownartscentre </span>
+                For more information, visit SeeSubiaco.com.au/Christmas and share the excitement online with #SubiacoTwilightTrail #SeeSubiaco @SeeSubiaco
             </p>
         </div>
     );

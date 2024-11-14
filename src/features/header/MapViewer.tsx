@@ -1,5 +1,5 @@
 import { PinMarker } from '../../components/PinMarker';
-import Map from './assets/map-3.png';
+import Map from './assets/map.webp';
 import PresentStorm from '../../assets/artworks/present-storm.png';
 import SantaSleigh from '../../assets/artworks/santa-sleigh.png';
 import SnowGlobe from '../../assets/artworks/snow-globe.png';

@@ -12,7 +12,7 @@ export const ZoomPanPinch = ({ children }: ZoomPanPinchProps) => {
             <TransformComponent
                 wrapperStyle={{
                     maxWidth: '100%',
-                    maxHeight: 'calc(100vh - 100px)',
+                    maxHeight: '100vh',
                 }}
             >
                 {children}
