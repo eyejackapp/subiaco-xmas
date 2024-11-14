@@ -272,9 +272,9 @@ export function App() {
             )}
         </div>
       </FadeTransition>
-      <FadeTransition show={appState !== AppState.SPLASH}>
+      <FadeTransition show={appState !== AppState.SPLASH && appState !== AppState.ONBOARDING}>
         <div className="absolute top-0 w-full z-10">
-          <Header />
+          <Header recordingState={recordingState}/>
         </div>
       </FadeTransition>
       <FadeTransition show={showArtworkUnlockedModal}>

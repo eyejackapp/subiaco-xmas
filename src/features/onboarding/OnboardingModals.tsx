@@ -43,7 +43,7 @@ export const OnboardingModals = ({ onClose }: OnboardingModalsProps) => {
       <Modal
         maxWidth="max-w-[390px]"
         maxHeight="max-h-[600px]"
-        className="bg-gray-900 bg-cover text-white centered w-[92%] "
+        className="bg-gray-900 bg-cover text-white centered w-[92%] overflow-hidden"
       >
         <Carousel
           options={carouselOptions}
@@ -132,7 +132,7 @@ export const OnboardingModals = ({ onClose }: OnboardingModalsProps) => {
           </div>
 
           <div
-            className={" slide h-full w-full"}
+            className={" slide h-full w-full text-base leading-[20px]  overflow-auto"}
             style={{
               backgroundImage: `url(${OnboardingBg2})`,
               backgroundSize: "cover",
@@ -144,14 +144,16 @@ export const OnboardingModals = ({ onClose }: OnboardingModalsProps) => {
             <div class="middle-section">
               <div></div>
               <div
+              className="flex-grow pt-36"
+
                 style={{
-                  marginTop: "60px",
+                  // marginTop: "60px",
                   marginLeft: "30px",
                   marginRight: "30px",
                   display: "flex",
                   flexDirection: "column",
                   alignItems: "center",
-                  justifyContent: "center",
+                  // justifyContent: "center",
                   textAlign: "center",
                   gap: "20px",
                   fontFamily: "Inter"
@@ -185,7 +187,7 @@ export const OnboardingModals = ({ onClose }: OnboardingModalsProps) => {
           </div>
 
           <div
-            className={" slide h-full w-full"}
+            className={" slide h-full w-full text-base leading-[20px] overflow-auto"}
             style={{
               backgroundImage: `url(${OnboardingBg2})`,
               backgroundSize: "cover",
@@ -197,14 +199,15 @@ export const OnboardingModals = ({ onClose }: OnboardingModalsProps) => {
             <div class="middle-section">
               <div></div>
               <div
+              className="flex-grow pt-36"
                 style={{
-                  marginTop: "70px",
+                  // marginTop: "70px",
                   marginLeft: "30px",
                   marginRight: "30px",
                   display: "flex",
                   flexDirection: "column",
                   alignItems: "center",
-                  justifyContent: "center",
+                  // justifyContent: "center",
                   textAlign: "center",
                   gap: "20px",
                   fontFamily: "Inter"

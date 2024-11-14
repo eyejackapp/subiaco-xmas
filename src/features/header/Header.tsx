@@ -6,10 +6,12 @@ import { useArtwork } from '@/hooks/useArtwork';
 import UserForm from '@/components/UserForm';
 import { useAppState } from '@/hooks/useAppState';
 import { useRenderer } from '@/context/RendererContext';
-import { Modal } from '@/components/Modal/Modal';
+import { VideoRecorderResult } from '../recording-button';
 
-
-export const Header = () => {
+type HeaderProps ={
+    recordingState: VideoRecorderResult;
+}
+export const Header = ({recordingState}: HeaderProps) => {
     // const [infoModalType, setInfoModalType] = useState<'terms' | 'privacy' | undefined>(undefined);
     // const onShowInfoModal = (type: 'terms' | 'privacy') => {
     //     setInfoModalType(type);
@@ -59,8 +61,8 @@ export const Header = () => {
     return (
         <div
             className={clsx('header-child relative h-full top-0 w-full z-10 bg-gray-100 Header pointer-events-auto', {
-                // 'animate-slide-down': recordingState.state === 'none',
-                // 'animate-slide-up': recordingState.state !== 'none',
+                'animate-slide-down': recordingState.state === 'none',
+                'animate-slide-up': recordingState.state !== 'none',
             })}
         >
             <div
