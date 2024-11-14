@@ -11,7 +11,7 @@ export type MediaPreviewProps = {
 
 export function MediaPreview({ recordingState, onVideoCleared }: MediaPreviewProps) {
     const [videoLoaded, setVideoLoaded] = useState(false)
-    const onVideoDataLoaded = () => { 
+    const onVideoDataLoaded = () => {
         setVideoLoaded(true)
     };
 
@@ -65,15 +65,16 @@ export function MediaPreview({ recordingState, onVideoCleared }: MediaPreviewPro
                 <div className="flex flex-col flex-shrink-0 justify-center items-center text-white">
                     {(recordingState.state === 'ready') && (
                         <>
+                    
                             <button
-                                className="mt-4 refraction-button bg-[#11d398] border-[#11d398] active:opacity-70"
-                                onClick={() => recordingState.download('bankstown_wander_video.mp4')}
-                            >
-                                Share
-                            </button>
-                            <p className="py-6 text-md leading-6 text-center font-[500] text-shadow-base">
-                                Don’t forget to use #bankstownwander
-                                <br />
+                  className="px-4 py-2  bg-[#C4A056] max-w-[230px] h-14 w-full text-white rounded-full font-secondary-sans text-lg active:bg-white active:text-[#C4A056]"
+                  onClick={() => recordingState.download('subiaco_twilight_trail_video.mp4')}
+                  >
+                  <span className="block pt-[2px]">Share</span>
+
+                </button>
+                            <p className="font-secondary-sans py-6 text-md leading-6 text-center font-[500] text-shadow-base">
+                                Don't forget to use #SeeSubiaco #SubiacoTwilightTrail
                                 when your sharing on socials.
                             </p>
                         </>

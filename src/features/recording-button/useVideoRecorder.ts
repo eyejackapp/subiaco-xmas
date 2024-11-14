@@ -102,8 +102,8 @@ export function useVideoRecorder(api: RendererApi | undefined): VideoRecorderRes
                 try {
                     const videoFile = new File([videoBlob], filename, {type: videoBlob.type});
                     navigator.share({
-                        title: 'Bankstown Wander',
-                        text: 'Bankstown Wander',
+                        title: 'Subiaco Twilight Trail',
+                        text: 'Subiaco Twilight Trail',
                         files: [videoFile],
                     });
                     console.log('Successfully shared');

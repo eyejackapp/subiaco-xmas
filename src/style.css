@@ -63,9 +63,9 @@ a {
     pointer-events: auto;
 }
 @layer base {
-    html,
-    body {
+    html {
         /* @apply !bg-[#1a2358]; */
+        overscroll-behavior: none;
     }
 }
 #app {

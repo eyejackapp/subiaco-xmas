@@ -14,10 +14,10 @@ import { FadeTransition } from '@/components/Transitions';
 
 export type HeaderBodyProps = {
     onToggleHeader: () => void;
-    onShowInfoModal: (type: 'terms' | 'privacy') => void;
+    // onShowInfoModal: (type: 'terms' | 'privacy') => void;
 };
 
-export function HeaderBody({ onToggleHeader, onShowInfoModal }: HeaderBodyProps) {
+export function HeaderBody({ onToggleHeader }: HeaderBodyProps) {
     const [isMapOpen, setIsMapOpen] = useState(false);
 
     const { regularArtworks } = useArtwork();
@@ -89,10 +89,12 @@ export function HeaderBody({ onToggleHeader, onShowInfoModal }: HeaderBodyProps)
             {/* <FAQs /> */}
             <div className="flex justify-between items-end px-5">
                 <div className="text-base">
-                    <button className="text-xs font-[500] underline pr-4" onClick={() => onShowInfoModal('terms')}>
-                        Terms & Conditions
-                    </button>
-                    <a href="https://eyejackapp.com/pages/privacy" target="_blank" rel="noreferrer">
+                    <a href="https://seesubiaco.com.au/treasure-hunt-conditions/" target="_blank" rel="noreferrer">
+                        <button className="text-xs font-[500] underline pr-4">
+                            Terms & Conditions
+                        </button>
+                    </a>
+                    <a href="https://www.subiaco.wa.gov.au/privacy" target="_blank" rel="noreferrer">
                         <button className="text-xs font-[500] underline">Privacy Policy</button>
                     </a>
                 </div>

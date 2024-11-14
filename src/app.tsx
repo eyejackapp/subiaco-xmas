@@ -1,4 +1,4 @@
-import { useCallback, useState, useErrorBoundary, useEffect, useMemo } from "preact/hooks";
+import { useCallback, useState, useErrorBoundary, useEffect, useMemo, useRef } from "preact/hooks";
 import { createPortal } from "preact/compat";
 import Splash from "./features/splash";
 import { FadeTransition } from "./components/Transitions";
@@ -34,11 +34,13 @@ export function App() {
   const [limitReached, setLimitReached] = useState<boolean>(false);
 
 
-  const { appState, setAppState, isHeaderOpen, setIsSurveyOpen, showThankYouModal, setShowThankYouModal } = useAppState();
+  const { appState, setAppState, isHeaderOpen, setIsSurveyOpen, showThankYouModal, setShowThankYouModal, setIsHeaderOpen } = useAppState();
   const { renderer, initExperience, loadArtwork, clearCurrentArtwork } = useRenderer();
   const { artworkState, setArtworkState, setCurrentArtwork, currentArtworkModel, regularArtworks, showArtworkUnlocked, setShowArtworkUnlocked, viewedArtworks, setViewedArtworks } = useArtwork();
   const recordingState = useVideoRecorder(renderer!);
   const { hasHitSubmissionLimit } = useUserForm();
+
+  const canResumeAudio = useRef(false);
 
   const handleShowingArtworkUnlockedModal = useCallback(() => {
     if (shouldShowArtworkUnlocked) {
@@ -57,6 +59,7 @@ export function App() {
     }
     clearCurrentArtwork();
     renderer?.pauseAudio();
+    canResumeAudio.current = false
   }, [clearCurrentArtwork, setArtworkState, renderer, shouldShowArtworkUnlocked, setShowArtworkUnlocked]);
 
   const { hash, handleQRFound } = useUrlHash(handleHashChange);
@@ -64,9 +67,13 @@ export function App() {
   useEffect(() => {
     const handleVisiblityChange = () => {
       if (document.visibilityState === 'visible') {
-        //
+        console.log(ArtworkState[artworkState])
+        if (canResumeAudio.current) renderer?.resumeAudio();
+
       } else {
         renderer?.pauseAudio()
+        canResumeAudio.current = true;
+        setIsHeaderOpen(false);
       }
     };
 
@@ -74,7 +81,7 @@ export function App() {
     return () => {
       window.removeEventListener('visibilitychange', handleVisiblityChange);
     };
-  }, [renderer]);
+  }, [renderer, artworkState, setIsHeaderOpen]);
 
 
   useEffect(() => {
@@ -134,6 +141,8 @@ export function App() {
       await loadArtwork(artworkId);
       setCurrentArtwork(artworkId);
       setArtworkState(ArtworkState.VIEWING);
+      canResumeAudio.current = false;
+
     } catch (error) {
       console.error("Failed to load artwork:", error);
     } finally {
@@ -166,10 +175,11 @@ export function App() {
     if (regularArtworks!.length == ARTWORKS_LENGTH && !hasViewedCongrats) {
       setShowCongratsModal(true);
       renderer?.pauseTracking();
+      return;
     }
-    if (artworkState === ArtworkState.NONE && hasViewedCongrats) {
+    if (artworkState === ArtworkState.NONE) {
       setArtworkState(ArtworkState.PLACING);
-      renderer?.resumeTracking();
+      // renderer?.resumeTracking();
 
     }
   }, [setShowArtworkUnlocked, hasViewedCongrats, regularArtworks, artworkState, setArtworkState, renderer]);
@@ -202,13 +212,17 @@ export function App() {
     setShowThankYouModal(false);
     if (artworkState === ArtworkState.NONE) {
       setArtworkState(ArtworkState.PLACING);
-      renderer?.resumeTracking();
+      // renderer?.resumeTracking();
     }
-    if (artworkState === ArtworkState.VIEWING && !isHeaderOpen) {
-      renderer?.resumeTracking();
+    // if (artworkState === ArtworkState.VIEWING && !isHeaderOpen) {
+    //   renderer?.resumeTracking();
 
-    }
-  }, [artworkState, setShowThankYouModal, setArtworkState, renderer,  isHeaderOpen]);
+    // }
+  }, [artworkState, setShowThankYouModal, setArtworkState]);
+
+  useEffect(() => {
+    if (artworkState === ArtworkState.VIEWING && !isHeaderOpen) renderer?.resumeTracking();
+  }, [artworkState, renderer, isHeaderOpen]);
 
   const [error] = useErrorBoundary();
 
@@ -307,7 +321,7 @@ export function App() {
                 <h2 className="text-xl sm:text-2xl text-center font-secondary-sans">Congratulations!</h2>
                 <img src={CongratsLogo} className="w-[100px] xs:w-[140px] h-auto" />
                 {limitReached ?
-                  <p className="text-sm xs:text-base leading-[18px] xs:leading-[20px] text-center">
+                  <p className="text-sm sm:text-base leading-[18px] sm:leading-[20px] text-center">
                     You have unlocked all the Subiaco Twilight Trail experiences!
                     <br /><br />
                     To go in the draw to win a year's worth of FREE ice-cream from Whisk Creamery valued at over $1,000 or one of four runner up merch packs, simply complete the following short survey.
@@ -316,7 +330,7 @@ export function App() {
                     To stay up to date visit <a href="https://seesubiaco.com.au/" target="_blank" className="underline active:opacity-75">seesubiaco.com.au</a>
                   </p>
                   :
-                  <p className="text-sm xs:text-base leading-[18px] xs:leading-[20px] text-center">
+                  <p className="text-sm sm:text-base leading-[18px] sm:leading-[20px] text-center">
                     You have unlocked all the Subiaco Twilight Trail experiences and won yourself a free ice-cream at Whisk Creamery Subiaco!
                     <br /><br />
                     To claim your prize PLUS go in the draw to win a year's worth of FREE ice-cream from Whisk Creamery valued at over $1,000 or one of four runner up merch packs, simply complete the following short survey then present the confirmation screen in store (screenshots not permitted).
