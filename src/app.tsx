@@ -21,6 +21,8 @@ import { useLocalStorageState } from "ahooks";
 import { OnboardingModals } from "./features/onboarding";
 import { useUserForm } from "./hooks/useUserForm";
 import Star from './assets/star-lg.svg';
+import CongratsLogo from './assets/congrats-logo.svg';
+import CongratsStars from './assets/congrats-stars.png';
 
 export function App() {
   const [loadingArtwork, setLoadingArtwork] = useState(false);
@@ -250,15 +252,39 @@ export function App() {
       <FadeTransition show={showCongratsModal}>
         <div className="w-full h-full">
           <ModalOverlay>
-            <Modal className="centered h-fit bg-[#EA81A4] px-8 py-16 flex justify-center items-center">
-              <div className="flex flex-col items-center justify-center gap-8">
-                <h2 className="text-3xl font-bold text-center">{limitReached ? 'CONGRATS 2' : 'CONGRATULATIONS'}</h2>
+            <Modal className="centered h-fit bg-[#EA81A4] px-6 xs:px-8 py-10 xs:py-12 flex justify-center xitems-center max-h-[655px]">
+              <div className="flex flex-col items-center xjustify-center gap-5 xs:gap-7 xoverflow-scroll">
+              <img src={CongratsStars} className="absolute -top-10 xs:-top-12 left-1/2 -translate-x-1/2 max-w-[160px] xs:max-w-[195px] w-full h-auto" />
+                <h2 className="text-xl sm:text-2xl text-center font-secondary-sans">Congratulations!</h2>
+                <img src={CongratsLogo} className="w-[100px] xs:w-[140px] h-auto" />
+                {limitReached ?
+                  <p className="text-sm xs:text-base leading-[18px] xs:leading-[20px] text-center">
+                    You have unlocked all the Subiaco Twilight Trail experiences!
+                    <br /><br />
+                    To go in the draw to win a year's worth of FREE ice-cream from Whisk Creamery valued at over $1,000 or one of four runner up merch packs, simply complete the following short survey.
+                    <br /><br />
+
+                    To stay up to date visit <a href="https://seesubiaco.com.au/" target="_blank" className="underline active:opacity-75">seesubiaco.com.au</a>
+                  </p>
+                  :
+                  <p className="text-sm xs:text-base leading-[18px] xs:leading-[20px] text-center">
+                    You have unlocked all the Subiaco Twilight Trail experiences and won yourself a free ice-cream at Whisk Creamery Subiaco!
+                    <br /><br />
+                    To claim your prize PLUS go in the draw to win a year's worth of FREE ice-cream from Whisk Creamery valued at over $1,000 or one of four runner up merch packs, simply complete the following short survey then present the confirmation screen in store (screenshots not permitted).
+                    <br /><br />
+                    To stay up to date visit <a href="https://seesubiaco.com.au/" target="_blank" className="underline active:opacity-75">seesubiaco.com.au</a>
+                  </p>
+                }
                 <button
-                  className="mt-4 px-4 py-2 border-white border-2 max-w-[230px] w-full text-white rounded"
+                  className="px-4 py-2 border-white border-2 max-w-[220px] xs:max-w-[240px] h-12 xs:h-14 w-full text-white rounded-full font-secondary-sans text-base xs:text-lg"
                   onClick={handleEnterDetails}
                 >
-                  Enter your details
+                  <span className="block pt-[2px]">
+                    Enter your details
+                  </span>
+
                 </button>
+
               </div>
             </Modal>
           </ModalOverlay>

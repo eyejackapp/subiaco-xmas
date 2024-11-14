@@ -12,7 +12,7 @@ export const Modal = ({ maxWidth = 'max-w-[390px]', maxHeight = 'max-h-[600px]',
     return (
         <div
             className={clsx(
-                'bg-cover z-50 xoverflow-hidden w-[90%] h-[90%] rounded-3xl',
+                'xoverflow-scroll bg-cover z-50 xoverflow-hidden w-[90%] h-[90%] rounded-3xl',
                 className,
                 maxWidth,
                 maxHeight,

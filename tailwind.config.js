@@ -6,7 +6,7 @@ export default {
     theme: {
         extend: {
             screens: {
-                'xs': { raw: '(min-width: 375px) and (min-height: 630px)' },
+                'xs': { raw: '(min-width: 390px) and (min-height: 630px)' },
                 // => @media (min-width: 640px) { ... }
                 'short-desktop': { raw: '(max-height: 830px)' },
                 'short-narrow-desktop': { raw: '(max-height: 650px) and (min-width:600px)' },

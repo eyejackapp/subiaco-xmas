@@ -186,3 +186,9 @@ transform-style: preserve-3d;
     background-color: #FEF0D5;
     color: #971741;
 }
+
+
+.scrollable-div {
+    mask-image: linear-gradient(to bottom, black 90%, transparent);
+    -webkit-mask-image: linear-gradient(to bottom, black 90%, transparent);
+  }
