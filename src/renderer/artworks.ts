@@ -1,20 +1,11 @@
-import Artwork1 from "../assets/artworks/artwork-1.jpg";
-import Artwork2 from "../assets/artworks/artwork-2.jpg";
-import Artwork3 from "../assets/artworks/artwork-3.jpg";
-import Artwork4 from "../assets/artworks/artwork-4.jpg";
-import Artwork5 from "../assets/artworks/artwork-5.jpg";
-import Artwork6 from "../assets/artworks/artwork-6.jpg";
-import Artwork7 from "../assets/artworks/artwork-7.jpg";
-import Artwork8 from "../assets/artworks/artwork-8.jpg";
-
-import Artwork1Thumbnail from "../assets/artworks/artwork-1.webp";
-import Artwork2Thumbnail from "../assets/artworks/artwork-2.webp";
-import Artwork3Thumbnail from "../assets/artworks/artwork-3.webp";
-import Artwork4Thumbnail from "../assets/artworks/artwork-4.webp";
-import Artwork5Thumbnail from "../assets/artworks/artwork-5.webp";
-import Artwork6Thumbnail from "../assets/artworks/artwork-6.webp";
-import Artwork7Thumbnail from "../assets/artworks/artwork-7.webp";
-import Artwork8Thumbnail from "../assets/artworks/artwork-8.webp";
+import PresentStorm from "../assets/artworks/present-storm.png";
+import SantaSleigh from "../assets/artworks/santa-sleigh.png";
+import SnowGlobe from "../assets/artworks/snow-globe.png";
+import SantaSelfie from "../assets/artworks/santa-selfie.png";
+import XmasTree from "../assets/artworks/xmas-tree.png";
+import ToyParade from "../assets/artworks/toy-parade.png";
+import Orbs from "../assets/artworks/orbs.png";
+import SnowMan from "../assets/artworks/snow-man.png";
 
 type ArtworkDefiniton = {
   /** Path to the artwork folder */
@@ -24,8 +15,8 @@ type ArtworkDefiniton = {
   audioPath: string;
   clue: string;
   image: string;
-  artistImage: string;
-  info: string;
+  unlockedInfo?: string;
+  unlockedLogo?: string;
   link: string;
   index: number;
 };
@@ -37,9 +28,9 @@ export const ARTWORKS = {
     basePath: "/content/Xmas_Tree.glb",
     audioPath: "/content/audio/Xmas_Tree.mp3",
     clue: "Home of the arts in Bankstown.",
-    image: Artwork1Thumbnail,
-    artistImage: Artwork1,
-    info: "Ginger lands in the heart of the arts, <br />Bankstown Arts Centre greets<br />With textures, shapes, sounds and colour off the charts.",
+    image: PresentStorm,
+    unlockedInfo: "Spoil yourself or your loved ones with 15% off at Spoilt at Subi! To claim, head in store and show this offer when you make a purchase. Excludes Merry People products. Offer valid until 24 December 2024. Visit them at 20 Subiaco Square Rd, Subiaco.",
+    unlockedLogo: "Spoil yourself or your loved ones with 15% off at Spoilt at Subi! To claim, head in store and show this offer when you make a purchase. Excludes Merry People products. Offer valid until 24 December 2024. Visit them at 20 Subiaco Square Rd, Subiaco.",
     link: "https://twitter.com/",
     index: 0,
   },
@@ -49,9 +40,7 @@ export const ARTWORKS = {
     basePath: "/content/Toy_Parade.glb",
     audioPath: "/content/audio/Toy_Parade.mp3",
     clue: "Sandwiched between the carpark and the street of shops.",
-    image: Artwork2Thumbnail,
-    artistImage: Artwork2,
-    info: "Curiosity calls Ginger, the cacophony of noise<br />Picking up pace, he explores the street of stalls.",
+    image: SantaSleigh,
     link: "https://twitter.com/",
     index: 1,
   },
@@ -61,9 +50,7 @@ export const ARTWORKS = {
     basePath: "/content/Snow_Globe.glb",
     audioPath: "/content/audio/Snow_Globe.mp3",
     clue: "Right next to a divine dessert cafe.",
-    image: Artwork3Thumbnail,
-    artistImage: Artwork3,
-    info: "Smells too rich to ignore, he inhales and leaps off he goes, which one first – meat or sweets?",
+    image: SnowGlobe,
     link: "https://twitter.com/",
     index: 2,
   },
@@ -73,9 +60,7 @@ export const ARTWORKS = {
     basePath: "/content/Santa_Sleigh.glb",
     audioPath: "/content/audio/Santa_Sleigh.mp3",
     clue: "A stretch connecting two parts of Bankstown CVD.",
-    image: Artwork4Thumbnail,
-    artistImage: Artwork4,
-    info: "A hoo-man child. Who is he?<br />Sounds unfamiliar but feels so friendly.<br/>Meow on approach, bite free.",
+    image: SantaSelfie,
     link: "https://twitter.com/",
     index: 3,
   },
@@ -85,9 +70,8 @@ export const ARTWORKS = {
     basePath: "/content/Santa_Selfie.glb",
     audioPath: "/content/audio/Santa_Selfie.mp3",
     clue: "A wooden platform on the green.",
-    image: Artwork5Thumbnail,
-    artistImage: Artwork5,
-    info: "Musical Ginger on a bold adventure,<br/>Leaping next to the stage, he thinks,<br/>“I’d love me some boogie. Let’s party to the beat!”",
+    image: XmasTree,
+    unlockedInfo: "You've won a FREE rocky road bonbon from Nosh Gourmet Gifts! To claim, simply head in store, present this offer and give them a follow on socials. Visit them at shop 4/97 Rokeby Road, Subiaco.",
     link: "https://twitter.com/",
     index: 4,
   },
@@ -97,9 +81,7 @@ export const ARTWORKS = {
     basePath: "/content/Present_Storm.glb",
     audioPath: "/content/audio/Present_Storm.mp3",
     clue: "Circles of seats and bubble tea galore.",
-    image: Artwork6Thumbnail,
-    artistImage: Artwork6,
-    info: "With newfound friends, Ginger struts his stuff<br/>Swapping clothes at dizzying speeds,<br/>All in the spirit of fashion fun.",
+    image: ToyParade,
     link: "https://twitter.com/",
     index: 5,
   },
@@ -109,9 +91,7 @@ export const ARTWORKS = {
     basePath: "/content/Snow_Man.glb",
     audioPath: "/content/audio/Snow_Man.mp3",
     clue: "Lush greenery in the city next to cultural venues.",
-    image: Artwork7Thumbnail,
-    artistImage: Artwork7,
-    info: "Rest and recharge after the rush<br/>As he enters an urban oasis,<br/>A cocoon that envelops, Ginger finds Zen.",
+    image: Orbs,
     link: "https://twitter.com/",
     index: 6,
   },
@@ -121,9 +101,8 @@ export const ARTWORKS = {
     basePath: "/content/Orbs.glb",
     audioPath: "/content/audio/Orbs.mp3",
     clue: "A new world at the forecourt.",
-    image: Artwork8Thumbnail,
-    artistImage: Artwork8,
-    info: "He dreams of a future<br/>For this kaleidoscopic place Darani<br/>A wondrous high-tech eco city.",
+    image: SnowMan,
+    unlockedInfo: "You’ve won a special offer from Excelsior Deli!<br/><br/>Receive a FREE hot drink of any size when you spend $29 or more in one transaction. Offer excludes specialty coffees or drinks.To claim, simply head in store and present this offer. Find them at 140 Onslow Road, Shenton Park.",
     link: "https://twitter.com/",
     index: 7,
   },

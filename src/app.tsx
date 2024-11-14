@@ -104,7 +104,7 @@ export function App() {
       if (!viewedArtworksList?.includes(artworkId)) {
         setViewedArtworks([...viewedArtworksList, artworkId]);
         setShouldShowArtworkUnlocked(true);
-
+        // we need to check the submission count here to determine which modal to show
         if (
           regularArtworks?.length === ARTWORKS_LENGTH - 1 &&
           !artworkId.startsWith("bonus") &&

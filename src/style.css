@@ -99,13 +99,13 @@ a {
     }
     .font-regular {
         /* weird bug with variable fonts - this is 'regular' boldness */
-        font-weight: 700;
+        font-weight: 400;
     }
     .font-bold {
-        font-variation-settings: "wght" 400;
+        font-variation-settings: "wght" 500;
     }
     .font-extrabold {
-        font-variation-settings: "wght" 500;
+        font-variation-settings: "wght" 700;
     }
 }
 

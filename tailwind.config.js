@@ -12,7 +12,7 @@ export default {
                 'short-narrow-desktop': { raw: '(max-height: 650px) and (min-width:600px)' },
             },
             fontFamily: {
-                sans: ['space-grotesk-variable', ...defaultTheme.fontFamily.sans],
+                sans: ['Inter', ...defaultTheme.fontFamily.sans],
                 'secondary-sans': ['roboto', ...defaultTheme.fontFamily.sans],
                 'number-sans': ['URWDIN', ...defaultTheme.fontFamily.sans],
             },

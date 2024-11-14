@@ -47,21 +47,21 @@ export const Header = () => {
             })}
         >
             <div
-                className="px-5 py-4 w-full bg-[#11d398] bg-[length:100%_160%] bg-center flex justify-between items-end cursor-pointer box-border border-b-[0.5px] border-orchid-500"
+                className="px-5 py-5 w-full bg-[#C4A056] bg-[length:100%_160%] bg-center flex justify-between items-end cursor-pointer"
                 onClick={onToggleHeader}
             >
-                <h2 className="-mb-2 text-[18px] font-bold tracking-[1px] leading-none">
-                    <span className="pr-1 text-4xl font-extrabold leading-none">{regularArtworks?.length ?? 0}</span> OF{' '}
-                    <span className="px-1 text-4xl font-extrabold leading-none">{ARTWORKS_LENGTH}</span> FOUND
+                <h2 className="-mb-[6px] text-[18px] font-bold tracking-[1px] leading-none">
+                    <span className="pr-1 text-[34px] font-extrabold leading-none">{regularArtworks?.length ?? 0}</span> OF{' '}
+                    <span className="px-1 text-[34px] font-extrabold leading-none">{ARTWORKS_LENGTH}</span> FOUND
                 </h2>
                 <p className="flex items-center -mb-2 font-base tracking-[1px] font-bold">
                     TAP TO {isHeaderOpen ? 'CLOSE' : 'OPEN'}
                     <span className="px-[3px]"></span>
-                    <span className={clsx('transition-transform duration-500 mb-[6px]', { 'rotate-180': isHeaderOpen })}>
+                    <span className={clsx('transition-transform duration-500 mb-[3px]', { 'rotate-180': isHeaderOpen })}>
                         <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path
                                 d="M13 13L1 12.9999M13 13L13 7L13 1M13 13L2 2"
-                                stroke="#82FFD9"
+                                stroke="#ffffff"
                                 strokeWidth="2"
                                 strokeLinecap="round"
                                 strokeLinejoin="round"
@@ -70,29 +70,12 @@ export const Header = () => {
                     </span>
                 </p>
             </div>
-            {/* {currentArtworkModel && (
-                <FadeTransition
-                    show={
-                        rendererState === RendererState.VIEWING
-                    }
-                    duration={500}
-                >
-                    <div className="absolute pointer-events-none w-full -z-10">
-                        <div className="relative z-10">
-                            <ArtworkPopup
-                                currentArtworkModel={currentArtworkModel}
-                                isPopupOpen={isPopupOpen}
-                                onToggleArtworkPopup={onToggleArtworkPopup}
-                            />
-                        </div>
-                    </div>
-                </FadeTransition>
-            )} */}
+     
             {isSurveyOpen && <div className="fixed top-0 w-full h-full z-[100] bg-[#EA81A4] flex items-center justify-center"><UserForm /></div>}
 
             <div
                 ref={scrollElement}
-                className={clsx('header-bar w-full transition-[max-height] duration-500 bg-cb-dark-purple-950', {
+                className={clsx('header-bar w-full transition-[max-height] duration-500 ', {
                     'max-h-0 overflow-hidden': !isHeaderOpen,
                     'max-h-[calc(100dvh)] overflow-scroll': isHeaderOpen,
                 })}

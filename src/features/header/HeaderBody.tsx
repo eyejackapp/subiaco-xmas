@@ -1,6 +1,8 @@
 import clsx from 'clsx';
 import { ARTWORK_ARRAY, ArtworkId, ARTWORKS_LENGTH } from '../../renderer/artworks';
 import QuestionMark from './assets/question.svg';
+import Bonus from './assets/bonus.svg';
+import Star from './assets/star.svg';
 import { useCallback, useState } from 'preact/hooks';
 import { createPortal } from 'preact/compat'
 import { ZoomPanPinch } from '@/components/ZoomPanPinch';
@@ -18,7 +20,7 @@ export function HeaderBody({ onToggleHeader }: HeaderBodyProps) {
     const [isMapOpen, setIsMapOpen] = useState(false);
 
     const { regularArtworks } = useArtwork();
-    const {setIsSurveyOpen} = useAppState();
+    const { setIsSurveyOpen } = useAppState();
 
     const onMapVisible = useCallback(() => {
         setIsMapOpen((isOpen) => !isOpen);
@@ -29,47 +31,50 @@ export function HeaderBody({ onToggleHeader }: HeaderBodyProps) {
     const { hasSentData } = useUserForm();
 
     return (
-        <div className="w-full bg-cb-dark-purple-950 relative">
+        <div className="w-full relative bg-[#F0493C]">
             <ArtworkList />
-            <span className="block bg-[#424242] h-[1px] w-full"></span>
+            <span className="block h-[1px] w-full"></span>
             <Map onMapVisible={onMapVisible} />
             {isMapOpen && createPortal(
-                <div className="fixed z-[1000] inset-0 pointer-events-auto h-full w-full bg-cb-blue-950 animate-fade-in">
+                <div className="fixed z-[1000] inset-0 pointer-events-auto h-full w-full animate-fade-in">
                     <ZoomPanPinch>
                         <MapViewer />
                     </ZoomPanPinch>
 
                     <button
-                        className="fixed bottom-10 z-50 left-1/2 -translate-x-1/2 active:text-cb-green-500"
+                        className="fixed bottom-10 z-50 left-1/2 -translate-x-1/2 active:text-[#C4A056]"
                         onClick={onMapVisible}
                     >
-                        <svg width="56" height="56" viewBox="0 0 56 56" xmlns="http://www.w3.org/2000/svg">
+                        <svg
+                            className="group"
+                            width="56"
+                            height="56"
+                            viewBox="0 0 56 56"
+                            xmlns="http://www.w3.org/2000/svg"
+                        >
                             <rect
-                                className="fill-current text-cb-green-500 active:text-white"
+                                className="fill-current text-[#C4A056] group-active:text-white"
                                 width="56"
                                 height="56"
                                 rx="28"
-                                fill="#003EE3"
+                                fill="black"
                             />
                             <path
-                                className="stroke-current"
+                                className="stroke-current text-white group-active:text-[#C4A056]"
                                 d="M22 22L34 34"
                                 strokeWidth="2"
                                 strokeLinecap="square"
-                                stroke="white"
                             />
                             <path
-                                className="stroke-current"
+                                className="stroke-current text-white group-active:text-[#C4A056]"
                                 d="M34 22L22 34"
                                 strokeWidth="2"
                                 strokeLinecap="square"
-                                stroke="white"
                             />
                         </svg>
                     </button>
                 </div>, document.body
             )}
-            <span className="block bg-[#424242] h-[1px] w-full"></span>
             <div className="w-full flex flex-col gap-4 justify-center items-center">
                 <h2 className="text-base font-bold px-5 pt-5">{canClaimPrize ? 'You have unlocked all 7!' : 'Unlock all 7 for your chance to win'}</h2>
                 <button onClick={() => setIsSurveyOpen(true)} className="border-2 border-white max-w-[200px] w-full px-2 py-4 rounded-md disabled:bg-gray-400" disabled={!canClaimPrize}>{hasSentData ? 'Update Details' : 'Claim your prize'}</button>
@@ -113,36 +118,37 @@ export function HeaderBody({ onToggleHeader }: HeaderBodyProps) {
 
 
 function ArtworkList() {
-    const { viewedArtworks, currentArtwork, setTappedArtwork, setShowArtworkUnlocked } = useArtwork();
+    const { viewedArtworks, currentArtwork, setTappedArtwork, setShowArtworkUnlocked, regularArtworks } = useArtwork();
 
     const handleArtworkTap = useCallback(
         (artworkId: ArtworkId) => {
             setTappedArtwork(artworkId);
-            if (viewedArtworks && viewedArtworks.includes(artworkId)) {
-                setShowArtworkUnlocked(true);
-            }
+            console.log('handleartworktap', artworkId)
+            setShowArtworkUnlocked(true);
         },
-        [setShowArtworkUnlocked, setTappedArtwork, viewedArtworks],
+        [setShowArtworkUnlocked, setTappedArtwork],
     );
     return (
-        <div className="artwork-bg flex sm:gap-9 gap-7 sm:p-8 p-5 flex-wrap">
+        <div className="flex sm:gap-9 gap-7 sm:p-8 p-5 flex-wrap">
             {ARTWORK_ARRAY.map((model, index) => {
                 const isViewed = viewedArtworks?.includes(model.artworkId);
-                const isCurrent = currentArtwork === model.artworkId;
+                const isBonus = model.artworkId.startsWith("bonus") && !isViewed;
+                const hasPrize = 'unlockedInfo' in model;
                 const paddedArtworkIndex = String(index + 1).padStart(2, '0');
                 return (
                     <div
                         key={model.artworkId}
                         className={clsx(
-                            `basis-[27%] h-full aspect-square border-2 rounded-full relative text-[10px] font-bold text-oslo-gray-400 before:content-[attr(data-before-content)] before:absolute before:-top-[2px] before:-left-[2px] before:font-number-sans active:border-2 active:border-1 active:border-cb-blue-950`,
+                            `basis-[27%] h-full aspect-square border-2 rounded-full relative text-[10px] font-bold text-oslo-gray-400 before:content-[attr(data-before-content)] before:absolute before:-top-[2px] before:-left-[2px] before:font-number-sans active:border-opacity-50 `,
                             {
                                 // 'border-2': !isCurrent,
                                 // 'border-3': isCurrent,
-                                'border-cb-border-800 flex justify-center items-center': !isViewed,
-                                'border-white ': isViewed,
+                                'border-[#FEF0D5]': !isViewed,
+                                'border-[#FFE033]' : isViewed && hasPrize,
+                                'xborder-white ': isViewed,
                             },
                         )}
-                        onClick={() => handleArtworkTap(model.artworkId)}
+                        onClick={() => hasPrize && isViewed && handleArtworkTap(model.artworkId)}
                         data-before-content={paddedArtworkIndex}
                     >
                         <div
@@ -154,7 +160,9 @@ function ArtworkList() {
                             {!isViewed && <div className="absolute bg-black w-full h-full opacity-70"></div>}
                             <img src={model.image} alt="image of artwork" className="w-full h-full aspect-square" />
                         </div>
-                        {!isViewed && <img src={QuestionMark} className="absolute w-full h-full p-7 aspect-square" />}
+                        {!isBonus && !isViewed && <img src={QuestionMark} className="absolute w-full h-full p-3 xs:p-5 sm:p-7 aspect-square" />}
+                        {isBonus && <img src={Bonus} className="absolute w-full h-full p-3 aspect-square" />}
+                        {hasPrize && isViewed && <img src={Star} className="absolute left-1/2 -translate-x-1/2 -top-4 aspect-square" />}
                     </div>
                 );
             })}
