@@ -9,7 +9,9 @@
     "dev:sst": "sst dev --watch ./api/",
     "build": "vite build",
     "preview": "vite preview",
-    "deploy": "sst deploy"
+    "deploy": "aws s3 sync dist/ s3://eyejack-webar-custom/subiaco-twilight-trail/ --delete --acl public-read",
+    "invalidate": "aws cloudfront create-invalidation --distribution-id E26MYNXGQ9RS4J --paths '/subiaco-twilight-trail*'"
+
   },
   "dependencies": {
     "@headlessui/react": "^2.2.0",

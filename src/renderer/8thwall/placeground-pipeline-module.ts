@@ -3,6 +3,7 @@ import mitt, { Emitter } from "mitt";
 import { RGBELoader } from "three/examples/jsm/Addons.js";
 import { I8thWallImageTargetEventModel, IPipelineModule } from ".";
 import * as THREE from "three";
+import HDRImage from "/empty_warehouse_01_1k.hdr";
 
 window.THREE = THREE;
 
@@ -58,14 +59,11 @@ export const placegroundPipelineModule =
         renderer.toneMapping = THREE.ACESFilmicToneMapping;
         renderer.toneMappingExposure = 1;
 
-        new RGBELoader().load(
-            '/empty_warehouse_01_1k.hdr',
-            function (texture) {
-                texture.mapping = THREE.EquirectangularReflectionMapping;
+        new RGBELoader().load(HDRImage, function (texture) {
+          texture.mapping = THREE.EquirectangularReflectionMapping;
 
-                scene.environment = texture;  
-            },
-        );
+          scene.environment = texture;
+        });
 
         camera.position.set(0, 2, 0);
 

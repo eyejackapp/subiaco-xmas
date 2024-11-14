@@ -10,13 +10,15 @@ import { VitePWA } from "vite-plugin-pwa";
 
 
 
-export default defineConfig(() => {
+export default defineConfig(({ mode }) => {
 
   return {
     plugins: [comlink(), preact(), inspect()],
     worker: {
       plugins: () => [comlink()],
     },
+    base: mode === 'production' ? '/subiaco-twilight-trail/' : '',
+    assetsInclude: ['**/*.glb', '**/*.hdr'],
     server: {
       https: {
         key: "./k-key.pem",
@@ -37,6 +39,7 @@ export default defineConfig(() => {
           main: resolve(__dirname, "./index.html"),
         },
       },
+        outDir: 'dist', 
 
       sourcemap: true,
     },

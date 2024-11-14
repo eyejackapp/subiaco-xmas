@@ -49,7 +49,7 @@
     user-select: none !important;
     box-sizing: border-box !important;
 }
-img {
+img, p, h2, h3 {
     pointer-events: none;
 }
 

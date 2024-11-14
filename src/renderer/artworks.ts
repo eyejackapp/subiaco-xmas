@@ -11,6 +11,24 @@ import PresentStormUnlocked from "../assets/unlocked-modals/present-storm-unlock
 import XmasTreeUnlocked from "../assets/unlocked-modals/xmas-tree-unlocked.svg";
 import SnowManUnlocked from "../assets/unlocked-modals/snow-man-unlocked.svg";
 
+import PresentStormModel from "/content/Present_Storm.glb";
+import SantaSleighModel from "/content/Santa_Sleigh.glb";
+import SnowGlobeModel from "/content/Snow_Globe.glb";
+import SantaSelfieModel from "/content/Santa_Selfie.glb";
+import XmasTreeModel from "/content/Xmas_Tree.glb";
+import ToyParadeModel from "/content/Toy_Parade.glb";
+import OrbsModel from "/content/Orbs.glb";
+import SnowManModel from "/content/Snow_Man.glb";
+
+import PresentStormAudio from "/content/audio/Present_Storm.mp3";
+import SantaSleighAudio from "/content/audio/Santa_Sleigh.mp3";
+import SnowGlobeAudio from "/content/audio/Snow_Globe.mp3";
+import SantaSelfieAudio from "/content/audio/Santa_Selfie.mp3";
+import XmasTreeAudio from "/content/audio/Xmas_Tree.mp3";
+import ToyParadeAudio from "/content/audio/Toy_Parade.mp3";
+import OrbsAudio from "/content/audio/Orbs.mp3";
+import SnowManAudio from "/content/audio/Snow_Man.mp3";
+
 type ArtworkDefiniton = {
   name: string;
   artist: string;
@@ -26,8 +44,8 @@ export const ARTWORKS = {
   "present-storm": {
     name: "Present Storm",
     artist: "Subi Starlit Tree",
-    basePath: "/content/Present_Storm.glb",
-    audioPath: "/content/audio/Present_Storm.mp3",
+    basePath: PresentStormModel,
+    audioPath: PresentStormAudio,
     image: PresentStorm,
     unlockedInfo: "Spoil yourself or your loved ones with 15% off at Spoilt at Subi! To claim, head in store and show this offer when you make a purchase. Excludes Merry People products. Offer valid until 24 December 2024. Visit them at 20 Subiaco Square Rd, Subiaco.",
     unlockedLogo: PresentStormUnlocked,
@@ -36,8 +54,8 @@ export const ARTWORKS = {
   "santa-sleigh": {
     name: "Santa Sleigh",
     artist: "Twinkle Twinkle",
-    basePath: "/content/Santa_Sleigh.glb",
-    audioPath: "/content/audio/Santa_Sleigh.mp3",
+    basePath: SantaSleighModel,
+    audioPath: SantaSleighAudio,
     image: SantaSleigh,
     unlockedInfo: "",
     unlockedLogo: "",
@@ -46,8 +64,8 @@ export const ARTWORKS = {
   "snow-globe": {
     name: "Snow Globe",
     artist: "Gingerbread Train",
-    basePath: "/content/Snow_Globe.glb",
-    audioPath: "/content/audio/Snow_Globe.mp3",
+    basePath: SnowGlobeModel,
+    audioPath: SnowGlobeAudio,
     image: SnowGlobe,
     unlockedInfo: "",
     unlockedLogo: "",
@@ -56,8 +74,8 @@ export const ARTWORKS = {
   "santa-selfie": {
     name: "Santa Selfie",
     artist: "Festive Voyage",
-    basePath: "/content/Santa_Selfie.glb",
-    audioPath: "/content/audio/Santa_Selfie.mp3",
+    basePath: SantaSelfieModel,
+    audioPath: SantaSelfieAudio,
     image: SantaSelfie,
     unlockedInfo: "",
     unlockedLogo: "",
@@ -66,8 +84,8 @@ export const ARTWORKS = {
   "xmas-tree": {
     name: "Xmas Tree",
     artist: "Golden Gateway",
-    basePath: "/content/Xmas_Tree.glb",
-    audioPath: "/content/audio/Xmas_Tree.mp3",
+    basePath: XmasTreeModel,
+    audioPath: XmasTreeAudio,
     image: XmasTree,
     unlockedInfo: "You've won a FREE rocky road bonbon from Nosh Gourmet Gifts! To claim, simply head in store, present this offer and give them a follow on socials. Visit them at shop 4/97 Rokeby Road, Subiaco.",
     unlockedLogo: XmasTreeUnlocked,
@@ -76,8 +94,8 @@ export const ARTWORKS = {
   "toy-parade": {
     name: "Toy Parade",
     artist: "Luminous Lizard",
-    basePath: "/content/Toy_Parade.glb",
-    audioPath: "/content/audio/Toy_Parade.mp3",
+    basePath: ToyParadeModel,
+    audioPath: ToyParadeAudio,
     image: ToyParade,
     unlockedInfo: "",
     unlockedLogo: "",
@@ -86,8 +104,8 @@ export const ARTWORKS = {
   "orbs": {
     name: "Orbs",
     artist: "Enchanted Wings",
-    basePath: "/content/Orbs.glb",
-    audioPath: "/content/audio/Orbs.mp3",
+    basePath: OrbsModel,
+    audioPath: OrbsAudio,
     image: Orbs,
     unlockedInfo: "",
     unlockedLogo: "",
@@ -96,8 +114,8 @@ export const ARTWORKS = {
   "bonus-snowman": {
     name: "Snow Man",
     artist: "Magical Owl",
-    basePath: "/content/Snow_Man.glb",
-    audioPath: "/content/audio/Snow_Man.mp3",
+    basePath: SnowManModel,
+    audioPath: SnowManAudio,
     image: SnowMan,
     unlockedInfo: "You’ve won a special offer from Excelsior Deli!<br/><br/>Receive a FREE hot drink of any size when you spend $29 or more in one transaction. Offer excludes specialty coffees or drinks.To claim, simply head in store and present this offer. Find them at 140 Onslow Road, Shenton Park.",
     unlockedLogo: SnowManUnlocked,

@@ -1,4 +1,4 @@
-export const QR_CODE_LOOKUP = {
+export const QR_CODE_LOOKUP = import.meta.env.DEV ? {
     '1': 'present-storm',
     '2': 'santa-sleigh',
     '3': 'snow-globe',
@@ -7,6 +7,15 @@ export const QR_CODE_LOOKUP = {
     '6': 'toy-parade',
     '7': 'orbs',
     '8': 'bonus-snowman',
+} : {
+    '2949': 'present-storm',
+    '9525': 'santa-sleigh',
+    '7057': 'snow-globe',
+    '3130': 'santa-selfie',
+    '1412': 'xmas-tree',
+    '6793': 'toy-parade',
+    '4364': 'orbs',
+    '5281': 'bonus-snowman',
 } as const;
 
 const validCodes = Object.keys(QR_CODE_LOOKUP);

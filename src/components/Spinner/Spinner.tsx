@@ -28,7 +28,7 @@ export type SpinnerProps = {
 export const Spinner = ({ size = 'xl', variant = 'light', thickness = 'default', className = '' }: SpinnerProps) => {
   return (
     <>
-      <svg className={clsx('animate-spin', variants[variant], sizes[size], className)} viewBox="0 0 59 59" fill="none" xmlns="http://www.w3.org/2000/svg" data-testid="loading" >
+      <svg className={clsx('animate-spin pointer-events-none', variants[variant], sizes[size], className)} viewBox="0 0 59 59" fill="none" xmlns="http://www.w3.org/2000/svg" data-testid="loading" >
         <path d="M28.9796 55C15.1837 55 4 43.5833 4 29.5C4 15.4167 15.1837 4 28.9796 4" stroke="currentColor" strokeWidth={thicknesses[thickness]} strokeLinecap="round" />
         <path d="M30.0204 55C43.8163 55 55 43.5833 55 29.5C55 25.073 53.8949 20.9095 51.951 17.2812" stroke="url(#paint0_linear_123_3400)" strokeWidth={thicknesses[thickness]} strokeLinecap="round" />
         <defs>
