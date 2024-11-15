@@ -110,7 +110,7 @@ export const OnboardingModals = ({ onClose }: OnboardingModalsProps) => {
                 />
               </div>
               <p
-                class="p-main"
+                class="p-main text-2xl"
                 style={{
                   marginTop: "50px",
                 }}

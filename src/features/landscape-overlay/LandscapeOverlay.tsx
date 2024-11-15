@@ -7,7 +7,7 @@ export function LandscapeOverlay(props: LandscapeOverlayProps) {
     return (
         <div
             className={clsx(
-                'absolute z-[1001] inset-0 bg-cb-blue-950 bg-cover w-full h-full flex flex-col justify-center items-center',
+                'absolute z-[1001] inset-0 bg-[#F0493C] w-full h-full flex flex-col justify-center items-center',
                 props.className,
             )}
         >

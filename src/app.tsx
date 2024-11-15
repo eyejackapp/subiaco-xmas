@@ -24,6 +24,9 @@ import { useUserForm } from "./hooks/useUserForm";
 import Star from './assets/star-lg.svg';
 import CongratsLogo from './assets/congrats-logo.svg';
 import CongratsStars from './assets/congrats-stars.png';
+import useUserDevice from "./hooks/useUserDevice";
+import LandscapeOverlay from "./features/landscape-overlay";
+import useScreenOrientation from "./hooks/useScreenOrientation";
 
 export function App() {
   const [loadingArtwork, setLoadingArtwork] = useState(false);
@@ -39,6 +42,8 @@ export function App() {
   const { artworkState, setArtworkState, setCurrentArtwork, currentArtworkModel, regularArtworks, showArtworkUnlocked, setShowArtworkUnlocked, viewedArtworks, setViewedArtworks } = useArtwork();
   const recordingState = useVideoRecorder(renderer!);
   const { hasHitSubmissionLimit } = useUserForm();
+  const { isMobile } = useUserDevice();
+  const screenOrientation = useScreenOrientation();
 
   const canResumeAudio = useRef(false);
 
@@ -193,10 +198,10 @@ export function App() {
   const shouldRendererPause = useMemo(() => {
     return (
       appState === AppState.ONBOARDING ||
-      recordingState.state === 'ready'
-      // (screenOrientation?.includes('landscape') && isMobile)
+      recordingState.state === 'ready' ||
+      (screenOrientation?.includes('landscape') && isMobile)
     );
-  }, [appState, recordingState]);
+  }, [appState, recordingState, screenOrientation, isMobile]);
 
   useEffect(() => {
     return shouldRendererPause ? renderer?.pauseTracking() : renderer?.resumeTracking();
@@ -247,6 +252,11 @@ export function App() {
   return (
     <div className="w-full h-full flex items-center justify-center">
       {/* <UserForm /> */}
+      <FadeTransition show={screenOrientation?.includes('landscape') && isMobile} duration={500}>
+        <div className="h-full w-full">
+          <LandscapeOverlay className="flex lg:hidden" />
+        </div>
+      </FadeTransition>
       <FadeTransition show={appState === AppState.SPLASH}>
         <div className="h-full w-full">
           <Splash onPermissionsGranted={handleInitExperience} />
@@ -274,7 +284,7 @@ export function App() {
       </FadeTransition>
       <FadeTransition show={appState !== AppState.SPLASH && appState !== AppState.ONBOARDING}>
         <div className="absolute top-0 w-full z-10">
-          <Header recordingState={recordingState}/>
+          <Header recordingState={recordingState} />
         </div>
       </FadeTransition>
       <FadeTransition show={showArtworkUnlockedModal}>

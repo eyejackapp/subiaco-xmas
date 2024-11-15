@@ -19,7 +19,8 @@ export const QrCodeGenerator = ({
             <QRCode
                 value={value}
                 fgColor={fgColor}
-                size={Math.max(dimensions.width / 8, size)}
+                // size={Math.max(dimensions.width / 8, size)}
+                size={size}
             />
         </div>
     );

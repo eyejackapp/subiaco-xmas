@@ -159,7 +159,7 @@ export function Splash({ onPermissionsGranted }: SplashProps) {
 
                                         {pageType === 'loading' && (
                                             <>
-                                                <p class="p-main leading-[25px]">Discover the magic of <br></br>
+                                                <p class="p-main text-2xl leading-[25px]">Discover the magic of <br></br>
                                                     Christmas in Subiaco</p>
                                                 <div className="animate-fade-in" id="spinner" style={{
                                                     marginBottom: 15
@@ -181,15 +181,15 @@ export function Splash({ onPermissionsGranted }: SplashProps) {
                                                     style={{
                                                         // paddingBottom: '30px'
                                                     }}>
-                                                    <p class="p-main leading-[21px]" style={{
+                                                    <p class="p-main text-2xl leading-[21px]" style={{
                                                         fontSize: '20px',
                                                     }}>To learn more about<br />Christmas in Subiaco visit</p>
-                                                    <a target="_blank" href={"https://SeeSubiaco.com.au/Christmas"}><p class="p-main link" style={{
+                                                    <a target="_blank" href={"https://SeeSubiaco.com.au/Christmas"}><p class="p-main text-2xl link" style={{
                                                         marginTop: '10px',
                                                         fontSize: '20px',
                                                     }}>SeeSubiaco.com.au/Christmas</p></a>
                                                 </div>
-                                                <p class="p-main animate-fade-in leading-[29px]">Begin the Twinkling<br />Treasure Hunt</p>
+                                                <p class="p-main text-2xl animate-fade-in leading-[29px]">Begin the Twinkling<br />Treasure Hunt</p>
                                                 <button class="rounded-button animate-fade-in" onClick={handleBegin} style={{
                                                     // marginBottom: '10px'
                                                 }} >Begin</button>
@@ -264,7 +264,7 @@ export function Splash({ onPermissionsGranted }: SplashProps) {
                         backgroundImage: `url(${TreeDesktop})`,
                     }} />
 
-                    <div className="gap-4 " style={{
+                    <div className="gap-4 w-full overflow-scroll " style={{
                         zIndex: 1,
                         display: 'flex',
                         flexDirection: 'column',
@@ -275,9 +275,9 @@ export function Splash({ onPermissionsGranted }: SplashProps) {
                         <div>
                             <div id="main-logo" style={{
                                 backgroundImage: `url(${MainLogo})`,
-                                marginTop: '80px'
+                                marginTop: '60px'
                             }} />
-                            <p class="p-main" style={{
+                            <p class="p-main 3xl:text-2xl text-xl" style={{
                                 marginTop: '25px'
                             }}>21 November - 31 December</p>
                         </div>
@@ -302,23 +302,22 @@ function DesktopSplash() {
             <QrCodeGenerator
                 value={url}
                 fgColor="#971741"
-                size={250}
+                size={200}
             />
-            <div className="flex flex-col gap-8 w-full items-center">
-                <div className="w-fit flex flex-col 3xl:gap-14 md:gap-10 gap-8 items-center justify-center">
+            <div className="flex flex-col 3xl:gap-8 gap-6 w-full items-center">
+                <div className="w-fit flex flex-col 3xl:gap-10 md:gap-6 gap-6 items-center justify-center">
 
-                    <div style={{
+                    <div className="gap-6" style={{
                         display: 'flex',
                         flexDirection: 'column',
                         // justifyContent: 'center',
                         alignItems: 'center',
                         marginBottom: '80px',
-                        gap: 32,
                     }} >
-                        <h2 className="font-secondary-sans text-[#FAEFD5] text-center p-main">
+                        <h2 className="font-secondary-sans text-[#FAEFD5] text-center p-main 3xl:text-2xl text-xl">
                             Join the Twinkling Treasure Hunt
                         </h2>
-                        <h2 className="text-white text-center md:text-[22px] text-xl font-helvetica-light md:leading-[26px] leading-[22px] tracking-[-0.41px]">
+                        <h2 className="text-white text-center md:text-[20px] text-xl font-helvetica-light md:leading-[22px] leading-[22px] tracking-[-0.41px]">
                             Scan the QR code to launch the<br />
                             Twinkling Treasure Hunt AR experience
                         </h2>
