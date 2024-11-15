@@ -109,7 +109,7 @@ export function Splash({ onPermissionsGranted }: SplashProps) {
                         height: pageType === 'loading' ? '30%' : '50%',
                     }}></div>
                     <div className="flex flex-col gap-4 items-center">
-                        <div id="splash-top-half"style={{
+                        <div id="splash-top-half" style={{
                             height: pageType === 'loading' ? '50vh' : '45vh',
 
                         }}>
@@ -205,7 +205,7 @@ export function Splash({ onPermissionsGranted }: SplashProps) {
                                                         'flex flex-col items-center flex-grow basis-1/2 px-5 animate-fade-in justify-end',
                                                     )}
                                                 >
-                                                    {uiType === 'default' && (
+                                                    {/* {uiType === 'default' || uiType === 'loading' && ( */}
                                                         <>
                                                             <h2 className="text-lg md:text-xl items-end text-center animate-fade-in font-inter pb-12 px-5 leading-[24px]">
                                                                 Access to your camera, microphone,
@@ -214,22 +214,39 @@ export function Splash({ onPermissionsGranted }: SplashProps) {
                                                             <div className="">
                                                                 <button class="rounded-button" onClick={requestMotion} style={{
                                                                     // marginBottom: '10px'
-                                                                }} >Allow
+                                                                }} >
+                                                                    {/* Allow
 
                                                                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="12" viewBox="0 0 24 12" fill="none">
                                                                         <path d="M17 1L22 6L17 11" stroke="#FAEFD5" stroke-width="2" />
                                                                         <path d="M22 6H0" stroke="#FAEFD5" stroke-width="2" />
-                                                                    </svg>
+                                                                    </svg> */}
 
+                                                                    {uiType === 'loading' ? (
+                                                                        <span className="animate-fade-in pointer-events-none">
+                                                                            <Spinner
+                                                                                size="md"
+                                                                            />
+                                                                        </span>
+                                                                    ) : (
+                                                                        <>
+                                                                            Allow
+
+                                                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="12" viewBox="0 0 24 12" fill="none">
+                                                                                <path d="M17 1L22 6L17 11" stroke="#FAEFD5" stroke-width="2" />
+                                                                                <path d="M22 6H0" stroke="#FAEFD5" stroke-width="2" />
+                                                                            </svg>
+                                                                            </>
+                                                                    )}
                                                                 </button>
                                                             </div>
                                                         </>
-                                                    )}
+                                                    {/* )} */}
 
                                                 </div>
-                                                {uiType === 'loading' && (
+                                                {/* {uiType === 'loading' && (
                                                     <div className="animate-fade-in xpb-5 flex justify-center items-center flex-col"><Spinner size="lg" /><p className="pt-8 font-inter">Loading assets...</p></div>
-                                                )}
+                                                )} */}
                                             </>
                                         )}
 
@@ -304,7 +321,7 @@ function DesktopSplash() {
                         <h2 className="text-white text-center md:text-[22px] text-xl font-helvetica-light md:leading-[26px] leading-[22px] tracking-[-0.41px]">
                             Scan the QR code to launch the<br />
                             Twinkling Treasure Hunt AR experience
-                            </h2>
+                        </h2>
                         {/* <button className="rounded-button">COPY LINK</button> */}
                         <CopyToClipboardTrigger text={url}>
                             <p className="font-sans" style={{
@@ -312,7 +329,7 @@ function DesktopSplash() {
                             }}>COPY LINK</p>
                             <img src={ClipboardImg} />
                         </CopyToClipboardTrigger>
-                        
+
                     </div>
                 </div>
 
