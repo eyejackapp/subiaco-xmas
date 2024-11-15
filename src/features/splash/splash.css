@@ -4,26 +4,35 @@
     background-color: #F0493C;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    justify-content: flex-end;
     overflow: hidden;
 }
 
 #splash-top-half {
+    transition: 1000ms ease-in-out;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
-    height: 50vh;
+    justify-content: flex-end;
+    padding-bottom: 50px;
+    /* position: absolute; */
+    /* top: 100px; */
+    /* height: 45vh; */
+    /* height: 50vh; */
     z-index: 1;
 }
 
 #splash-bottom-half {
+    transition: 1000ms ease-in-out;
+
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
-    height: 40vh;
+    justify-content: flex-end;
+    height: 45vh;
     /* align-self: baseline; */
     align-items: center;
+    padding: 20px 0 50px 0;
     z-index: 1;
+    gap: 40px;
 }
 
 #spinner {
@@ -34,10 +43,12 @@
 }
 
 #see-subiaco-logo {
+    position: absolute;
     width: 118.5px;
     height: 42.48px;
-    margin-top: 50px;
+    top: 50px;
     align-self: center;
+    z-index: 10;
 }
 
 #main-logo {
@@ -66,8 +77,10 @@
 /* MASKED TREE */
 #masked-tree-mobile {
     transition: 1000ms ease-in-out;
-    width: 100vw;
-    height: 600px;
+    /* width: calc(100% + 20px); */
+    width: 100%;
+    height: 100%;
+    /* height: 600px; */
     position: absolute;
     bottom: 30%;
     left: 0;
@@ -75,6 +88,7 @@
     /* background-size: cover; */
     background-size: calc(100% + 5px) 100%;
     /* center */
+    /* background-position: 57% 50%; */
     background-position: center;
 }
 

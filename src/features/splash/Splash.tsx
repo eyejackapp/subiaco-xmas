@@ -96,146 +96,156 @@ export function Splash({ onPermissionsGranted }: SplashProps) {
         >
             {deviceType === 'loading' || deviceType === 'mobile' && (
                 <>
-                <div id="masked-tree-mobile" style={{
-                    backgroundImage: `url(${MaskedTreeMobile})`,
-                    bottom: pageType === 'loading' ? 'calc(30% - 1px)' : 'calc(50% - 1px)',
-                    backgroundSize: pageType === 'loading' ? 'calc(100% + 5px) 100%' : 'calc(130% + 5px) 100%',
-                }}/>
-                <div id="bottom-tree" style={{
-                    top: pageType === 'loading' ? '70%' : '50%',
-                    height: pageType === 'loading' ? '30%' : '50%',
-                }}></div>
-
-<div id="splash-top-half" >
-                <img id="see-subiaco-logo" src={SeeSubiaco} />
-                <div id="main-logo" style={{
-                    backgroundImage: `url(${MainLogo})`,
-                }}>
-                    <img class="snowflake" src={Snowflake} style={{
-                        position: 'absolute',
-                        top: '-80px',
-                        right: '80px',
-                        width: '60px',
-                        height: '60px',
-                        opacity: pageType === 'loading' ? 1 : 0
+                    <div id="masked-tree-mobile" style={{
+                        backgroundImage: `url(${MaskedTreeMobile})`,
+                        bottom: pageType === 'loading' ? 'calc(30% - 1px)' : 'calc(35% - 1px)',
+                        height: pageType === 'loading' ? '70%' : '100%',
+                        width: pageType === 'loading' ? '100%' : 'calc(100% + 20px)',
+                        backgroundSize: pageType === 'loading' ? 'calc(100% + 5px) 100%' : 'calc(130% + 5px) 100%',
+                        backgroundPosition: pageType === 'loading' ? 'center' : '57% 50%',
                     }} />
-                    <img class="snowflake" src={Snowflake} style={{
-                        position: 'absolute',
-                        top: '-17px',
-                        right: '36px',
-                        width: '30px',
-                        height: '30px',
-                        opacity: pageType === 'loading' ? 1 : 0
-                    }} />
-                     <img class="snowflake" src={Snowflake} style={{
-                        position: 'absolute',
-                        bottom: '0',
-                        left: '-20px',
-                        width: '40px',
-                        height: '40px',
-                        opacity: pageType === 'loading' ?1 : 0
-                    }} />
-                </div>
-            </div>
+                    <div id="bottom-tree" style={{
+                        top: pageType === 'loading' ? '70%' : '50%',
+                        height: pageType === 'loading' ? '30%' : '50%',
+                    }}></div>
+                    <div className="flex flex-col gap-4 items-center">
+                        <div id="splash-top-half"style={{
+                            height: pageType === 'loading' ? '50vh' : '45vh',
 
-            <div id="splash-bottom-half">
-            {deviceType === 'loading' && (
-                <div className="flex flex-col justify-center items-center px-10 pb-10 basis-1/2 h-full">
-                    <Spinner size="lg" />
-                </div>
-            )}
-            {deviceType === 'mobile' && (
-                permissionDenied ? <PermissionsDeniedScreen permissionDenied={permissionDenied} /> :
-                    <>
+                        }}>
+                            <img id="see-subiaco-logo" src={SeeSubiaco} />
+                            <div id="main-logo" style={{
+                                // backgroundImage: `url(${MainLogo})`,
+                            }}>
+                                <img className="" src={MainLogo} />
+                                <img class="snowflake" src={Snowflake} style={{
+                                    position: 'absolute',
+                                    top: '-50px',
+                                    right: '70px',
+                                    width: '60px',
+                                    height: '60px',
+                                    opacity: pageType === 'loading' ? 1 : 0
+                                }} />
+                                <img class="snowflake" src={Snowflake} style={{
+                                    position: 'absolute',
+                                    top: '-10px',
+                                    right: '26px',
+                                    width: '30px',
+                                    height: '30px',
+                                    opacity: pageType === 'loading' ? 1 : 0
+                                }} />
+                                <img class="snowflake" src={Snowflake} style={{
+                                    position: 'absolute',
+                                    bottom: '0',
+                                    left: '-20px',
+                                    width: '40px',
+                                    height: '40px',
+                                    opacity: pageType === 'loading' ? 1 : 0
+                                }} />
+                            </div>
+                        </div>
 
-                        {pageType === 'loading' && (
-                            <>
-                            <p class="p-main">Discover the magic of <br></br>
-                            Christmas in Subiaco</p>
-                                <div className="animate-fade-in" id="spinner" style={{
-                                    marginBottom: 100
-                                }}>
+                        <div id="splash-bottom-half" style={{
+                            height: pageType === 'loading' ? '40vh' : '45vh',
+                        }}>
+                            {deviceType === 'loading' && (
+                                <div className="flex flex-col justify-center items-center px-10 pb-10 basis-1/2 h-full">
                                     <Spinner size="lg" />
                                 </div>
+                            )}
+                            {deviceType === 'mobile' && (
+                                permissionDenied ? <PermissionsDeniedScreen permissionDenied={permissionDenied} /> :
+                                    <>
 
-                                <div className="absolute bottom-0 pb-4">
-                                    <Logo8thWall />
-                                </div>
-                            </>
-                        )}
+                                        {pageType === 'loading' && (
+                                            <>
+                                                <p class="p-main">Discover the magic of <br></br>
+                                                    Christmas in Subiaco</p>
+                                                <div className="animate-fade-in" id="spinner" style={{
+                                                    marginBottom: 15
+                                                }}>
+                                                    <Spinner size="lg" />
+                                                </div>
 
-                        {pageType === 'begin' && (
+                                                <div className="absolute bottom-0 pb-4">
+                                                    <Logo8thWall />
+                                                </div>
+                                            </>
+                                        )}
 
-                            <>
-                            <div 
-                            className={'animate-fade-in'}
-                            style={{
-                                paddingBottom: '30px'
-                            }}>
-                                <p  class="p-main" style={{
-                                    fontSize: '20px',
-                                }}>To learn more about<br/>Christmas in Subiaco visit</p>
-                                <a  href={"https://SeeSubiaco.com.au/Christmas"}><p class="p-main link" style={{
-                                    marginTop: '10px',
-                                    fontSize: '20px',
-                                }}>SeeSubiaco.com.au/Christmas</p></a>
-                            </div>
-                            <p class="p-main animate-fade-in">Begin the Twinkling<br/>Treasure Hunt</p>
-                            <button class="rounded-button animate-fade-in" onClick={handleBegin} style={{
-                                marginBottom: '50px'
-                            }} >Begin</button>
+                                        {pageType === 'begin' && (
 
-                            </>
-                            
-                        )}
-                        
-                        {pageType === 'default' && (
-                            <>
-                                <div
-                                    className={clsx(
-                                        'flex flex-col items-center flex-grow basis-1/2 px-5 animate-fade-in justify-end',
-                                    )}
-                                >
-                                    {uiType === 'default' && (
-                                        <>
-                                            <h2 className="text-lg md:text-xl items-end text-center animate-fade-in font-inter pb-12 px-5 leading-[115%]">
-                                                Access to your camera, microphone,
-                                                <br /> motion & orientation is required
-                                            </h2>
-                                            <div className="">
-                                            <button class="rounded-button" onClick={requestMotion} style={{
-                                                marginBottom: '50px'
-                                            }} >Allow
-                                            
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="12" viewBox="0 0 24 12" fill="none">
-                                                <path d="M17 1L22 6L17 11" stroke="#FAEFD5" stroke-width="2"/>
-                                                <path d="M22 6H0" stroke="#FAEFD5" stroke-width="2"/>
-                                            </svg>
+                                            <>
+                                                <div
+                                                    className={'animate-fade-in'}
+                                                    style={{
+                                                        // paddingBottom: '30px'
+                                                    }}>
+                                                    <p class="p-main" style={{
+                                                        fontSize: '20px',
+                                                    }}>To learn more about<br />Christmas in Subiaco visit</p>
+                                                    <a target="_blank" href={"https://SeeSubiaco.com.au/Christmas"}><p class="p-main link" style={{
+                                                        marginTop: '10px',
+                                                        fontSize: '20px',
+                                                    }}>SeeSubiaco.com.au/Christmas</p></a>
+                                                </div>
+                                                <p class="p-main animate-fade-in">Begin the Twinkling<br />Treasure Hunt</p>
+                                                <button class="rounded-button animate-fade-in" onClick={handleBegin} style={{
+                                                    // marginBottom: '10px'
+                                                }} >Begin</button>
 
-                                            </button>
-                                            </div>
-                                        </>
-                                    )}
+                                            </>
 
-                                </div>
-                                {uiType === 'loading' && (
-                                    <div className="animate-fade-in xpb-5 flex justify-center items-center flex-col"><Spinner size="lg" /><p className="pt-8 font-inter">Loading assets...</p></div>
-                                )}
-                            </>
-                        )}
+                                        )}
 
-                    </>
-            )}
-            </div>
-            </>
+                                        {pageType === 'default' && (
+                                            <>
+                                                <div
+                                                    className={clsx(
+                                                        'flex flex-col items-center flex-grow basis-1/2 px-5 animate-fade-in justify-end',
+                                                    )}
+                                                >
+                                                    {uiType === 'default' && (
+                                                        <>
+                                                            <h2 className="text-lg md:text-xl items-end text-center animate-fade-in font-inter pb-12 px-5 leading-[24px]">
+                                                                Access to your camera, microphone,
+                                                                <br /> motion & orientation is required
+                                                            </h2>
+                                                            <div className="">
+                                                                <button class="rounded-button" onClick={requestMotion} style={{
+                                                                    // marginBottom: '10px'
+                                                                }} >Allow
+
+                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="12" viewBox="0 0 24 12" fill="none">
+                                                                        <path d="M17 1L22 6L17 11" stroke="#FAEFD5" stroke-width="2" />
+                                                                        <path d="M22 6H0" stroke="#FAEFD5" stroke-width="2" />
+                                                                    </svg>
+
+                                                                </button>
+                                                            </div>
+                                                        </>
+                                                    )}
+
+                                                </div>
+                                                {uiType === 'loading' && (
+                                                    <div className="animate-fade-in xpb-5 flex justify-center items-center flex-col"><Spinner size="lg" /><p className="pt-8 font-inter">Loading assets...</p></div>
+                                                )}
+                                            </>
+                                        )}
+
+                                    </>
+                            )}
+                        </div>
+                    </div>
+                </>
             )}
 
             {deviceType === 'desktop' && (
-                
+
                 <>
                     <div id="tree-desktop" style={{
                         backgroundImage: `url(${TreeDesktop})`,
-                    }}/>
+                    }} />
 
                     <div style={{
                         zIndex: 1,
@@ -245,22 +255,22 @@ export function Splash({ onPermissionsGranted }: SplashProps) {
                         justifyContent: 'space-between',
                         height: '100vh',
                     }}>
-                       <div>
+                        <div>
                             <div id="main-logo" style={{
                                 backgroundImage: `url(${MainLogo})`,
                                 marginTop: '80px'
-                            }}/>
+                            }} />
                             <p class="p-main" style={{
                                 marginTop: '25px'
                             }}>21 November - 31 December</p>
-                       </div>
-                        
-                        <DesktopSplash/>
+                        </div>
+
+                        <DesktopSplash />
                     </div>
                 </>
-                
+
             )}
-            
+
 
 
         </div>
@@ -272,37 +282,37 @@ function DesktopSplash() {
     const url = window.location.href
     return (
         <>
-        <QrCodeGenerator
-        value={url}
-        fgColor="#000000"
-        size={250}
-    />
-        <div className="flex flex-col gap-8  w-full items-center">
-            <div className="w-fit flex flex-col 3xl:gap-14 md:gap-10 gap-8 items-center justify-center">
-               
-               <div style={{
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'center',
-                alignItems: 'center',
-                marginBottom: '80px',
-                gap: 20,
-               }} >
-                <h2 className="text-white text-center md:text-[22px] text-xl font-helvetica-light md:leading-[26px] leading-[22px] tracking-[-0.41px]">
-                        Scan the QR code to launch the<br />
-                        Twinkling Treasure Hunt AR experience
-                    </h2>
-                    {/* <button className="rounded-button">COPY LINK</button> */}
-                    <CopyToClipboardTrigger text={url}>
-                    <p style={{
-                        paddingTop: '5px'
-                    }}>COPY LINK</p>
-                    <img src={ClipboardImg} />
-                    </CopyToClipboardTrigger>
-               </div>
-            </div>
+            <QrCodeGenerator
+                value={url}
+                fgColor="#000000"
+                size={250}
+            />
+            <div className="flex flex-col gap-8  w-full items-center">
+                <div className="w-fit flex flex-col 3xl:gap-14 md:gap-10 gap-8 items-center justify-center">
 
-        </div>
+                    <div style={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        marginBottom: '80px',
+                        gap: 20,
+                    }} >
+                        <h2 className="text-white text-center md:text-[22px] text-xl font-helvetica-light md:leading-[26px] leading-[22px] tracking-[-0.41px]">
+                            Scan the QR code to launch the<br />
+                            Twinkling Treasure Hunt AR experience
+                        </h2>
+                        {/* <button className="rounded-button">COPY LINK</button> */}
+                        <CopyToClipboardTrigger text={url}>
+                            <p style={{
+                                paddingTop: '5px'
+                            }}>COPY LINK</p>
+                            <img src={ClipboardImg} />
+                        </CopyToClipboardTrigger>
+                    </div>
+                </div>
+
+            </div>
         </>
     );
 }
