@@ -159,7 +159,7 @@ export function Splash({ onPermissionsGranted }: SplashProps) {
 
                                         {pageType === 'loading' && (
                                             <>
-                                                <p class="p-main">Discover the magic of <br></br>
+                                                <p class="p-main leading-[25px]">Discover the magic of <br></br>
                                                     Christmas in Subiaco</p>
                                                 <div className="animate-fade-in" id="spinner" style={{
                                                     marginBottom: 15
@@ -181,7 +181,7 @@ export function Splash({ onPermissionsGranted }: SplashProps) {
                                                     style={{
                                                         // paddingBottom: '30px'
                                                     }}>
-                                                    <p class="p-main" style={{
+                                                    <p class="p-main leading-[21px]" style={{
                                                         fontSize: '20px',
                                                     }}>To learn more about<br />Christmas in Subiaco visit</p>
                                                     <a target="_blank" href={"https://SeeSubiaco.com.au/Christmas"}><p class="p-main link" style={{
@@ -189,7 +189,7 @@ export function Splash({ onPermissionsGranted }: SplashProps) {
                                                         fontSize: '20px',
                                                     }}>SeeSubiaco.com.au/Christmas</p></a>
                                                 </div>
-                                                <p class="p-main animate-fade-in">Begin the Twinkling<br />Treasure Hunt</p>
+                                                <p class="p-main animate-fade-in leading-[29px]">Begin the Twinkling<br />Treasure Hunt</p>
                                                 <button class="rounded-button animate-fade-in" onClick={handleBegin} style={{
                                                     // marginBottom: '10px'
                                                 }} >Begin</button>
