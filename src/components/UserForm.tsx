@@ -177,7 +177,7 @@ export const UserForm = () => {
 
   return (
     <div className="w-full h-full overflow-auto flex xitems-center justify-center ">
-    <div className="px-6 py-12 max-w-[360px] w-full h-full relative bg-[#EA81A4] xoverflow-y-scroll">
+    <div className="px-6 py-12 max-w-[360px] w-full h-full relative bg-[#EA81A4] xoverflow-y-scroll pointer-events-none">
       <button
         onClick={handleClose}
         className="absolute top-4 right-2 text-black"
@@ -200,8 +200,9 @@ export const UserForm = () => {
             onChange={handleChange}
             onBlur={handleBlur}
             required
-            className={clsx("w-full p-3 border border-[#FEF0D5] rounded-[3px] bg-[#EA81A4] focus:outline-none focus:border-gray-300 mt-1", {
+            className={clsx("w-full p-3 border  rounded-[3px] bg-[#EA81A4] focus:outline-none focus:border-gray-300 mt-1", {
               "border-[#FF454A] bg-[#FF454A] bg-opacity-10": errors.fullName,
+              "border-[#FEF0D5]": !errors.fullName,
             })} />
           {errors.fullName && <p className=" text-[#FF454A] text-xs font-bold pt-1">{errors.fullName}</p>}
         </div>
@@ -312,7 +313,7 @@ export const UserForm = () => {
           type="submit"
           disabled={!isFormValid || loading}
           className={clsx("px-4 py-2 mb-12 border-[#FEF0D5] border-2 max-w-[220px] xs:max-w-[240px] h-12 xs:h-14 w-full text-[#FEF0D5] rounded-full font-secondary-sans text-base xs:text-lg active:bg-[#FEF0D5] active:text-[#F184AE]", {
-            "opacity-50 cursor-not-allowed": !isFormValid || loading,
+            "opacity-50 cursor-not-allowed active:bg-transparent active:text-[#FEF0D5]": !isFormValid || loading,
           })}
         >
           {loading ? <span className="block h-full w-full pt-[2px]"><div className=" absolute left-1/2 -translate-x-1/2"><Spinner size="md" className="" /></div></span> :
