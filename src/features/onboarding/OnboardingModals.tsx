@@ -28,7 +28,7 @@ export const OnboardingModals = ({ onClose }: OnboardingModalsProps) => {
   ];
 
   const carouselOptions = {
-    loop: true,
+    loop: false,
     draggable: true,
   };
 
