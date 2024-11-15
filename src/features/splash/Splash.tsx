@@ -91,18 +91,19 @@ export function Splash({ onPermissionsGranted }: SplashProps) {
         <div
             id="splash-bg"
             className={clsx(
-                'bg-cover bg-center h-full w-full text-white pointer-events-auto items-center xpx-5 flex flex-col',
+                'bg-cover bg-center h-full w-full text-white relative pointer-events-none overflow-hidden items-center xpx-5 flex flex-col',
             )}
         >
             {deviceType === 'loading' || deviceType === 'mobile' && (
                 <>
-                    <div id="masked-tree-mobile" style={{
+                    <div id="masked-tree-mobile" className="pointer-events-none overflow-hidden" style={{
                         backgroundImage: `url(${MaskedTreeMobile})`,
                         bottom: pageType === 'loading' ? 'calc(30% - 1px)' : 'calc(35% - 1px)',
                         height: pageType === 'loading' ? '70%' : '100%',
-                        width: pageType === 'loading' ? '100%' : 'calc(100% + 20px)',
+                        width: pageType === 'loading' ? '100%' : '100%',
+                        transform: pageType === 'loading' ? 'scale(1)' : 'scaleX(1.05)',
                         backgroundSize: pageType === 'loading' ? 'calc(100% + 5px) 100%' : 'calc(130% + 5px) 100%',
-                        backgroundPosition: pageType === 'loading' ? 'center' : '57% 50%',
+                        backgroundPosition: pageType === 'loading' ? 'center' : 'center',
                     }} />
                     <div id="bottom-tree" style={{
                         top: pageType === 'loading' ? '70%' : '50%',
