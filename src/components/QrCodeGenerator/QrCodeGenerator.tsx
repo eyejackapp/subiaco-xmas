@@ -15,7 +15,7 @@ export const QrCodeGenerator = ({
 }: QRCodeProps) => {
     const dimensions = useWindowDimensions();
     return (
-        <div className="p-[10px] bg-white xrounded-md flex-shrink border border-black">
+        <div className="p-5 bg-white rounded-md xflex-shrink border ">
             <QRCode
                 value={value}
                 fgColor={fgColor}

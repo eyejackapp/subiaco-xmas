@@ -9,7 +9,7 @@ import './splash.css';
 import SeeSubiaco from './assets/see-subiaco.svg';
 import MainLogo from './assets/main-logo.svg';
 import MaskedTreeMobile from './assets/masked-tree-mobile.png';
-import TreeDesktop from './assets/tree-desktop.png';
+import TreeDesktop from './assets/tree-desktop-stars.png';
 import Snowflake from './assets/snowflake.svg';
 import { CopyToClipboardTrigger } from './CopyToClipboardTrigger';
 import ClipboardImg from '../../assets/clipboard.svg';
@@ -247,12 +247,12 @@ export function Splash({ onPermissionsGranted }: SplashProps) {
                         backgroundImage: `url(${TreeDesktop})`,
                     }} />
 
-                    <div style={{
+                    <div className="gap-4 " style={{
                         zIndex: 1,
                         display: 'flex',
                         flexDirection: 'column',
                         alignItems: 'center',
-                        justifyContent: 'space-between',
+                        // justifyContent: 'space-between',
                         height: '100vh',
                     }}>
                         <div>
@@ -281,39 +281,43 @@ function DesktopSplash() {
     // const url = useEJXLaunchUrl();
     const url = window.location.href
     return (
-        <>
+        <div className="flex-grow flex flex-col justify-center items-center gap-8">
             <QrCodeGenerator
                 value={url}
-                fgColor="#000000"
+                fgColor="#971741"
                 size={250}
             />
-            <div className="flex flex-col gap-8  w-full items-center">
+            <div className="flex flex-col gap-8 w-full items-center">
                 <div className="w-fit flex flex-col 3xl:gap-14 md:gap-10 gap-8 items-center justify-center">
 
                     <div style={{
                         display: 'flex',
                         flexDirection: 'column',
-                        justifyContent: 'center',
+                        // justifyContent: 'center',
                         alignItems: 'center',
                         marginBottom: '80px',
-                        gap: 20,
+                        gap: 32,
                     }} >
+                        <h2 className="font-secondary-sans text-[#FAEFD5] text-center p-main">
+                            Join the Twinkling Treasure Hunt
+                        </h2>
                         <h2 className="text-white text-center md:text-[22px] text-xl font-helvetica-light md:leading-[26px] leading-[22px] tracking-[-0.41px]">
                             Scan the QR code to launch the<br />
                             Twinkling Treasure Hunt AR experience
-                        </h2>
+                            </h2>
                         {/* <button className="rounded-button">COPY LINK</button> */}
                         <CopyToClipboardTrigger text={url}>
-                            <p style={{
-                                paddingTop: '5px'
+                            <p className="font-sans" style={{
+                                paddingTop: '0px'
                             }}>COPY LINK</p>
                             <img src={ClipboardImg} />
                         </CopyToClipboardTrigger>
+                        
                     </div>
                 </div>
 
             </div>
-        </>
+        </div>
     );
 }
 
