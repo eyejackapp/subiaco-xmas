@@ -126,15 +126,15 @@ export function HeaderBody({ onToggleHeader }: HeaderBodyProps) {
 
 
 function ArtworkList() {
-    const { viewedArtworks, setTappedArtwork, setShowArtworkUnlocked } = useArtwork();
+    const { viewedArtworks, setTappedArtwork, setShowArtworkTapped } = useArtwork();
 
     const handleArtworkTap = useCallback(
         (artworkId: ArtworkId) => {
             setTappedArtwork(artworkId);
             console.log('handleartworktap', artworkId)
-            setShowArtworkUnlocked(true);
+            setShowArtworkTapped(true);
         },
-        [setShowArtworkUnlocked, setTappedArtwork],
+        [setShowArtworkTapped, setTappedArtwork],
     );
     return (
         <div className="flex sm:gap-9 gap-7 sm:p-8 p-5 flex-wrap">

@@ -11,7 +11,7 @@ import { getArtworkIdFromCode } from "./utils/qrUtils";
 import TrackingOverlay from "./features/tracking-overlay";
 import { Spinner } from "./components/Spinner";
 import Header from "./features/header";
-import { ArtworkId, ARTWORKS_LENGTH } from "./renderer/artworks";
+import { ArtworkId, ARTWORKS, ARTWORKS_LENGTH } from "./renderer/artworks";
 import { ModalOverlay } from "./components/Modal/ModalOverlay";
 import { Modal } from "./components/Modal/Modal";
 import { useArtwork } from "./hooks/useArtwork";
@@ -39,11 +39,12 @@ export function App() {
 
   const { appState, setAppState, isHeaderOpen, setIsSurveyOpen, showThankYouModal, setShowThankYouModal, setIsHeaderOpen } = useAppState();
   const { renderer, initExperience, loadArtwork, clearCurrentArtwork } = useRenderer();
-  const { artworkState, setArtworkState, setCurrentArtwork, currentArtworkModel, regularArtworks, showArtworkUnlocked, setShowArtworkUnlocked, viewedArtworks, setViewedArtworks } = useArtwork();
+  const { artworkState, setArtworkState, currentArtworkModel, tappedArtworkModel, setCurrentArtwork, currentArtwork, tappedArtwork, setShowArtworkTapped, showArtworkTapped, regularArtworks, showArtworkUnlocked, setShowArtworkUnlocked, viewedArtworks, setViewedArtworks } = useArtwork();
   const recordingState = useVideoRecorder(renderer!);
   const { hasHitSubmissionLimit } = useUserForm();
   const { isMobile } = useUserDevice();
   const screenOrientation = useScreenOrientation();
+
 
   const canResumeAudio = useRef(false);
 
@@ -175,6 +176,7 @@ export function App() {
     (artworkState === ArtworkState.VIEWING || artworkState === ArtworkState.NONE);
 
   const handleCloseArtworkUnlockedModal = useCallback(() => {
+    console.log('closeArtworkUnlockedModal')
     setShowArtworkUnlocked(false);
     setShouldShowArtworkUnlocked(false);
     if (regularArtworks!.length == ARTWORKS_LENGTH && !hasViewedCongrats) {
@@ -188,6 +190,7 @@ export function App() {
 
     }
   }, [setShowArtworkUnlocked, hasViewedCongrats, regularArtworks, artworkState, setArtworkState, renderer]);
+
 
   const handleEnterDetails = useCallback(() => {
     setShowCongratsModal(false);
@@ -299,6 +302,28 @@ export function App() {
                 <button
                   className="px-4 py-2 border-white border-2 max-w-[230px] h-14 w-full text-white rounded-full font-secondary-sans text-lg"
                   onClick={handleCloseArtworkUnlockedModal}
+                >
+                  <span className="block pt-[2px]">OK</span>
+
+                </button>
+              </div>
+            </Modal>
+          </ModalOverlay>
+        </div>
+      </FadeTransition>
+
+      <FadeTransition show={showArtworkTapped}>
+        <div className="w-full h-full">
+          <ModalOverlay>
+            <Modal className="centered h-fit bg-[#EA81A4] px-6 xs:px-8 py-12 flex justify-center items-center">
+              <div className="flex flex-col gap-8 items-center w-full">
+                {tappedArtworkModel?.unlockedInfo && <img src={Star} className="absolute -top-9 left-1/2 -translate-x-1/2 z-10" />}
+                <h2 className="text-2xl text-center font-secondary-sans">{tappedArtworkModel?.artist}<br /> Unlocked!</h2>
+                {tappedArtworkModel?.unlockedLogo && (<img src={tappedArtworkModel?.unlockedLogo} className="" />)}
+                {tappedArtworkModel?.unlockedInfo && <p className="leading-[20px] text-center" dangerouslySetInnerHTML={{ __html: tappedArtworkModel?.unlockedInfo ?? '' }}></p>}
+                <button
+                  className="px-4 py-2 border-white border-2 max-w-[230px] h-14 w-full text-white rounded-full font-secondary-sans text-lg"
+                  onClick={() => setShowArtworkTapped(false)}
                 >
                   <span className="block pt-[2px]">OK</span>
 

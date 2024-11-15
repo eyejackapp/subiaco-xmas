@@ -3,6 +3,7 @@ import { useContext, useState, useMemo, useEffect } from 'preact/hooks';
 import { createContext } from 'preact/compat';
 import { ARTWORKS, ArtworkId, ArtworkModel } from '../renderer/artworks';
 import { useLocalStorageState } from 'ahooks';
+import { c } from 'vite/dist/node/types.d-aGj9QkWt';
 
 export enum ArtworkState {
   NONE,
@@ -18,11 +19,14 @@ type ArtworkContextType = {
   viewedArtworks: ArtworkId[] | undefined;
   setViewedArtworks: React.Dispatch<React.SetStateAction<ArtworkId[] | undefined>>;
   currentArtworkModel: ArtworkModel | undefined;
+  tappedArtworkModel: ArtworkModel | undefined;
   tappedArtwork: ArtworkId | null;
   setTappedArtwork: (artwork: ArtworkId | null) => void;
   showArtworkUnlocked: boolean;
   setShowArtworkUnlocked: (value: boolean) => void;
   regularArtworks: ArtworkId[] | undefined;
+  showArtworkTapped: boolean;
+  setShowArtworkTapped: (value: boolean) => void;
 
 };
 
@@ -30,6 +34,7 @@ export const ArtworkContext = createContext<ArtworkContextType>({
   artworkState: ArtworkState.NONE,
   setArtworkState: () => { },
   currentArtworkModel: undefined,
+  tappedArtworkModel: undefined,
   viewedArtworks: [],
   setCurrentArtwork: () => { },
   setViewedArtworks: () => { },
@@ -39,19 +44,26 @@ export const ArtworkContext = createContext<ArtworkContextType>({
   showArtworkUnlocked: false,
   setShowArtworkUnlocked: () => { },
   regularArtworks: [],
+  showArtworkTapped: false,
+  setShowArtworkTapped: () => { },
+  // artworkToShow: null,
+  // setArtworkToShow: () => { },
 });
 
 export const ArtworkProvider = ({ children }) => {
   const [currentArtwork, setCurrentArtwork] = useState<ArtworkId | undefined>(undefined);
   const [artworkState, setArtworkState] = useState<ArtworkState>(ArtworkState.NONE);
   const [showArtworkUnlocked, setShowArtworkUnlocked] = useState(false);
+  const [showArtworkTapped, setShowArtworkTapped] = useState(false);
   const [tappedArtwork, setTappedArtwork] = useState<ArtworkId | null>(null);
-
-  const artworkToShow = tappedArtwork || currentArtwork;
-
+  // const [artworkToShow, setArtworkToShow] = useState(tappedArtwork || currentArtwork);
   const currentArtworkModel = useMemo(() => {
-    return artworkToShow ? ARTWORKS[artworkToShow] : undefined;
-  }, [artworkToShow]);
+    return currentArtwork ? ARTWORKS[currentArtwork] : undefined;
+  }, [currentArtwork]);
+
+  const tappedArtworkModel = useMemo(() => {
+    return tappedArtwork ? ARTWORKS[tappedArtwork] : undefined;
+  }, [tappedArtwork]);
 
   const [viewedArtworks, setViewedArtworks] = useLocalStorageState<ArtworkId[] | undefined>('viewedArtworks', {
     defaultValue: [],
@@ -68,6 +80,7 @@ export const ArtworkProvider = ({ children }) => {
         currentArtwork,
         setCurrentArtwork,
         currentArtworkModel,
+        tappedArtworkModel,
         viewedArtworks,
         setViewedArtworks,
         tappedArtwork,
@@ -75,6 +88,10 @@ export const ArtworkProvider = ({ children }) => {
         showArtworkUnlocked,
         setShowArtworkUnlocked,
         regularArtworks,
+        showArtworkTapped,
+        setShowArtworkTapped
+        // artworkToShow,
+        // setArtworkToShow
       }}
     >
       {children}
