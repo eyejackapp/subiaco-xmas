@@ -17,7 +17,6 @@ export const TrackingOverlay = ({ onStatusNormal }: TrackingOverlayProps) => {
     const { setArtworkState } = useArtwork();
 
     useMount(() => {
-        console.log('tracking: ', trackingStatus, 'ui:', uiStatus)
         setUiStatus(trackingStatus)
         if (trackingStatus === 'NORMAL') {
             setUiStatus('NORMAL');

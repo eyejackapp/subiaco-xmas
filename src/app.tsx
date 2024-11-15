@@ -73,7 +73,6 @@ export function App() {
   useEffect(() => {
     const handleVisiblityChange = () => {
       if (document.visibilityState === 'visible') {
-        console.log(ArtworkState[artworkState])
         if (canResumeAudio.current) renderer?.resumeAudio();
 
       } else {
@@ -180,7 +179,6 @@ export function App() {
     (artworkState === ArtworkState.VIEWING || artworkState === ArtworkState.NONE);
 
   const handleCloseArtworkUnlockedModal = useCallback(() => {
-    console.log('closeArtworkUnlockedModal')
     setShowArtworkUnlocked(false);
     setShouldShowArtworkUnlocked(false);
     if (regularArtworks!.length == ARTWORKS_LENGTH && !hasViewedCongrats) {
@@ -238,17 +236,6 @@ export function App() {
 
   const [error] = useErrorBoundary();
 
-  useEffect(() => {
-    console.log('limitReached', limitReached)
-  }, [limitReached])
-
-  useEffect(() => {
-    console.log('artworkStateChange', artworkState)
-  }, [artworkState])
-
-  useEffect(() => {
-    console.log('appStateChange', appState)
-  }, [appState])
   /**
    * JSX
   */

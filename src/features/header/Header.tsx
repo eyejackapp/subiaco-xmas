@@ -41,9 +41,7 @@ export const Header = ({recordingState}: HeaderProps) => {
     const scrollElement = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
-        console.log('isSurveyOpen', isSurveyOpen);
         if (isSurveyOpen) {
-            console.log('scrollElement', scrollElement.current);
             window.scrollTo(0, 0);
         }
     }, [isSurveyOpen, scrollElement]);

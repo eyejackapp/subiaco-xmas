@@ -165,7 +165,6 @@ export const UserForm = () => {
 
   const handleClose = useCallback(() => {
     setIsSurveyOpen(false);
-    console.log("artworkState", artworkState, isHeaderOpen);
     if (artworkState === ArtworkState.NONE) {
       // renderer?.resumeTracking();
       setArtworkState(ArtworkState.PLACING); 

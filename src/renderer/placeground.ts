@@ -232,11 +232,9 @@ export function init3dExperience(
   const startPlayback = (actions: AnimationAction[]) => {
     let hasShownUnlockedModal = false;
     const onMixerFinished = () => {
-      console.log('run listener every time')
       audioElement.currentTime = 0;
       loopAnimations(model);
       if (hasShownUnlockedModal) return;
-      console.log("Event listener executed once.");
       module.emitter.emit("on-animation-loop");
       // mixer.removeEventListener("finished", onMixerFinished);
       hasShownUnlockedModal = true;

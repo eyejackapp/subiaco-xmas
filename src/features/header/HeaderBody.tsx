@@ -131,7 +131,6 @@ function ArtworkList() {
     const handleArtworkTap = useCallback(
         (artworkId: ArtworkId) => {
             setTappedArtwork(artworkId);
-            console.log('handleartworktap', artworkId)
             setShowArtworkTapped(true);
         },
         [setShowArtworkTapped, setTappedArtwork],
