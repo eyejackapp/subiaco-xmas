@@ -14,6 +14,7 @@ import Snowflake from './assets/snowflake.svg';
 import { CopyToClipboardTrigger } from './CopyToClipboardTrigger';
 import ClipboardImg from '../../assets/clipboard.svg';
 import useUnlockAudio from '@/hooks/useUnlockAudio';
+import { ModalOverlay } from '@/components/Modal/ModalOverlay';
 
 type SplashProps = {
     onPermissionsGranted: () => void;
@@ -22,6 +23,7 @@ type SplashProps = {
 export function Splash({ onPermissionsGranted }: SplashProps) {
     const [pageType, setPageType] = useState<'loading' | 'begin' | 'default'>('loading');
     const [uiType, setUiType] = useState<'loading' | 'default'>('default');
+    const [showModalOverlay, setShowModalOverlay] = useState(false);
     const { device } = useUserDevice();
     useUnlockAudio("ejx-audio");
 
@@ -33,6 +35,7 @@ export function Splash({ onPermissionsGranted }: SplashProps) {
     }
 
     const requestCamera = () => {
+        setShowModalOverlay(false);
         navigator.mediaDevices
             .getUserMedia({ video: true, audio: false })
             .then(() => {
@@ -46,6 +49,7 @@ export function Splash({ onPermissionsGranted }: SplashProps) {
     };
 
     const requestMotion = () => {
+        setShowModalOverlay(true);
         if (
             typeof DeviceMotionEvent !== 'undefined' &&
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -245,9 +249,10 @@ export function Splash({ onPermissionsGranted }: SplashProps) {
                                                     {/* )} */}
 
                                                 </div>
-                                                {/* {uiType === 'loading' && (
-                                                    <div className="animate-fade-in xpb-5 flex justify-center items-center flex-col"><Spinner size="lg" /><p className="pt-8 font-inter">Loading assets...</p></div>
-                                                )} */}
+                                                {showModalOverlay && (
+                                                    <ModalOverlay>''</ModalOverlay>
+                                                    // <div className="animate-fade-in xpb-5 flex justify-center items-center flex-col"><Spinner size="lg" /><p className="pt-8 font-inter">Loading assets...</p></div>
+                                                )}
                                             </>
                                         )}
 

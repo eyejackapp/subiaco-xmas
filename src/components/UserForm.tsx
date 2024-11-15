@@ -176,7 +176,8 @@ export const UserForm = () => {
   }, [setIsSurveyOpen, artworkState, setArtworkState, isHeaderOpen, renderer]);
 
   return (
-    <div className="px-6 py-12 max-w-[360px] w-full h-full relative bg-[#EA81A4] overflow-y-scroll">
+    <div className="w-full h-full overflow-auto flex xitems-center justify-center ">
+    <div className="px-6 py-12 max-w-[360px] w-full h-full relative bg-[#EA81A4] xoverflow-y-scroll">
       <button
         onClick={handleClose}
         className="absolute top-4 right-2 text-black"
@@ -199,7 +200,7 @@ export const UserForm = () => {
             onChange={handleChange}
             onBlur={handleBlur}
             required
-            className={clsx("w-full p-3 border rounded-[3px] bg-[#EA81A4] focus:outline-none focus:border-gray-300 mt-1", {
+            className={clsx("w-full p-3 border border-[#FEF0D5] rounded-[3px] bg-[#EA81A4] focus:outline-none focus:border-gray-300 mt-1", {
               "border-[#FF454A] bg-[#FF454A] bg-opacity-10": errors.fullName,
             })} />
           {errors.fullName && <p className=" text-[#FF454A] text-xs font-bold pt-1">{errors.fullName}</p>}
@@ -212,8 +213,9 @@ export const UserForm = () => {
             value={formData.postcode}
             onChange={handleChange}
             onBlur={handleBlur}
-            className={clsx("w-full p-3 border rounded-[3px] bg-[#EA81A4] focus:outline-none focus:border-gray-300 mt-1", {
+            className={clsx("w-full p-3 border  rounded-[3px] bg-[#EA81A4] focus:outline-none focus:border-gray-300 mt-1", {
               "border-[#FF454A] bg-[#FF454A] bg-opacity-10": errors.postcode,
+              "border-[#FEF0D5]": !errors.postcode,
             })} required
           />
           {errors.postcode && <p className="text-[#FF454A] text-xs font-bold pt-1">{errors.postcode}</p>}
@@ -228,8 +230,9 @@ export const UserForm = () => {
             onChange={handleChange}
             onBlur={handleBlur}
             required
-            className={clsx("w-full p-3 border rounded-[3px] bg-[#EA81A4] focus:outline-none focus:border-gray-300 mt-1", {
+            className={clsx("w-full p-3 border  rounded-[3px] bg-[#EA81A4] focus:outline-none focus:border-gray-300 mt-1", {
               "border-[#FF454A] bg-[#FF454A] bg-opacity-10": errors.emailAddress,
+              "border-[#FEF0D5]": !errors.emailAddress,
             })}
           />
           {errors.emailAddress && <p className="text-[#FF454A] text-xs font-bold pt-1">{errors.emailAddress}</p>}
@@ -246,6 +249,7 @@ export const UserForm = () => {
             required
             className={clsx("w-full p-3 border rounded-[3px] bg-[#EA81A4] focus:outline-none focus:border-gray-300 mt-1", {
               "border-[#FF454A] bg-[#FF454A] bg-opacity-10": errors.phone,
+              "border-[#FEF0D5]": !errors.phone,
             })} />
           {errors.phone && <p className="text-[#FF454A] text-xs font-bold pt-1">{errors.phone}</p>}
         </div>
@@ -256,7 +260,7 @@ export const UserForm = () => {
             name="hearSource"
             value={formData.hearSource}
             onChange={handleChange}
-            className="w-full p-3 border rounded-[3px] bg-[#EA81A4] focus:outline-none focus:border-gray-300 appearance-none  mt-1"
+            className="w-full p-3 border border-[#FEF0D5] rounded-[3px] bg-[#EA81A4] focus:outline-none focus:border-gray-300 appearance-none  mt-1"
           >
             {[...Array(10)].map((_, index) => (
               <option key={index + 1} value={index + 1}>
@@ -277,7 +281,7 @@ export const UserForm = () => {
             name="visitedBusinesses"
             value={formData.visitedBusinesses}
             onChange={handleChange}
-            className="w-full p-3 border rounded-[3px] bg-[#EA81A4] focus:outline-none focus:border-gray-300 appearance-none mt-1"
+            className="w-full p-3 border border-[#FEF0D5] rounded-[3px] bg-[#EA81A4] focus:outline-none focus:border-gray-300 appearance-none mt-1"
           >
             <option value="Yes">Yes</option>
             <option value="No">No</option>
@@ -295,7 +299,7 @@ export const UserForm = () => {
             name="encouragedExplore"
             value={formData.encouragedExplore}
             onChange={handleChange}
-            className="w-full p-3 border rounded-[3px] bg-[#EA81A4] focus:outline-none focus:border-gray-300 appearance-none mt-1"
+            className="w-full p-3 border border-[#FEF0D5] rounded-[3px] bg-[#EA81A4] focus:outline-none focus:border-gray-300 appearance-none mt-1"
           >
             <option value="Yes">Yes</option>
             <option value="No">No</option>
@@ -307,7 +311,7 @@ export const UserForm = () => {
         <button
           type="submit"
           disabled={!isFormValid || loading}
-          className={clsx("px-4 py-2 border-white border-2 max-w-[220px] xs:max-w-[240px] h-12 xs:h-14 w-full text-white rounded-full font-secondary-sans text-base xs:text-lg", {
+          className={clsx("px-4 py-2 mb-12 border-[#FEF0D5] border-2 max-w-[220px] xs:max-w-[240px] h-12 xs:h-14 w-full text-[#FEF0D5] rounded-full font-secondary-sans text-base xs:text-lg active:bg-[#FEF0D5] active:text-[#F184AE]", {
             "opacity-50 cursor-not-allowed": !isFormValid || loading,
           })}
         >
@@ -321,6 +325,7 @@ export const UserForm = () => {
       </form>
 
       {error && <p className="mt-4 text-[#FF454A]">{error}</p>}
+    </div>
     </div>
   );
 };

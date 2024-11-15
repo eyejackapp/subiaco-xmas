@@ -80,14 +80,14 @@ export function HeaderBody({ onToggleHeader }: HeaderBodyProps) {
                     </button>
                 </div>, document.body)}
             <div className="w-full flex flex-col gap-6 justify-center items-center bg-[#F184AE] px-5 py-10">
-                <h2 className="text-base font-bold px-5">{canClaimPrize ? 'You have unlocked all 7!' : 'Unlock all 7 for your chance to win'}</h2>
-                <button onClick={() => setIsSurveyOpen(true)} className="w-[230px] h-14 font-secondary-sans rounded-full text-lg border-2 border-white active:bg-white active:text-black disabled:opacity-50 disabled:bg-transparent disabled:text-white " disabled={!canClaimPrize}>
+                <h2 className="text-lg text-[#FAEFD5] font-bold px-5">{canClaimPrize ? 'You have unlocked all 7!' : 'Unlock all 7 for your chance to win'}</h2>
+                <button onClick={() => setIsSurveyOpen(true)} className="w-[230px] h-14 font-secondary-sans rounded-full text-lg border-2 border-[#FEF0D5] text-[#FEF0D5] active:bg-[#FEF0D5] active:text-[#F184AE] disabled:opacity-50 disabled:bg-transparent disabled:text-white " disabled={!canClaimPrize}>
                     <span className="block pt-[2px]">
                         {hasSentData ? 'Update Details' : 'Claim your prize'}</span></button>
             </div>
             <Instructions />
             {/* <FAQs /> */}
-            <div className="flex justify-between items-end px-5">
+            <div className="flex justify-between items-end px-5 pb-12">
                 <div className="text-base">
                     <a href="https://seesubiaco.com.au/treasure-hunt-conditions/" target="_blank" rel="noreferrer">
                         <button className="text-xs font-[500] underline pr-4">

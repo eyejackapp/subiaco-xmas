@@ -10,6 +10,7 @@ import Orbs from '../../assets/artworks/orbs.png';
 import SnowMan from '../../assets/artworks/snow-man.png';
 import { useTransformEffect } from 'react-zoom-pan-pinch';
 import { useState } from 'preact/hooks';
+import { useMount } from '@/hooks/useMount';
 export function MapViewer() {
     const [scale, setScale] = useState(1);
     useTransformEffect(({ state, instance }) => {
@@ -18,18 +19,20 @@ export function MapViewer() {
             // unmount
         };
     });
-
+    useMount(() => {
+        setScale(3)
+    })
     return (
         <>
             <img style={{ maxWidth: 'none' }} className="touch-none pointer-events-none" src={Map} alt="map" />
-            <PinMarker position={{ x: 810, y: 1889 }} imageUrl={PresentStorm} scale={scale} />
-            <PinMarker position={{ x: 1184, y: 1742 }} imageUrl={SantaSleigh} scale={scale} />
-            <PinMarker position={{ x: 1395, y: 1772 }} imageUrl={SnowGlobe} scale={scale} /> 
-            <PinMarker position={{ x: 1680, y: 1590 }} imageUrl={SantaSelfie} scale={scale} />
-            <PinMarker position={{ x: 1946, y: 1340 }} imageUrl={XmasTree} scale={scale} />
-            <PinMarker position={{ x: 1890, y: 1180 }} imageUrl={ToyParade} scale={scale} />
-            <PinMarker position={{ x: 2050, y: 449 }} imageUrl={Orbs} scale={scale} />
-            <PinMarker position={{ x: 1985, y: 623 }} imageUrl={SnowMan} scale={scale} /> 
+            <PinMarker position={{ x: 2180, y: 249 }} imageUrl={PresentStorm} scale={scale} />
+            <PinMarker position={{ x: 2185, y: 369 }} imageUrl={SantaSleigh} scale={scale} />
+            <PinMarker position={{ x: 2245, y: 369 }} imageUrl={SnowGlobe} scale={scale} />
+            <PinMarker position={{ x: 2185, y: 500 }} imageUrl={SantaSelfie} scale={scale} />
+            <PinMarker position={{ x: 2145, y: 660 }} imageUrl={XmasTree} scale={scale} />
+            <PinMarker position={{ x: 2170, y: 940 }} imageUrl={ToyParade} scale={scale} />
+            <PinMarker position={{ x: 2135, y: 1090 }} imageUrl={Orbs} scale={scale} />
+            <PinMarker position={{ x: 650, y: 2873 }} imageUrl={SnowMan} scale={scale} />
         </>
     );
 }

@@ -40,14 +40,14 @@ export const Carousel: FunctionalComponent<PropType> = (props) => {
 
       {/* Dots overlayed on top of the carousel content */}
       {children.length > 1 && (
-        <div className="embla__controls absolute bottom-4 w-full flex justify-center gap-5">
-          <div className="embla__dots flex gap-2">
+        <div className="embla__controls absolute bottom-[26px] w-full flex justify-center gap-5">
+          <div className="embla__dots flex gap-1">
             {scrollSnaps.map((_, index) => (
               <DotButton
                 key={index}
                 onClick={() => onDotButtonClick(index)}
                 className={
-                  'embla__dot appearance-none bg-transparent cursor-pointer border-0 w-5 h-5 flex items-center justify-center after:w-3 after:h-3 after:rounded-full after:content-[""]' +
+                  'embla__dot appearance-none bg-transparent cursor-pointer border-0 w-3 h-3 flex items-center justify-center after:w-2 after:h-2 after:rounded-full after:content-[""]' +
                   (index === selectedIndex
                     ? ' embla__dot--selected after:bg-[white] after:bg-opacity-100'
                     : ' after:bg-[white] after:bg-opacity-20')

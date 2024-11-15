@@ -300,7 +300,7 @@ export function App() {
                 {currentArtworkModel?.unlockedLogo && (<img src={currentArtworkModel?.unlockedLogo} className="" />)}
                 {currentArtworkModel?.unlockedInfo && <p className="leading-[20px] text-center" dangerouslySetInnerHTML={{ __html: currentArtworkModel?.unlockedInfo ?? '' }}></p>}
                 <button
-                  className="px-4 py-2 border-white border-2 max-w-[230px] h-14 w-full text-white rounded-full font-secondary-sans text-lg"
+                  className="px-4 py-2 border-[#FEF0D5] border-2 max-w-[230px] h-14 w-full text-[#FEF0D5] rounded-full font-secondary-sans text-lg active:bg-[#FEF0D5] active:text-[#F184AE]"
                   onClick={handleCloseArtworkUnlockedModal}
                 >
                   <span className="block pt-[2px]">OK</span>
@@ -322,7 +322,7 @@ export function App() {
                 {tappedArtworkModel?.unlockedLogo && (<img src={tappedArtworkModel?.unlockedLogo} className="" />)}
                 {tappedArtworkModel?.unlockedInfo && <p className="leading-[20px] text-center" dangerouslySetInnerHTML={{ __html: tappedArtworkModel?.unlockedInfo ?? '' }}></p>}
                 <button
-                  className="px-4 py-2 border-white border-2 max-w-[230px] h-14 w-full text-white rounded-full font-secondary-sans text-lg"
+                  className="px-4 py-2 border-[#FEF0D5] border-2 max-w-[230px] h-14 w-full text-[#FEF0D5] rounded-full font-secondary-sans text-lg active:bg-[#FEF0D5] active:text-[#F184AE]"
                   onClick={() => setShowArtworkTapped(false)}
                 >
                   <span className="block pt-[2px]">OK</span>
@@ -374,7 +374,7 @@ export function App() {
                   </p>
                 }
                 <button
-                  className="px-4 py-2 border-white border-2 max-w-[220px] xs:max-w-[240px] h-12 xs:h-14 w-full text-white rounded-full font-secondary-sans text-base xs:text-lg"
+                  className="px-4 py-2 border-[#FEF0D5] border-2 max-w-[220px] xs:max-w-[240px] h-12 xs:h-14 w-full text-[#FEF0D5] rounded-full font-secondary-sans text-base xs:text-lg active:bg-[#FEF0D5] active:text-[#F184AE]"
                   onClick={handleEnterDetails}
                 >
                   <span className="block pt-[2px]">
@@ -412,7 +412,7 @@ export function App() {
                   </p>
                 }
                 <button
-                  className="px-4 py-2 border-white border-2 max-w-[220px] xs:max-w-[240px] h-12 xs:h-14 w-full text-white rounded-full font-secondary-sans text-base xs:text-lg"
+                  className="px-4 py-2 border-[#FEF0D5] border-2 max-w-[220px] xs:max-w-[240px] h-12 xs:h-14 w-full text-[#FEF0D5] rounded-full font-secondary-sans text-base xs:text-lg active:bg-[#FEF0D5] active:text-[#F184AE]"
                   onClick={handleThankYouClose}
                 >
                   <span className="block pt-[2px]">
