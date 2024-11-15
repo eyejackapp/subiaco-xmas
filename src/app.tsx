@@ -56,14 +56,14 @@ export function App() {
   }, [shouldShowArtworkUnlocked, setShowArtworkUnlocked]);
 
   const handleHashChange = useCallback(() => {
+    clearCurrentArtwork();
+
     if (shouldShowArtworkUnlocked) {
       setArtworkState(ArtworkState.NONE);
       setShowArtworkUnlocked(true)
     } else {
       setArtworkState(ArtworkState.PLACING);
-
     }
-    clearCurrentArtwork();
     renderer?.pauseAudio();
     canResumeAudio.current = false
   }, [clearCurrentArtwork, setArtworkState, renderer, shouldShowArtworkUnlocked, setShowArtworkUnlocked]);
