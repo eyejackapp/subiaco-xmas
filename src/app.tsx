@@ -1,5 +1,4 @@
 import { useCallback, useState, useErrorBoundary, useEffect, useMemo, useRef } from "preact/hooks";
-import { createPortal } from "preact/compat";
 import Splash from "./features/splash";
 import { FadeTransition } from "./components/Transitions";
 import ErrorPage from "./features/error";
@@ -11,7 +10,7 @@ import { getArtworkIdFromCode } from "./utils/qrUtils";
 import TrackingOverlay from "./features/tracking-overlay";
 import { Spinner } from "./components/Spinner";
 import Header from "./features/header";
-import { ArtworkId, ARTWORKS, ARTWORKS_LENGTH } from "./renderer/artworks";
+import { ArtworkId, ARTWORKS_LENGTH } from "./renderer/artworks";
 import { ModalOverlay } from "./components/Modal/ModalOverlay";
 import { Modal } from "./components/Modal/Modal";
 import { useArtwork } from "./hooks/useArtwork";
@@ -20,13 +19,14 @@ import { RecordingButton, useVideoRecorder } from "./features/recording-button";
 import MediaPreview from "./features/media-preview";
 import { useLocalStorageState } from "ahooks";
 import { OnboardingModals } from "./features/onboarding";
-import { useUserForm } from "./hooks/useUserForm";
+import { UserFormProvider, useUserForm } from "./hooks/useUserForm";
 import Star from './assets/star-lg.svg';
 import CongratsLogo from './assets/congrats-logo.svg';
 import CongratsStars from './assets/congrats-stars.png';
 import useUserDevice from "./hooks/useUserDevice";
 import LandscapeOverlay from "./features/landscape-overlay";
 import useScreenOrientation from "./hooks/useScreenOrientation";
+import useAnalytics from "./hooks/useAnalytics";
 
 export function App() {
   const [loadingArtwork, setLoadingArtwork] = useState(false);
@@ -44,7 +44,12 @@ export function App() {
   const { hasHitSubmissionLimit } = useUserForm();
   const { isMobile } = useUserDevice();
   const screenOrientation = useScreenOrientation();
+  const { userId } = useUserForm();
+  const { initAnalytics, sendEvent } = useAnalytics(userId)
 
+  useEffect(() => {
+    initAnalytics('G-J314S16GFS')
+  }, [initAnalytics])
 
   const canResumeAudio = useRef(false);
 
@@ -56,7 +61,7 @@ export function App() {
   }, [shouldShowArtworkUnlocked, setShowArtworkUnlocked]);
 
   const handleHashChange = useCallback(() => {
-    
+
     if (shouldShowArtworkUnlocked) {
       setArtworkState(ArtworkState.NONE);
       setShowArtworkUnlocked(true)
@@ -150,14 +155,19 @@ export function App() {
       await loadArtwork(artworkId);
       setCurrentArtwork(artworkId);
       setArtworkState(ArtworkState.VIEWING);
+
       canResumeAudio.current = false;
+
+      sendEvent('artwork_viewed', {
+        artwork_id: artworkId,
+      })
 
     } catch (error) {
       console.error("Failed to load artwork:", error);
     } finally {
       setLoadingArtwork(false);
     }
-  }, [loadArtwork, hash, setLoadingArtwork, setCurrentArtwork, setArtworkState, viewedArtworks, setViewedArtworks, hasViewedCongrats, regularArtworks, hasHitSubmissionLimit]);
+  }, [loadArtwork, hash, setLoadingArtwork, loadingArtwork, sendEvent, setCurrentArtwork, setArtworkState, viewedArtworks, setViewedArtworks, hasViewedCongrats, regularArtworks, hasHitSubmissionLimit]);
 
 
   const onVideoCleared = useCallback(() => {
