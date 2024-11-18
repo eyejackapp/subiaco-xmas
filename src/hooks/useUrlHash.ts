@@ -36,7 +36,7 @@ function useUrlHash(onHashChange?: () => void) {
         const hash = new URL(model.data).hash.slice(1);
         const artworkId = getArtworkIdFromCode(hash);
         if (artworkId && artworkId !== previousHashRef.current) {
-          console.log("UPDATE hash", artworkId);
+          // console.log("UPDATE hash", artworkId);
           updateHash(hash, artworkId);
         }
       }

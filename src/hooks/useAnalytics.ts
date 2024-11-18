@@ -21,7 +21,7 @@ const useAnalytics = (userId: string) => {
         console.warn('Google Analytics is already initialized.');
         return;
       }
-      console.log('userId', userId);
+
       const script = document.createElement('script');
       script.async = true;
       script.src = `https://www.googletagmanager.com/gtag/js?id=${tag}`;
@@ -34,11 +34,10 @@ const useAnalytics = (userId: string) => {
       window.gtag = gtag;
 
       script.onload = () => {
-        console.log('id for ga config', userId);
         window.gtag('js', new Date());
         window.gtag('config', tag, {
           user_id: userId || 'anonymous',
-          send_page_view: false,
+          send_page_view: true,
         });
 
         isInitialized.current = true;
@@ -57,7 +56,7 @@ const useAnalytics = (userId: string) => {
       }
       eventParams['user_id'] = userId;
       window.gtag('event', eventName, eventParams);
-      console.log('GA: page_view app', document.title, window.location.pathname);
+      // console.log('GA: page_view app', document.title, window.location.pathname);
 
     },
     [isInitialized, userId]

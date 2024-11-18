@@ -1,24 +1,29 @@
 import { sentryVitePlugin } from "@sentry/vite-plugin";
 import { resolve } from "node:path";
 
-import { defineConfig, loadEnv } from "vite";
+import { defineConfig } from "vite";
 import { comlink } from "vite-plugin-comlink";
 import inspect from "vite-plugin-inspect";
 import preact from "@preact/preset-vite";
 import path from "path";
-import { VitePWA } from "vite-plugin-pwa";
-
-
 
 export default defineConfig(({ mode }) => {
-
   return {
-    plugins: [comlink(), preact(), inspect()],
+    plugins: [
+      comlink(),
+      preact(),
+      inspect(),
+      sentryVitePlugin({
+        authToken: process.env.SENTRY_AUTH_TOKEN,
+        org: "eyejack",
+        project: "subiaco-xmas",
+      }),
+    ],
     worker: {
       plugins: () => [comlink()],
     },
-    base: mode === 'production' ? '/subiaco-twilight-trail/' : '',
-    assetsInclude: ['**/*.glb', '**/*.hdr'],
+    base: mode === "production" ? "/subiaco-twilight-trail/" : "",
+    assetsInclude: ["**/*.glb", "**/*.hdr"],
     server: {
       https: {
         key: "./k-key.pem",
@@ -39,7 +44,7 @@ export default defineConfig(({ mode }) => {
           main: resolve(__dirname, "./index.html"),
         },
       },
-        outDir: 'dist', 
+      outDir: "dist",
 
       sourcemap: true,
     },

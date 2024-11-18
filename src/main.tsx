@@ -11,10 +11,14 @@ import { UserFormProvider } from './hooks/useUserForm.tsx';
 // ReactGA.initialize('G-J314S16GFS');
 
 // if (import.meta.env.PROD) {
-//     Sentry.init({
-//         dsn: 'https://b9df91503a25289a9e03e6b9f61f6faa@o4506630415319040.ingest.sentry.io/4506630416891904',
-//         integrations: [],
-//     });
+Sentry.init({
+    dsn: "https://09c5952301501726701f5266c8de19ed@o1388406.ingest.us.sentry.io/4508316281929728",
+    integrations: [
+        Sentry.browserTracingIntegration(),
+    ],
+    tracesSampleRate: 1.0,
+    replaysOnErrorSampleRate: 1.0,
+});
 // }
 
 render(<AppStateProvider><RendererProvider><ArtworkProvider><UserFormProvider><App /></UserFormProvider></ArtworkProvider></RendererProvider></AppStateProvider>, document.getElementById('app')!);

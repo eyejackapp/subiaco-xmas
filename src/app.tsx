@@ -161,14 +161,12 @@ export function App() {
       sendEvent('artwork_viewed', {
         artwork_id: artworkId,
       })
-
     } catch (error) {
       console.error("Failed to load artwork:", error);
     } finally {
       setLoadingArtwork(false);
     }
   }, [loadArtwork, hash, setLoadingArtwork, loadingArtwork, sendEvent, setCurrentArtwork, setArtworkState, viewedArtworks, setViewedArtworks, hasViewedCongrats, regularArtworks, hasHitSubmissionLimit]);
-
 
   const onVideoCleared = useCallback(() => {
     setAppState(AppState.ARTWORK_VIEWING);
