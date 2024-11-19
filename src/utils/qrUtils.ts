@@ -14,8 +14,8 @@ export const QR_CODE_LOOKUP = import.meta.env.DEV ? {
     '3130': 'santa-selfie',
     '1412': 'xmas-tree',
     '6793': 'toy-parade',
-    '4364': 'orbs',
-    '5281': 'bonus-snowman',
+    '4364': 'snowman',
+    '5281': 'bonus-orbs',
 } as const;
 
 const validCodes = Object.keys(QR_CODE_LOOKUP);

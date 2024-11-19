@@ -9,7 +9,7 @@ import SnowMan from "../assets/artworks/snow-man.png";
 
 import PresentStormUnlocked from "../assets/unlocked-modals/present-storm-unlocked.svg";
 import XmasTreeUnlocked from "../assets/unlocked-modals/xmas-tree-unlocked.svg";
-import SnowManUnlocked from "../assets/unlocked-modals/snow-man-unlocked.svg";
+import OrbsUnlocked from "../assets/unlocked-modals/orbs-unlocked.svg";
 
 import PresentStormModel from "/content/Present_Storm.glb";
 import SantaSleighModel from "/content/Santa_Sleigh.glb";
@@ -101,24 +101,24 @@ export const ARTWORKS = {
     unlockedLogo: "",
     index: 5,
   },
-  "orbs": {
-    name: "Orbs",
+  "snowman": {
+    name: "Snow Man",
     artist: "Enchanted Wings",
-    basePath: OrbsModel,
-    audioPath: OrbsAudio,
-    image: Orbs,
+    basePath: SnowManModel,
+    audioPath: SnowManAudio,
+    image: SnowMan,
     unlockedInfo: "",
     unlockedLogo: "",
     index: 6,
   },
-  "bonus-snowman": {
-    name: "Snow Man",
+  "bonus-orbs": {
+    name: "Orbs",
     artist: "Magical Owl",
-    basePath: SnowManModel,
-    audioPath: SnowManAudio,
-    image: SnowMan,
+    basePath: OrbsModel,
+    audioPath: OrbsAudio,
+    image: Orbs,
     unlockedInfo: "You’ve won a special offer from Excelsior Deli!<br/><br/>Receive a FREE hot drink of any size when you spend $29 or more in one transaction. Offer excludes specialty coffees or drinks.To claim, simply head in store and present this offer. Find them at 140 Onslow Road, Shenton Park.",
-    unlockedLogo: SnowManUnlocked,
+    unlockedLogo: OrbsUnlocked,
     index: 7,
   },
 } satisfies Record<string, ArtworkDefiniton>;

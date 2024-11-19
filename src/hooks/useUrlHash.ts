@@ -11,7 +11,8 @@ function useUrlHash(onHashChange?: () => void) {
     (newHash: string, artworkId: string) => {
       if (newHash !== hash) {
         setHash(newHash);
-        window.location.hash = newHash;
+        // window.location.hash = newHash;
+        window.history.replaceState(null, '', `#${newHash}`);
         previousHashRef.current = artworkId;
         if (onHashChange) {
           onHashChange();

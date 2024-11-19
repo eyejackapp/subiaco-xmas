@@ -214,8 +214,9 @@ export function Splash({ onPermissionsGranted }: SplashProps) {
                                                         <>
                                                             <h2 className="text-lg md:text-xl items-end text-center animate-fade-in font-inter pb-12 px-5 leading-[24px]">
                                                                 Access to your camera, microphone,
-                                                                <br /> motion & orientation is required
-                                                            </h2>
+                                                                <br /> motion & orientation is required.
+                                                                <br /><br />
+                                                                Ensure volume is turned up for<br />the best experience.</h2>
                                                             <div className="">
                                                                 <button class="rounded-button" onClick={requestMotion} style={{
                                                                     // marginBottom: '10px'
