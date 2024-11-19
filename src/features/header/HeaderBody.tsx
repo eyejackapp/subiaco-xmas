@@ -185,14 +185,14 @@ function Instructions() {
             </p>
             <h2 className="text-base font-secondary-sans font-bold">Instructions</h2>
             <p className="text-sm leading-[18px] tracking-[-0.2px]">
-                Start your journey at any of the 7 Subiaco locations or the bonus Shenton Park stop by viewing the map online or below.   your journey at any one of the 8 locations.
+                Start your journey at any of the 7 Subiaco locations or the bonus Shenton Park stop by viewing the map online or below. Begin your journey at any one of the 8 locations.
                 <br />
                 <br />
                 Follow the map to discover each installation and scan the EyeJack QR code to watch them come to life. Collect special offers and gifts at select stops along the way.                  <br />
                 <br />
                 Activate all 7 Subiaco installations to go in the draw to WIN a year's worth of FREE ice-cream from Whisk Creamery! Plus the first 300 people to complete the trail will also win an instant prize!                  <br />
                 <br />
-                For more information, visit SeeSubiaco.com.au/Christmas and share the excitement online with #SubiacoTwilightTrail #SeeSubiaco @SeeSubiaco
+                For more information, visit <a href="https://seesubiaco.com.au/" target="_blank" className="underline active:opacity-75">SeeSubiaco.com.au/Christmas</a> and share the excitement online with #SubiacoTwilightTrail #SeeSubiaco @SeeSubiaco
             </p>
         </div>
     );

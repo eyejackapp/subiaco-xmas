@@ -95,7 +95,7 @@ export function Splash({ onPermissionsGranted }: SplashProps) {
         <div
             id="splash-bg"
             className={clsx(
-                'bg-cover bg-center h-full w-full text-white relative pointer-events-none overflow-hidden items-center xpx-5 flex flex-col',
+                'bg-cover bg-center h-full w-full text-white relative xpointer-events-none overflow-hidden items-center xpx-5 flex flex-col',
             )}
         >
             {deviceType === 'loading' || deviceType === 'mobile' && (
@@ -189,10 +189,10 @@ export function Splash({ onPermissionsGranted }: SplashProps) {
                                                     <p class="p-main text-2xl leading-[21px]" style={{
                                                         fontSize: '20px',
                                                     }}>To learn more about<br />Christmas in Subiaco visit</p>
-                                                    <a target="_blank" href={"https://SeeSubiaco.com.au/Christmas"}><p class="p-main text-2xl link" style={{
+                                                    <a href="https://seesubiaco.com.au/christmas" target="_blank" className="pointer-events-auto"><button class="p-main text-2xl link" style={{
                                                         marginTop: '10px',
                                                         fontSize: '20px',
-                                                    }}>SeeSubiaco.com.au/Christmas</p></a>
+                                                    }}>SeeSubiaco.com.au/Christmas</button></a>
                                                 </div>
                                                 <p class="p-main text-2xl animate-fade-in leading-[29px]">Begin the Twinkling<br />Treasure Hunt</p>
                                                 <button class="rounded-button animate-fade-in" onClick={handleBegin} style={{
